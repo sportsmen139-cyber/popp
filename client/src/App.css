@@ -1,0 +1,119 @@
+#root {
+  min-height: 100vh;
+}
+
+.app {
+  min-height: 100vh;
+  padding: 24px 16px;
+}
+
+.home {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.program-label {
+  margin: 0 0 8px;
+  color: #71717a;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+h1 {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.1;
+}
+
+.subtitle {
+  margin: 12px 0 28px;
+  color: #71717a;
+  font-size: 16px;
+}
+
+.workout-card {
+  padding: 20px;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+.workout-status {
+  margin: 0 0 6px;
+  color: #71717a;
+  font-size: 14px;
+}
+
+.workout-card h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.workout-card div > p:last-child {
+  margin: 8px 0 20px;
+  color: #71717a;
+}
+
+.workout-card button {
+  width: 100%;
+  min-height: 52px;
+  border: 0;
+  border-radius: 14px;
+  background: #18181b;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+.back-button {
+  margin-bottom: 24px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #52525b;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.exercise-card {
+  display: flex;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.exercise-number {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #18181b;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.exercise-card h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.exercise-card p {
+  margin: 0;
+  color: #71717a;
+  font-size: 14px;
+}
+
+.exercise-card .exercise-rest {
+  margin-top: 4px;
+}
