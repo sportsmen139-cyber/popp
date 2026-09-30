@@ -1,13 +1,40 @@
+import { exercises } from '../../data/exercises'
+
 import type {
+  ExerciseSelectionContext,
   TrainingEmphasis,
+  UserLevel,
   WorkoutSlot,
 } from '../../types/program'
+
+const levelRank: Record<UserLevel, number> = {
+  beginner: 1,
+  intermediate: 2,
+  advanced: 3,
+}
 
 export function selectExerciseForSlot(
   slot: WorkoutSlot,
   emphasis: TrainingEmphasis,
+  context: ExerciseSelectionContext,
 ): string | null {
-  if (slot.candidateExerciseIds.length === 0) {
+  const eligibleExerciseIds =
+    slot.candidateExerciseIds.filter((exerciseId) => {
+      const exercise = exercises.find(
+        (item) => item.id === exerciseId,
+      )
+
+      if (!exercise) {
+        return false
+      }
+
+      return (
+        levelRank[exercise.difficulty] <=
+        levelRank[context.level]
+      )
+    })
+
+  if (eligibleExerciseIds.length === 0) {
     return null
   }
 
@@ -25,7 +52,7 @@ export function selectExerciseForSlot(
 
     const preferredExerciseId = rule.exerciseIds.find(
       (exerciseId) =>
-        slot.candidateExerciseIds.includes(exerciseId),
+        eligibleExerciseIds.includes(exerciseId),
     )
 
     if (preferredExerciseId) {
@@ -33,5 +60,5 @@ export function selectExerciseForSlot(
     }
   }
 
-  return slot.candidateExerciseIds[0]
+  return eligibleExerciseIds[0]
 }

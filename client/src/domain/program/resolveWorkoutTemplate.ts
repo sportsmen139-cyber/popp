@@ -1,4 +1,5 @@
 import type {
+  ExerciseSelectionContext,
   ResolvedWorkout,
   TrainingEmphasis,
   WorkoutTemplate,
@@ -9,13 +10,15 @@ import { selectExerciseForSlot } from './selectExerciseForSlot'
 export function resolveWorkoutTemplate(
   template: WorkoutTemplate,
   emphasis: TrainingEmphasis,
+  context: ExerciseSelectionContext,
 ): ResolvedWorkout {
   const exercises = template.slots
     .map((slot) => {
       const exerciseId = selectExerciseForSlot(
-        slot,
-        emphasis,
-      )
+  slot,
+  emphasis,
+  context,
+)
 
       if (!exerciseId) {
         return null

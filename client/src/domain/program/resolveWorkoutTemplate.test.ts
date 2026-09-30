@@ -26,11 +26,13 @@ describe('resolveWorkoutTemplate', () => {
     const balancedWorkout = resolveWorkoutTemplate(
       template,
       balanced,
+       { level: 'intermediate' },
     )
 
     const glutesWorkout = resolveWorkoutTemplate(
       template,
       glutes,
+       { level: 'intermediate' },
     )
 
     expect(

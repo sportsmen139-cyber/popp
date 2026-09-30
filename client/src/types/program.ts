@@ -9,6 +9,10 @@ export type UserLevel =
   | 'beginner'
   | 'intermediate'
   | 'advanced'
+  export type ExerciseSelectionContext = {
+  level: UserLevel
+}
+ 
 
 export type TrainingObjective =
   | 'general_fitness'
