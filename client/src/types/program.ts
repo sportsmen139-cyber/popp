@@ -11,6 +11,7 @@ export type UserLevel =
   | 'advanced'
   export type ExerciseSelectionContext = {
   level: UserLevel
+  availableEquipment?: string[]
 }
  
 

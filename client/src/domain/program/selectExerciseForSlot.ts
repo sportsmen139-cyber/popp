@@ -25,13 +25,27 @@ export function selectExerciseForSlot(
       )
 
       if (!exercise) {
-        return false
-      }
+  return false
+}
 
-      return (
-        levelRank[exercise.difficulty] <=
-        levelRank[context.level]
-      )
+const levelMatches =
+  levelRank[exercise.difficulty] <=
+  levelRank[context.level]
+
+if (!levelMatches) {
+  return false
+}
+
+if (context.availableEquipment === undefined) {
+  return true
+}
+
+const equipmentMatches = exercise.equipment.every(
+  (equipmentItem) =>
+    context.availableEquipment?.includes(equipmentItem),
+)
+
+return equipmentMatches
     })
 
   if (eligibleExerciseIds.length === 0) {

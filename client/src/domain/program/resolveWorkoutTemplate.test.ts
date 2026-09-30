@@ -26,13 +26,17 @@ describe('resolveWorkoutTemplate', () => {
     const balancedWorkout = resolveWorkoutTemplate(
       template,
       balanced,
-       { level: 'intermediate' },
+      {
+        level: 'intermediate',
+      },
     )
 
     const glutesWorkout = resolveWorkoutTemplate(
       template,
       glutes,
-       { level: 'intermediate' },
+      {
+        level: 'intermediate',
+      },
     )
 
     expect(
@@ -42,5 +46,35 @@ describe('resolveWorkoutTemplate', () => {
     expect(
       glutesWorkout.exercises[0].exerciseId,
     ).toBe('leg-press')
+  })
+
+  it('учитывает доступное оборудование', () => {
+    const template = workoutTemplates.find(
+      (item) => item.id === 'gym-fullbody-a',
+    )
+
+    const balanced = trainingEmphases.find(
+      (item) => item.id === 'balanced',
+    )
+
+    if (!template || !balanced) {
+      throw new Error('Не найдены данные для теста')
+    }
+
+    const workout = resolveWorkoutTemplate(
+      template,
+      balanced,
+      {
+        level: 'intermediate',
+        availableEquipment: [],
+      },
+    )
+
+    const horizontalPush = workout.exercises.find(
+      (exercise) =>
+        exercise.slotId === 'a-horizontal-push',
+    )
+
+    expect(horizontalPush?.exerciseId).toBe('push-up')
   })
 })
