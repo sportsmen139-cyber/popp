@@ -31,4 +31,22 @@ export const trainingEmphases: TrainingEmphasis[] = [
       },
     ],
   },
+  {
+  id: 'pullups',
+  title: 'Акцент на подтягивания',
+  description:
+    'Программа остаётся сбалансированной, но больше внимания получает развитие подтягиваний и связанных тяговых движений.',
+  rules: [
+    {
+      type: 'prefer_exercises',
+      slotTag: 'pullups',
+      exerciseIds: [
+        'pull-up',
+        'assisted-pull-up',
+        'lat-pulldown',
+        'close-grip-lat-pulldown',
+      ],
+    },
+  ],
+},
 ]

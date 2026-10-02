@@ -12,9 +12,7 @@ export type UserLevel =
   export type ExerciseSelectionContext = {
   level: UserLevel
   availableEquipment?: string[]
-}
- 
-
+  }
 export type TrainingObjective =
   | 'general_fitness'
   | 'muscle_gain'
@@ -120,4 +118,11 @@ export type ResolvedWorkout = {
   templateId: string
   title: string
   exercises: ResolvedWorkoutExercise[]
+}
+export type ProgramResolverInput = {
+  environment: TrainingEnvironment
+  daysPerWeek: 2 | 3 | 4
+  level: UserLevel
+  objective: TrainingObjective
+  emphasisId: TrainingEmphasisId
 }
