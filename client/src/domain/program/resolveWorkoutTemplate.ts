@@ -1,6 +1,7 @@
 import type {
   ExerciseSelectionContext,
   ResolvedWorkout,
+  ResolvedWorkoutExercise,
   TrainingEmphasis,
   WorkoutTemplate,
 } from '../../types/program'
@@ -11,37 +12,36 @@ export function resolveWorkoutTemplate(
   template: WorkoutTemplate,
   emphasis: TrainingEmphasis,
   context: ExerciseSelectionContext,
-): ResolvedWorkout {
-  const exercises = template.slots
-    .map((slot) => {
-      const exerciseId = selectExerciseForSlot(
-  slot,
-  emphasis,
-  context,
-)
+): ResolvedWorkout | null {
+  const resolvedExercises: ResolvedWorkoutExercise[] = []
 
-      if (!exerciseId) {
-        return null
-      }
-
-      return {
-        slotId: slot.id,
-        exerciseId,
-        sets: slot.sets,
-        target: slot.target,
-        restSeconds: slot.restSeconds,
-      }
-    })
-    .filter(
-      (
-        exercise,
-      ): exercise is NonNullable<typeof exercise> =>
-        exercise !== null,
+  for (const slot of template.slots) {
+    const exerciseId = selectExerciseForSlot(
+      slot,
+      emphasis,
+      context,
     )
+
+    if (!exerciseId) {
+      if (slot.optional) {
+        continue
+      }
+
+      return null
+    }
+
+    resolvedExercises.push({
+      slotId: slot.id,
+      exerciseId,
+      sets: slot.sets,
+      target: slot.target,
+      restSeconds: slot.restSeconds,
+    })
+  }
 
   return {
     templateId: template.id,
     title: template.title,
-    exercises,
+    exercises: resolvedExercises,
   }
 }
