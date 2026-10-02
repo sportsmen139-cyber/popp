@@ -19,9 +19,26 @@ type ResolveCurrentWorkoutInput = {
   availableEquipment?: string[]
 }
 
+type ResolveCurrentWorkoutFailureReason =
+  | 'training_plan_not_found'
+  | 'workout_unavailable'
+type ResolveCurrentWorkoutResult =
+  | {
+      ok: true
+      trainingPlan: NonNullable<
+        ReturnType<typeof resolveTrainingPlan>
+      >
+      workout: NonNullable<
+        ReturnType<typeof resolveNextWorkout>
+      >
+    }
+  | {
+      ok: false
+      reason: ResolveCurrentWorkoutFailureReason
+    }
 export function resolveCurrentWorkout(
   input: ResolveCurrentWorkoutInput,
-) {
+): ResolveCurrentWorkoutResult {
   const trainingPlan = resolveTrainingPlan({
     environment: input.environment,
     daysPerWeek: input.daysPerWeek,
@@ -30,8 +47,11 @@ export function resolveCurrentWorkout(
   })
 
   if (!trainingPlan) {
-    return null
+  return {
+    ok: false,
+    reason: 'training_plan_not_found',
   }
+}
 
   const workout = resolveNextWorkout({
     baseProgram: trainingPlan.baseProgram,
@@ -46,11 +66,15 @@ export function resolveCurrentWorkout(
   })
 
   if (!workout) {
-    return null
+  return {
+    ok: false,
+    reason: 'workout_unavailable',
   }
+}
 
   return {
-    trainingPlan,
-    workout,
-  }
+  ok: true,
+  trainingPlan,
+  workout,
+}
 }
