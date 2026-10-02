@@ -123,6 +123,4 @@ export type ProgramResolverInput = {
   environment: TrainingEnvironment
   daysPerWeek: 2 | 3 | 4
   level: UserLevel
-  objective: TrainingObjective
-  emphasisId: TrainingEmphasisId
 }

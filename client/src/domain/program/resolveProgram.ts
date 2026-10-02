@@ -1,5 +1,4 @@
 import { basePrograms } from '../../data/basePrograms'
-import { trainingEmphases } from '../../data/trainingEmphases'
 
 import type {
   ProgramResolverInput,
@@ -15,22 +14,5 @@ export function resolveProgram(
       program.supportedLevels.includes(input.level),
   )
 
-  if (!baseProgram) {
-    return null
-  }
-
-  const emphasis = trainingEmphases.find(
-    (item) => item.id === input.emphasisId,
-  )
-
-  if (!emphasis) {
-    return null
-  }
-
-  return {
-    baseProgram,
-    objective: input.objective,
-    emphasis,
-    level: input.level,
-  }
+  return baseProgram ?? null
 }
