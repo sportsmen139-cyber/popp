@@ -6,6 +6,7 @@ import { resolveCurrentWorkout } from './domain/program/resolveCurrentWorkout'
 
 import type { ExerciseTarget } from './types/training'
 import { mockUserProfile } from './data/mockUserProfile'
+import { mockUserProgress } from './data/mockUserProgress'
 
 function formatExerciseTarget(target: ExerciseTarget) {
   const unit =
@@ -53,8 +54,10 @@ function formatRestSeconds(
 function App() {
   const [workoutStarted, setWorkoutStarted] = useState(false)
 
- const currentWorkoutResult =
-  resolveCurrentWorkout(mockUserProfile)
+ const currentWorkoutResult = resolveCurrentWorkout({
+  ...mockUserProfile,
+  ...mockUserProgress,
+})
 
   if (!currentWorkoutResult.ok) {
     return (

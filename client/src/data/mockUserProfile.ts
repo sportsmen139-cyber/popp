@@ -1,19 +1,6 @@
-import type { TrainingGoal } from '../types/goal'
-import type {
-  TrainingEnvironment,
-  UserLevel,
-} from '../types/program'
+import type { OnboardingProfile } from '../types/onboarding'
 
-type MockUserProfile = {
-  environment: TrainingEnvironment
-  daysPerWeek: 2 | 3 | 4
-  level: UserLevel
-  goal: TrainingGoal
-  completedWorkoutsCount: number
-  availableEquipment?: string[]
-}
-
-export const mockUserProfile: MockUserProfile = {
+export const mockUserProfile: OnboardingProfile = {
   environment: 'gym',
   daysPerWeek: 3,
   level: 'intermediate',
@@ -25,5 +12,4 @@ export const mockUserProfile: MockUserProfile = {
     },
     priority: 'high',
   },
-  completedWorkoutsCount: 0,
 }
