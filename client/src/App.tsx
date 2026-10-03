@@ -1,9 +1,76 @@
 import { useState } from 'react'
 import './App.css'
-import { workoutA } from './data/workoutA'
 
+import { exercises } from './data/exercises'
+import { workoutA } from './data/workoutA'
+import { resolveCurrentWorkout } from './domain/program/resolveCurrentWorkout'
+
+import type { ExerciseTarget } from './types/training'
+function formatExerciseTarget(target: ExerciseTarget) {
+  const unit =
+    target.type === 'reps'
+      ? 'повторений'
+      : target.type === 'time'
+        ? 'сек.'
+        : 'м'
+
+  if (target.mode === 'range') {
+    return `${target.min}–${target.max} ${unit}`
+  }
+
+  if (target.mode === 'fixed') {
+    return `${target.value} ${unit}`
+  }
+
+  if (target.type === 'reps') {
+    return 'максимум повторений'
+  }
+
+  if (target.type === 'time') {
+    return 'максимум времени'
+  }
+
+  return 'максимальная дистанция'
+}
+function formatRestSeconds(
+  restSeconds: {
+    min?: number
+    max: number
+  },
+) {
+  if (
+    restSeconds.min !== undefined &&
+    restSeconds.min !== restSeconds.max
+  ) {
+    return `${restSeconds.min}–${restSeconds.max}`
+  }
+
+  return `${restSeconds.max}`
+}
 function App() {
   const [workoutStarted, setWorkoutStarted] = useState(false)
+  const currentWorkoutResult = resolveCurrentWorkout({
+  environment: 'gym',
+  daysPerWeek: 3,
+  level: 'intermediate',
+  goal: {
+    goalType: 'hypertrophy',
+    target: {
+      type: 'muscle_group',
+      id: 'glutes',
+    },
+    priority: 'high',
+  },
+  completedWorkoutsCount: 0,
+})
+
+const currentWorkout = currentWorkoutResult.ok
+  ? currentWorkoutResult.workout
+  : null
+
+const currentProgram = currentWorkoutResult.ok
+  ? currentWorkoutResult.trainingPlan.baseProgram
+  : null
 
   if (workoutStarted) {
     return (
@@ -17,34 +84,52 @@ function App() {
             ← Назад
           </button>
 
-          <p className="program-label">{workoutA.programName}</p>
-
-          <h1>{workoutA.title}</h1>
+          <p className="program-label">{currentProgram?.title ?? workoutA.programName}</p>
+          <h1>{currentWorkout?.title ?? workoutA.title}</h1>
 
           <p className="subtitle">
-            {workoutA.exercises.length} упражнений · около{' '}
+            {currentWorkout?.exercises.length ?? workoutA.exercises.length} упражнений · около{' '}
             {workoutA.estimatedMinutes} минут
           </p>
 
           <div className="exercise-list">
-            {workoutA.exercises.map((exercise, index) => (
-              <article className="exercise-card" key={exercise.id}>
-                <div className="exercise-number">{index + 1}</div>
+          {currentWorkout?.exercises.map((workoutExercise, index) => {
+  const exercise = exercises.find(
+    (item) => item.id === workoutExercise.exerciseId,
+  )
 
-                <div>
-                  <h2>{exercise.name}</h2>
+  if (!exercise) {
+    return null
+  }
 
-                  <p>
-                    {exercise.sets} подхода · {exercise.repsMin}–
-                    {exercise.repsMax}
-                  </p>
+  return (
+    <article
+      className="exercise-card"
+      key={workoutExercise.slotId}
+    >
+      <div className="exercise-number">
+        {index + 1}
+      </div>
 
-                  <p className="exercise-rest">
-                    Отдых: {exercise.restSeconds} сек.
-                  </p>
-                </div>
-              </article>
-            ))}
+      <div>
+        <h2>{exercise.name}</h2>
+
+        <p>
+          {workoutExercise.sets} подхода ·{' '}
+          {formatExerciseTarget(workoutExercise.target)}
+        </p>
+
+        <p className="exercise-rest">
+          Отдых:{' '}
+          {formatRestSeconds(
+            workoutExercise.restSeconds,
+          )}{' '}
+          сек.
+        </p>
+      </div>
+    </article>
+  )
+})}
           </div>
         </section>
       </main>
@@ -54,22 +139,23 @@ function App() {
   return (
     <main className="app">
       <section className="home">
-        <p className="program-label">{workoutA.programName}</p>
+        <p className="program-label">{currentProgram?.title ?? workoutA.programName}</p>
 
         <h1>Твоя тренировка</h1>
 
         <p className="subtitle">
-          Сегодня по плану — {workoutA.title}
+          Сегодня по плану — {currentWorkout?.title ?? workoutA.title}
         </p>
 
         <article className="workout-card">
           <div>
             <p className="workout-status">Сегодня</p>
 
-            <h2>{workoutA.title}</h2>
+            <h2>{currentWorkout?.title ?? workoutA.title}</h2>
 
             <p>
-              {workoutA.exercises.length} упражнений · около{' '}
+              {currentWorkout?.exercises.length ?? workoutA.exercises.length}
+              упражнений · около{' '}
               {workoutA.estimatedMinutes} минут
             </p>
           </div>
