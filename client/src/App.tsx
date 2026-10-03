@@ -5,6 +5,7 @@ import { exercises } from './data/exercises'
 import { resolveCurrentWorkout } from './domain/program/resolveCurrentWorkout'
 
 import type { ExerciseTarget } from './types/training'
+import { mockUserProfile } from './data/mockUserProfile'
 
 function formatExerciseTarget(target: ExerciseTarget) {
   const unit =
@@ -52,20 +53,8 @@ function formatRestSeconds(
 function App() {
   const [workoutStarted, setWorkoutStarted] = useState(false)
 
-  const currentWorkoutResult = resolveCurrentWorkout({
-    environment: 'gym',
-    daysPerWeek: 3,
-    level: 'intermediate',
-    goal: {
-      goalType: 'hypertrophy',
-      target: {
-        type: 'muscle_group',
-        id: 'glutes',
-      },
-      priority: 'high',
-    },
-    completedWorkoutsCount: 0,
-  })
+ const currentWorkoutResult =
+  resolveCurrentWorkout(mockUserProfile)
 
   if (!currentWorkoutResult.ok) {
     return (
