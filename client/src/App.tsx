@@ -7,6 +7,8 @@ import { resolveCurrentWorkout } from './domain/program/resolveCurrentWorkout'
 import type { ExerciseTarget } from './types/training'
 import { mockUserProfile } from './data/mockUserProfile'
 import { mockUserProgress } from './data/mockUserProgress'
+import { OnboardingEnvironment } from './components/OnboardingEnvironment'
+import type { TrainingEnvironment } from './types/program'
 
 function formatExerciseTarget(target: ExerciseTarget) {
   const unit =
@@ -53,10 +55,19 @@ function formatRestSeconds(
 
 function App() {
   const [workoutStarted, setWorkoutStarted] = useState(false)
-
+const [selectedEnvironment, setSelectedEnvironment] =
+  useState<TrainingEnvironment | null>(null)
+  if (!selectedEnvironment) {
+  return (
+    <OnboardingEnvironment
+      onSelect={setSelectedEnvironment}
+    />
+  )
+}
  const currentWorkoutResult = resolveCurrentWorkout({
   ...mockUserProfile,
   ...mockUserProgress,
+  environment: selectedEnvironment,
 })
 
   if (!currentWorkoutResult.ok) {
