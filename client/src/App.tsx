@@ -104,7 +104,8 @@ function App() {
           <h1>{currentWorkout.title}</h1>
 
           <p className="subtitle">
-  {currentWorkout.exercises.length} упражнений
+  {currentWorkout.exercises.length} упражнений · около{' '}
+  {currentWorkout.estimatedMinutes} минут
 </p>
 
           <div className="exercise-list">
@@ -179,7 +180,8 @@ function App() {
             <h2>{currentWorkout.title}</h2>
 
             <p>
-  {currentWorkout.exercises.length} упражнений
+  {currentWorkout.exercises.length} упражнений · около{' '}
+  {currentWorkout.estimatedMinutes} минут
 </p>
           </div>
 

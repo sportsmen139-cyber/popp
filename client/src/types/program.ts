@@ -82,6 +82,7 @@ export type WorkoutSlot = {
 export type WorkoutTemplate = {
   id: string
   title: string
+  estimatedMinutes: number
   slots: WorkoutSlot[]
 }
 
@@ -117,6 +118,7 @@ export type ResolvedWorkoutExercise = {
 export type ResolvedWorkout = {
   templateId: string
   title: string
+  estimatedMinutes: number
   exercises: ResolvedWorkoutExercise[]
 }
 export type ProgramResolverInput = {

@@ -42,6 +42,7 @@ export function resolveWorkoutTemplate(
   return {
     templateId: template.id,
     title: template.title,
+    estimatedMinutes: template.estimatedMinutes,
     exercises: resolvedExercises,
   }
 }

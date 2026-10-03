@@ -4,6 +4,7 @@ export const workoutTemplates: WorkoutTemplate[] = [
 {
   id: 'gym-fullbody-a',
   title: 'Full Body A',
+  estimatedMinutes: 60,
   slots: [
     {
       id: 'a-squat',
@@ -122,6 +123,7 @@ export const workoutTemplates: WorkoutTemplate[] = [
   {
   id: 'gym-fullbody-b',
   title: 'Full Body B',
+  estimatedMinutes: 60,
   slots: [
     {
       id: 'b-single-leg',
@@ -240,6 +242,7 @@ export const workoutTemplates: WorkoutTemplate[] = [
   {
   id: 'gym-fullbody-c',
   title: 'Full Body C',
+  estimatedMinutes: 60,
   slots: [
     {
       id: 'c-hinge',
