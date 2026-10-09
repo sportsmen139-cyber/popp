@@ -1,13 +1,22 @@
 type OnboardingDaysPerWeekProps = {
   onSelect: (daysPerWeek: 2 | 3 | 4) => void
+  onBack: () => void
 }
 
 export function OnboardingDaysPerWeek({
   onSelect,
+  onBack,
 }: OnboardingDaysPerWeekProps) {
   return (
     <main className="app">
       <section className="home">
+        <button
+  className="back-button"
+  type="button"
+  onClick={onBack}
+>
+  ← Назад
+</button>
         <p className="program-label">
           Шаг 2 из 4
         </p>

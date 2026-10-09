@@ -2,14 +2,23 @@ import type { UserLevel } from '../types/program'
 
 type OnboardingLevelProps = {
   onSelect: (level: UserLevel) => void
+  onBack: () => void
 }
 
 export function OnboardingLevel({
   onSelect,
+  onBack,
 }: OnboardingLevelProps) {
   return (
     <main className="app">
       <section className="home">
+        <button
+  className="back-button"
+  type="button"
+  onClick={onBack}
+>
+  ← Назад
+</button>
         <p className="program-label">
           Шаг 3 из 4
         </p>

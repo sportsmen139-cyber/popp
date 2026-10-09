@@ -78,17 +78,19 @@ const [selectedLevel, setSelectedLevel] =
     )
   }
 
-  if (!selectedDaysPerWeek) {
-    return (
-      <OnboardingDaysPerWeek
-        onSelect={setSelectedDaysPerWeek}
-      />
-    )
-  }
-  if (!selectedLevel) {
+ if (!selectedDaysPerWeek) {
+  return (
+    <OnboardingDaysPerWeek
+      onSelect={setSelectedDaysPerWeek}
+      onBack={() => setSelectedEnvironment(null)}
+    />
+  )
+}
+if (!selectedLevel) {
   return (
     <OnboardingLevel
       onSelect={setSelectedLevel}
+      onBack={() => setSelectedDaysPerWeek(null)}
     />
   )
 }
@@ -96,6 +98,7 @@ if (!selectedGoal) {
   return (
     <OnboardingGoal
       onSelect={setSelectedGoal}
+      onBack={() => setSelectedLevel(null)}
     />
   )
 }

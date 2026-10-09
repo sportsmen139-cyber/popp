@@ -2,14 +2,23 @@ import type { TrainingGoal } from '../types/goal'
 
 type OnboardingGoalProps = {
   onSelect: (goal: TrainingGoal) => void
+  onBack: () => void
 }
 
 export function OnboardingGoal({
   onSelect,
+  onBack,
 }: OnboardingGoalProps) {
   return (
     <main className="app">
       <section className="home">
+        <button
+  className="back-button"
+  type="button"
+  onClick={onBack}
+>
+  ← Назад
+</button>
         <p className="program-label">
           Шаг 4 из 4
         </p>
