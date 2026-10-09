@@ -4,7 +4,10 @@ import { OnboardingGoal } from './components/OnboardingGoal'
 import type { TrainingGoal } from './types/goal'
 import { exercises } from './data/exercises'
 import { resolveCurrentWorkout } from './domain/program/resolveCurrentWorkout'
-
+import {
+  loadOnboardingProfile,
+  saveOnboardingProfile,
+} from './storage/onboardingStorage'
 import type { ExerciseTarget } from './types/training'
 
 import { mockUserProgress } from './data/mockUserProgress'
@@ -60,16 +63,26 @@ function formatRestSeconds(
 
 function App() {
   const [workoutStarted, setWorkoutStarted] = useState(false)
+  const [savedOnboardingProfile] =
+  useState(loadOnboardingProfile)
 
   const [selectedEnvironment, setSelectedEnvironment] =
-    useState<TrainingEnvironment | null>(null)
+  useState<TrainingEnvironment | null>(
+    savedOnboardingProfile?.environment ?? null,
+  )
 
   const [selectedDaysPerWeek, setSelectedDaysPerWeek] =
-    useState<2 | 3 | 4 | null>(null)
+  useState<2 | 3 | 4 | null>(
+    savedOnboardingProfile?.daysPerWeek ?? null,
+  )
 const [selectedLevel, setSelectedLevel] =
-  useState<UserLevel | null>(null)
+  useState<UserLevel | null>(
+    savedOnboardingProfile?.level ?? null,
+  )
   const [selectedGoal, setSelectedGoal] =
-  useState<TrainingGoal | null>(null)
+  useState<TrainingGoal | null>(
+    savedOnboardingProfile?.goal ?? null,
+  )
   if (!selectedEnvironment) {
     return (
       <OnboardingEnvironment
@@ -97,7 +110,16 @@ if (!selectedLevel) {
 if (!selectedGoal) {
   return (
     <OnboardingGoal
-      onSelect={setSelectedGoal}
+      onSelect={(goal) => {
+        saveOnboardingProfile({
+          environment: selectedEnvironment,
+          daysPerWeek: selectedDaysPerWeek,
+          level: selectedLevel,
+          goal,
+        })
+
+        setSelectedGoal(goal)
+      }}
       onBack={() => setSelectedLevel(null)}
     />
   )
