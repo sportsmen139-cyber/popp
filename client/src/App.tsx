@@ -9,8 +9,11 @@ import { mockUserProfile } from './data/mockUserProfile'
 import { mockUserProgress } from './data/mockUserProgress'
 import { OnboardingEnvironment } from './components/OnboardingEnvironment'
 import { OnboardingDaysPerWeek } from './components/OnboardingDaysPerWeek'
-import type { TrainingEnvironment } from './types/program'
-
+import type {
+  TrainingEnvironment,
+  UserLevel,
+} from './types/program'
+import { OnboardingLevel } from './components/OnboardingLevel'
 function formatExerciseTarget(target: ExerciseTarget) {
   const unit =
     target.type === 'reps'
@@ -62,7 +65,8 @@ function App() {
 
   const [selectedDaysPerWeek, setSelectedDaysPerWeek] =
     useState<2 | 3 | 4 | null>(null)
-
+const [selectedLevel, setSelectedLevel] =
+  useState<UserLevel | null>(null)
   if (!selectedEnvironment) {
     return (
       <OnboardingEnvironment
@@ -78,12 +82,20 @@ function App() {
       />
     )
   }
+  if (!selectedLevel) {
+  return (
+    <OnboardingLevel
+      onSelect={setSelectedLevel}
+    />
+  )
+}
 
   const currentWorkoutResult = resolveCurrentWorkout({
     ...mockUserProfile,
     ...mockUserProgress,
     environment: selectedEnvironment,
     daysPerWeek: selectedDaysPerWeek,
+    level: selectedLevel,
   })
 
   if (!currentWorkoutResult.ok) {
