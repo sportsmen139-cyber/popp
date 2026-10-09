@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './App.css'
-
+import { OnboardingGoal } from './components/OnboardingGoal'
+import type { TrainingGoal } from './types/goal'
 import { exercises } from './data/exercises'
 import { resolveCurrentWorkout } from './domain/program/resolveCurrentWorkout'
 
@@ -67,6 +68,8 @@ function App() {
     useState<2 | 3 | 4 | null>(null)
 const [selectedLevel, setSelectedLevel] =
   useState<UserLevel | null>(null)
+  const [selectedGoal, setSelectedGoal] =
+  useState<TrainingGoal | null>(null)
   if (!selectedEnvironment) {
     return (
       <OnboardingEnvironment
@@ -89,6 +92,13 @@ const [selectedLevel, setSelectedLevel] =
     />
   )
 }
+if (!selectedGoal) {
+  return (
+    <OnboardingGoal
+      onSelect={setSelectedGoal}
+    />
+  )
+}
 
   const currentWorkoutResult = resolveCurrentWorkout({
     ...mockUserProfile,
@@ -96,7 +106,9 @@ const [selectedLevel, setSelectedLevel] =
     environment: selectedEnvironment,
     daysPerWeek: selectedDaysPerWeek,
     level: selectedLevel,
+    goal: selectedGoal,
   })
+  
 
   if (!currentWorkoutResult.ok) {
     return (
