@@ -6,7 +6,7 @@ import { exercises } from './data/exercises'
 import { resolveCurrentWorkout } from './domain/program/resolveCurrentWorkout'
 
 import type { ExerciseTarget } from './types/training'
-import { mockUserProfile } from './data/mockUserProfile'
+
 import { mockUserProgress } from './data/mockUserProgress'
 import { OnboardingEnvironment } from './components/OnboardingEnvironment'
 import { OnboardingDaysPerWeek } from './components/OnboardingDaysPerWeek'
@@ -101,7 +101,6 @@ if (!selectedGoal) {
 }
 
   const currentWorkoutResult = resolveCurrentWorkout({
-    ...mockUserProfile,
     ...mockUserProgress,
     environment: selectedEnvironment,
     daysPerWeek: selectedDaysPerWeek,
