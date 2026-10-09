@@ -8,6 +8,7 @@ import type { ExerciseTarget } from './types/training'
 import { mockUserProfile } from './data/mockUserProfile'
 import { mockUserProgress } from './data/mockUserProgress'
 import { OnboardingEnvironment } from './components/OnboardingEnvironment'
+import { OnboardingDaysPerWeek } from './components/OnboardingDaysPerWeek'
 import type { TrainingEnvironment } from './types/program'
 
 function formatExerciseTarget(target: ExerciseTarget) {
@@ -55,20 +56,35 @@ function formatRestSeconds(
 
 function App() {
   const [workoutStarted, setWorkoutStarted] = useState(false)
-const [selectedEnvironment, setSelectedEnvironment] =
-  useState<TrainingEnvironment | null>(null)
+
+  const [selectedEnvironment, setSelectedEnvironment] =
+    useState<TrainingEnvironment | null>(null)
+
+  const [selectedDaysPerWeek, setSelectedDaysPerWeek] =
+    useState<2 | 3 | 4 | null>(null)
+
   if (!selectedEnvironment) {
-  return (
-    <OnboardingEnvironment
-      onSelect={setSelectedEnvironment}
-    />
-  )
-}
- const currentWorkoutResult = resolveCurrentWorkout({
-  ...mockUserProfile,
-  ...mockUserProgress,
-  environment: selectedEnvironment,
-})
+    return (
+      <OnboardingEnvironment
+        onSelect={setSelectedEnvironment}
+      />
+    )
+  }
+
+  if (!selectedDaysPerWeek) {
+    return (
+      <OnboardingDaysPerWeek
+        onSelect={setSelectedDaysPerWeek}
+      />
+    )
+  }
+
+  const currentWorkoutResult = resolveCurrentWorkout({
+    ...mockUserProfile,
+    ...mockUserProgress,
+    environment: selectedEnvironment,
+    daysPerWeek: selectedDaysPerWeek,
+  })
 
   if (!currentWorkoutResult.ok) {
     return (
