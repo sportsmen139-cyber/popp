@@ -279,7 +279,54 @@ function App() {
     currentWorkoutResult.trainingPlan.baseProgram
     const lastWorkoutSession =
   workoutHistory[workoutHistory.length - 1] ?? null
+function handleStartWorkout() {
+  if (Object.keys(workoutSetResults).length > 0) {
+    setWorkoutStarted(true)
+    return
+  }
 
+  const initialResults: Record<
+    string,
+    WorkoutSetResult[]
+  > = {}
+
+  for (const workoutExercise of currentWorkout.exercises) {
+    const previousExerciseResult = [
+      ...workoutHistory,
+    ]
+      .reverse()
+      .map((session) =>
+        session.exercises.find(
+          (result) =>
+            result.exerciseId ===
+            workoutExercise.exerciseId,
+        ),
+      )
+      .find((result) => result !== undefined)
+
+    initialResults[workoutExercise.exerciseId] =
+      Array.from(
+        { length: workoutExercise.sets },
+        (_, setIndex) => {
+          const setNumber = setIndex + 1
+
+          const previousSet =
+            previousExerciseResult?.sets.find(
+              (set) =>
+                set.setNumber === setNumber,
+            )
+
+          return {
+            setNumber,
+            weightKg: previousSet?.weightKg,
+          }
+        },
+      )
+  }
+
+  setWorkoutSetResults(initialResults)
+  setWorkoutStarted(true)
+}
   if (workoutStarted) {
     return (
       <main className="app">
@@ -560,13 +607,11 @@ const previousExerciseResult = [...workoutHistory]
           </div>
 
           <button
-            type="button"
-            onClick={() =>
-              setWorkoutStarted(true)
-            }
-          >
-            Начать тренировку
-          </button>
+  type="button"
+  onClick={handleStartWorkout}
+>
+  Начать тренировку
+</button>
         </article>
       </section>
     </main>
