@@ -5,6 +5,7 @@ import type { TrainingGoal } from './types/goal'
 import { exercises } from './data/exercises'
 import { resolveCurrentWorkout } from './domain/program/resolveCurrentWorkout'
 import {
+  clearOnboardingProfile,
   loadOnboardingProfile,
   saveOnboardingProfile,
 } from './storage/onboardingStorage'
@@ -83,6 +84,15 @@ const [selectedLevel, setSelectedLevel] =
   useState<TrainingGoal | null>(
     savedOnboardingProfile?.goal ?? null,
   )
+  function handleEditProfile() {
+  clearOnboardingProfile()
+
+  setWorkoutStarted(false)
+  setSelectedEnvironment(null)
+  setSelectedDaysPerWeek(null)
+  setSelectedLevel(null)
+  setSelectedGoal(null)
+}
   if (!selectedEnvironment) {
     return (
       <OnboardingEnvironment
@@ -231,7 +241,13 @@ if (!selectedGoal) {
         <p className="program-label">
           {currentProgram.title}
         </p>
-
+<button
+  className="back-button"
+  type="button"
+  onClick={handleEditProfile}
+>
+  Изменить профиль
+</button>
         <h1>Твоя тренировка</h1>
 
         <p className="subtitle">

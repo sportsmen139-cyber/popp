@@ -28,3 +28,7 @@ export function loadOnboardingProfile():
     return null
   }
 }
+
+export function clearOnboardingProfile() {
+  localStorage.removeItem(ONBOARDING_PROFILE_KEY)
+}
