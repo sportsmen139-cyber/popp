@@ -564,11 +564,11 @@ const progressionDecision =
                                 }
                               >
                                 <span className="set-label">
-                                  Подход{' '}
-                                  {
-                                    setNumber
-                                  }
-                                </span>
+  Подход {setNumber}
+  {setNumber === workoutExercise.sets
+    ? ' · тестовый'
+    : ''}
+</span>
 
                                 <input
                                   className="set-input"
