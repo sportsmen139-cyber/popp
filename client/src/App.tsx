@@ -608,7 +608,7 @@ const progressionDecision =
                                   type="number"
                                   min="0"
                                   step="1"
-                                  placeholder="повт."
+                                  placeholder="чист. повт."
                                   value={
                                     setResult?.reps ??
                                     ''
