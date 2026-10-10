@@ -1,24 +1,33 @@
 import { useState } from 'react'
 import './App.css'
+
+import { OnboardingDaysPerWeek } from './components/OnboardingDaysPerWeek'
+import { OnboardingEnvironment } from './components/OnboardingEnvironment'
 import { OnboardingGoal } from './components/OnboardingGoal'
-import type { TrainingGoal } from './types/goal'
+import { OnboardingLevel } from './components/OnboardingLevel'
+
 import { exercises } from './data/exercises'
+
 import { resolveCurrentWorkout } from './domain/program/resolveCurrentWorkout'
+
 import {
   clearOnboardingProfile,
   loadOnboardingProfile,
   saveOnboardingProfile,
 } from './storage/onboardingStorage'
-import type { ExerciseTarget } from './types/training'
 
-import { mockUserProgress } from './data/mockUserProgress'
-import { OnboardingEnvironment } from './components/OnboardingEnvironment'
-import { OnboardingDaysPerWeek } from './components/OnboardingDaysPerWeek'
+import {
+  loadUserProgress,
+  saveUserProgress,
+} from './storage/progressStorage'
+
+import type { TrainingGoal } from './types/goal'
 import type {
   TrainingEnvironment,
   UserLevel,
 } from './types/program'
-import { OnboardingLevel } from './components/OnboardingLevel'
+import type { ExerciseTarget } from './types/training'
+
 function formatExerciseTarget(target: ExerciseTarget) {
   const unit =
     target.type === 'reps'
@@ -63,36 +72,60 @@ function formatRestSeconds(
 }
 
 function App() {
-  const [workoutStarted, setWorkoutStarted] = useState(false)
-  const [savedOnboardingProfile] =
-  useState(loadOnboardingProfile)
+  const [workoutStarted, setWorkoutStarted] =
+    useState(false)
 
-  const [selectedEnvironment, setSelectedEnvironment] =
-  useState<TrainingEnvironment | null>(
+  const [userProgress, setUserProgress] =
+    useState(loadUserProgress)
+
+  const [savedOnboardingProfile] =
+    useState(loadOnboardingProfile)
+
+  const [
+    selectedEnvironment,
+    setSelectedEnvironment,
+  ] = useState<TrainingEnvironment | null>(
     savedOnboardingProfile?.environment ?? null,
   )
 
-  const [selectedDaysPerWeek, setSelectedDaysPerWeek] =
-  useState<2 | 3 | 4 | null>(
+  const [
+    selectedDaysPerWeek,
+    setSelectedDaysPerWeek,
+  ] = useState<2 | 3 | 4 | null>(
     savedOnboardingProfile?.daysPerWeek ?? null,
   )
-const [selectedLevel, setSelectedLevel] =
-  useState<UserLevel | null>(
-    savedOnboardingProfile?.level ?? null,
-  )
-  const [selectedGoal, setSelectedGoal] =
-  useState<TrainingGoal | null>(
-    savedOnboardingProfile?.goal ?? null,
-  )
-  function handleEditProfile() {
-  clearOnboardingProfile()
 
-  setWorkoutStarted(false)
-  setSelectedEnvironment(null)
-  setSelectedDaysPerWeek(null)
-  setSelectedLevel(null)
-  setSelectedGoal(null)
-}
+  const [selectedLevel, setSelectedLevel] =
+    useState<UserLevel | null>(
+      savedOnboardingProfile?.level ?? null,
+    )
+
+  const [selectedGoal, setSelectedGoal] =
+    useState<TrainingGoal | null>(
+      savedOnboardingProfile?.goal ?? null,
+    )
+
+  function handleEditProfile() {
+    clearOnboardingProfile()
+
+    setWorkoutStarted(false)
+    setSelectedEnvironment(null)
+    setSelectedDaysPerWeek(null)
+    setSelectedLevel(null)
+    setSelectedGoal(null)
+  }
+
+  function handleCompleteWorkout() {
+    const nextProgress = {
+      completedWorkoutsCount:
+        userProgress.completedWorkoutsCount + 1,
+    }
+
+    saveUserProgress(nextProgress)
+    setUserProgress(nextProgress)
+    setWorkoutStarted(false)
+  }
+
   if (!selectedEnvironment) {
     return (
       <OnboardingEnvironment
@@ -101,48 +134,54 @@ const [selectedLevel, setSelectedLevel] =
     )
   }
 
- if (!selectedDaysPerWeek) {
-  return (
-    <OnboardingDaysPerWeek
-      onSelect={setSelectedDaysPerWeek}
-      onBack={() => setSelectedEnvironment(null)}
-    />
-  )
-}
-if (!selectedLevel) {
-  return (
-    <OnboardingLevel
-      onSelect={setSelectedLevel}
-      onBack={() => setSelectedDaysPerWeek(null)}
-    />
-  )
-}
-if (!selectedGoal) {
-  return (
-    <OnboardingGoal
-      onSelect={(goal) => {
-        saveOnboardingProfile({
-          environment: selectedEnvironment,
-          daysPerWeek: selectedDaysPerWeek,
-          level: selectedLevel,
-          goal,
-        })
+  if (!selectedDaysPerWeek) {
+    return (
+      <OnboardingDaysPerWeek
+        onSelect={setSelectedDaysPerWeek}
+        onBack={() =>
+          setSelectedEnvironment(null)
+        }
+      />
+    )
+  }
 
-        setSelectedGoal(goal)
-      }}
-      onBack={() => setSelectedLevel(null)}
-    />
-  )
-}
+  if (!selectedLevel) {
+    return (
+      <OnboardingLevel
+        onSelect={setSelectedLevel}
+        onBack={() =>
+          setSelectedDaysPerWeek(null)
+        }
+      />
+    )
+  }
 
-  const currentWorkoutResult = resolveCurrentWorkout({
-    ...mockUserProgress,
-    environment: selectedEnvironment,
-    daysPerWeek: selectedDaysPerWeek,
-    level: selectedLevel,
-    goal: selectedGoal,
-  })
-  
+  if (!selectedGoal) {
+    return (
+      <OnboardingGoal
+        onSelect={(goal) => {
+          saveOnboardingProfile({
+            environment: selectedEnvironment,
+            daysPerWeek: selectedDaysPerWeek,
+            level: selectedLevel,
+            goal,
+          })
+
+          setSelectedGoal(goal)
+        }}
+        onBack={() => setSelectedLevel(null)}
+      />
+    )
+  }
+
+  const currentWorkoutResult =
+    resolveCurrentWorkout({
+      ...userProgress,
+      environment: selectedEnvironment,
+      daysPerWeek: selectedDaysPerWeek,
+      level: selectedLevel,
+      goal: selectedGoal,
+    })
 
   if (!currentWorkoutResult.ok) {
     return (
@@ -151,14 +190,24 @@ if (!selectedGoal) {
           <h1>Тренировка недоступна</h1>
 
           <p className="subtitle">
-            Не удалось подобрать тренировку для текущих настроек.
+            Не удалось подобрать тренировку для
+            текущих настроек.
           </p>
+
+          <button
+            type="button"
+            onClick={handleEditProfile}
+          >
+            Изменить профиль
+          </button>
         </section>
       </main>
     )
   }
 
-  const currentWorkout = currentWorkoutResult.workout
+  const currentWorkout =
+    currentWorkoutResult.workout
+
   const currentProgram =
     currentWorkoutResult.trainingPlan.baseProgram
 
@@ -169,7 +218,9 @@ if (!selectedGoal) {
           <button
             className="back-button"
             type="button"
-            onClick={() => setWorkoutStarted(false)}
+            onClick={() =>
+              setWorkoutStarted(false)
+            }
           >
             ← Назад
           </button>
@@ -181,9 +232,10 @@ if (!selectedGoal) {
           <h1>{currentWorkout.title}</h1>
 
           <p className="subtitle">
-  {currentWorkout.exercises.length} упражнений · около{' '}
-  {currentWorkout.estimatedMinutes} минут
-</p>
+            {currentWorkout.exercises.length}{' '}
+            упражнений · около{' '}
+            {currentWorkout.estimatedMinutes} минут
+          </p>
 
           <div className="exercise-list">
             {currentWorkout.exercises.map(
@@ -211,7 +263,8 @@ if (!selectedGoal) {
                       <h2>{exercise.name}</h2>
 
                       <p>
-                        {workoutExercise.sets} подхода ·{' '}
+                        {workoutExercise.sets}{' '}
+                        подхода ·{' '}
                         {formatExerciseTarget(
                           workoutExercise.target,
                         )}
@@ -230,6 +283,13 @@ if (!selectedGoal) {
               },
             )}
           </div>
+
+          <button
+            type="button"
+            onClick={handleCompleteWorkout}
+          >
+            Завершить тренировку
+          </button>
         </section>
       </main>
     )
@@ -241,17 +301,20 @@ if (!selectedGoal) {
         <p className="program-label">
           {currentProgram.title}
         </p>
-<button
-  className="back-button"
-  type="button"
-  onClick={handleEditProfile}
->
-  Изменить профиль
-</button>
+
+        <button
+          className="back-button"
+          type="button"
+          onClick={handleEditProfile}
+        >
+          Изменить профиль
+        </button>
+
         <h1>Твоя тренировка</h1>
 
         <p className="subtitle">
-          Сегодня по плану — {currentWorkout.title}
+          Сегодня по плану —{' '}
+          {currentWorkout.title}
         </p>
 
         <article className="workout-card">
@@ -263,14 +326,18 @@ if (!selectedGoal) {
             <h2>{currentWorkout.title}</h2>
 
             <p>
-  {currentWorkout.exercises.length} упражнений · около{' '}
-  {currentWorkout.estimatedMinutes} минут
-</p>
+              {currentWorkout.exercises.length}{' '}
+              упражнений · около{' '}
+              {currentWorkout.estimatedMinutes}{' '}
+              минут
+            </p>
           </div>
 
           <button
             type="button"
-            onClick={() => setWorkoutStarted(true)}
+            onClick={() =>
+              setWorkoutStarted(true)
+            }
           >
             Начать тренировку
           </button>
