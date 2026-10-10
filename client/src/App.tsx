@@ -459,18 +459,24 @@ function App() {
                   ).length ===
                   workoutExercise.sets
 
-                const progressionDecision =
-                  allSetsCompleted
-                    ? resolveExerciseProgression(
-                        {
-                          currentSets:
-                            currentExerciseSets,
-                          previousSets:
-                            previousExerciseResult
-                              ?.sets,
-                        },
-                      )
-                    : null
+                const hasWeight =
+  currentExerciseSets.some(
+    (set) => set.weightKg !== undefined,
+  )
+
+const canUseWeightProgression =
+  workoutExercise.target.type === 'reps' &&
+  hasWeight
+
+const progressionDecision =
+  allSetsCompleted &&
+  canUseWeightProgression
+    ? resolveExerciseProgression({
+        currentSets: currentExerciseSets,
+        previousSets:
+          previousExerciseResult?.sets,
+      })
+    : null
 
                 return (
                   <article
