@@ -8,20 +8,14 @@ type ResolveExerciseProgressionInput = {
   previousSets?: WorkoutSetResult[]
 }
 
-function getLastCompletedSet(
+function getLastSet(
   sets: WorkoutSetResult[],
 ): WorkoutSetResult | null {
-  const completedSets = sets
-    .filter((set) => set.reps !== undefined)
-    .sort(
-      (a, b) => a.setNumber - b.setNumber,
-    )
-
-  return (
-    completedSets[
-      completedSets.length - 1
-    ] ?? null
+  const sortedSets = [...sets].sort(
+    (a, b) => a.setNumber - b.setNumber,
   )
+
+  return sortedSets[sortedSets.length - 1] ?? null
 }
 
 function isSameWorkingWeight(
@@ -55,7 +49,7 @@ export function resolveExerciseProgression(
   input: ResolveExerciseProgressionInput,
 ): ProgressionDecision | null {
   const currentSet =
-    getLastCompletedSet(input.currentSets)
+    getLastSet(input.currentSets)
 
   if (
     currentSet === null ||
@@ -66,9 +60,7 @@ export function resolveExerciseProgression(
 
   const previousSet =
     input.previousSets
-      ? getLastCompletedSet(
-          input.previousSets,
-        )
+      ? getLastSet(input.previousSets)
       : null
 
   const previousLowPerformance =

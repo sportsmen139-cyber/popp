@@ -120,7 +120,7 @@ describe('resolveExerciseProgression', () => {
     )
   })
 
-  it('возвращает null, если повторения не введены', () => {
+    it('возвращает null, если повторения не введены', () => {
     const result = resolveExerciseProgression({
       currentSets: [
         {
@@ -140,44 +140,68 @@ describe('resolveExerciseProgression', () => {
 
     expect(result).toBeNull()
   })
-})
-it('не считает низкий результат повторным, если рабочий вес изменился', () => {
-  const result = resolveExerciseProgression({
-    currentSets: [
-      {
-        setNumber: 1,
-        weightKg: 47.5,
-        reps: 10,
-      },
-      {
-        setNumber: 2,
-        weightKg: 47.5,
-        reps: 9,
-      },
-      {
-        setNumber: 3,
-        weightKg: 47.5,
-        reps: 8,
-      },
-    ],
-    previousSets: [
-      {
-        setNumber: 1,
-        weightKg: 50,
-        reps: 10,
-      },
-      {
-        setNumber: 2,
-        weightKg: 50,
-        reps: 9,
-      },
-      {
-        setNumber: 3,
-        weightKg: 50,
-        reps: 8,
-      },
-    ],
+
+  it('не считает низкий результат повторным, если рабочий вес изменился', () => {
+    const result = resolveExerciseProgression({
+      currentSets: [
+        {
+          setNumber: 1,
+          weightKg: 47.5,
+          reps: 10,
+        },
+        {
+          setNumber: 2,
+          weightKg: 47.5,
+          reps: 9,
+        },
+        {
+          setNumber: 3,
+          weightKg: 47.5,
+          reps: 8,
+        },
+      ],
+      previousSets: [
+        {
+          setNumber: 1,
+          weightKg: 50,
+          reps: 10,
+        },
+        {
+          setNumber: 2,
+          weightKg: 50,
+          reps: 9,
+        },
+        {
+          setNumber: 3,
+          weightKg: 50,
+          reps: 8,
+        },
+      ],
+    })
+
+    expect(result?.action).toBe('warning')
   })
 
-  expect(result?.action).toBe('warning')
+  it('не дает рекомендацию, пока последний подход не заполнен', () => {
+    const result = resolveExerciseProgression({
+      currentSets: [
+        {
+          setNumber: 1,
+          weightKg: 50,
+          reps: 10,
+        },
+        {
+          setNumber: 2,
+          weightKg: 50,
+          reps: 12,
+        },
+        {
+          setNumber: 3,
+          weightKg: 50,
+        },
+      ],
+    })
+
+    expect(result).toBeNull()
+  })
 })
