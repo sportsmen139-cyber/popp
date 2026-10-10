@@ -117,3 +117,33 @@ h1 {
 .exercise-card .exercise-rest {
   margin-top: 4px;
 }
+.set-row {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.set-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.set-input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 10px 12px;
+
+  border: 1px solid #d7d7dc;
+  border-radius: 10px;
+
+  background: #ffffff;
+  font-size: 16px;
+}
+
+.set-input:focus {
+  outline: 2px solid #18181b;
+  outline-offset: 1px;
+}

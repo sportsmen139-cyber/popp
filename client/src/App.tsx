@@ -21,12 +21,18 @@ import {
   saveUserProgress,
 } from './storage/progressStorage'
 
+import {
+  loadWorkoutHistory,
+  saveWorkoutSession,
+} from './storage/workoutHistoryStorage'
+
 import type { TrainingGoal } from './types/goal'
 import type {
   TrainingEnvironment,
   UserLevel,
 } from './types/program'
 import type { ExerciseTarget } from './types/training'
+import type { WorkoutSetResult } from './types/workoutSession'
 
 function formatExerciseTarget(target: ExerciseTarget) {
   const unit =
@@ -75,8 +81,14 @@ function App() {
   const [workoutStarted, setWorkoutStarted] =
     useState(false)
 
+  const [workoutSetResults, setWorkoutSetResults] =
+    useState<Record<string, WorkoutSetResult[]>>({})
+
   const [userProgress, setUserProgress] =
     useState(loadUserProgress)
+
+  const [workoutHistory, setWorkoutHistory] =
+    useState(loadWorkoutHistory)
 
   const [savedOnboardingProfile] =
     useState(loadOnboardingProfile)
@@ -115,7 +127,27 @@ function App() {
     setSelectedGoal(null)
   }
 
-  function handleCompleteWorkout() {
+  function handleCompleteWorkout(
+    workoutTemplateId: string,
+  ) {
+    const completedSession = {
+      workoutTemplateId,
+      completedAt: new Date().toISOString(),
+      exercises: Object.entries(
+        workoutSetResults,
+      ).map(([exerciseId, sets]) => ({
+        exerciseId,
+        sets,
+      })),
+    }
+
+    saveWorkoutSession(completedSession)
+
+    setWorkoutHistory([
+      ...workoutHistory,
+      completedSession,
+    ])
+
     const nextProgress = {
       completedWorkoutsCount:
         userProgress.completedWorkoutsCount + 1,
@@ -123,7 +155,42 @@ function App() {
 
     saveUserProgress(nextProgress)
     setUserProgress(nextProgress)
+
+    setWorkoutSetResults({})
     setWorkoutStarted(false)
+  }
+
+  function updateWorkoutSetResult(
+    exerciseId: string,
+    setNumber: number,
+    patch: Partial<WorkoutSetResult>,
+  ) {
+    setWorkoutSetResults((currentResults) => {
+      const exerciseSets =
+        currentResults[exerciseId] ?? []
+
+      const existingSet = exerciseSets.find(
+        (set) => set.setNumber === setNumber,
+      )
+
+      const nextSet: WorkoutSetResult = {
+        setNumber,
+        ...existingSet,
+        ...patch,
+      }
+
+      return {
+        ...currentResults,
+        [exerciseId]: [
+          ...exerciseSets.filter(
+            (set) => set.setNumber !== setNumber,
+          ),
+          nextSet,
+        ].sort(
+          (a, b) => a.setNumber - b.setNumber,
+        ),
+      }
+    })
   }
 
   if (!selectedEnvironment) {
@@ -210,6 +277,8 @@ function App() {
 
   const currentProgram =
     currentWorkoutResult.trainingPlan.baseProgram
+    const lastWorkoutSession =
+  workoutHistory[workoutHistory.length - 1] ?? null
 
   if (workoutStarted) {
     return (
@@ -277,6 +346,98 @@ function App() {
                         )}{' '}
                         сек.
                       </p>
+
+                      <div>
+                        {Array.from(
+                          {
+                            length:
+                              workoutExercise.sets,
+                          },
+                          (_, setIndex) => {
+                            const setNumber =
+                              setIndex + 1
+
+                            const setResult =
+                              workoutSetResults[
+                                workoutExercise
+                                  .exerciseId
+                              ]?.find(
+                                (set) =>
+                                  set.setNumber ===
+                                  setNumber,
+                              )
+
+                            return (
+                              <div
+                                className="set-row"
+                                key={setNumber}
+                              >
+                                <span className="set-label">
+                                  Подход {setNumber}
+                                </span>
+
+                                <input
+                                  className="set-input"
+                                  type="number"
+                                  min="0"
+                                  step="0.5"
+                                  placeholder="кг"
+                                  value={
+                                    setResult?.weightKg ??
+                                    ''
+                                  }
+                                  onChange={(event) =>
+                                    updateWorkoutSetResult(
+                                      workoutExercise.exerciseId,
+                                      setNumber,
+                                      {
+                                        weightKg:
+                                          event.target
+                                            .value === ''
+                                            ? undefined
+                                            : Number(
+                                                event
+                                                  .target
+                                                  .value,
+                                              ),
+                                      },
+                                    )
+                                  }
+                                />
+
+                                <input
+                                  className="set-input"
+                                  type="number"
+                                  min="0"
+                                  step="1"
+                                  placeholder="повт."
+                                  value={
+                                    setResult?.reps ??
+                                    ''
+                                  }
+                                  onChange={(event) =>
+                                    updateWorkoutSetResult(
+                                      workoutExercise.exerciseId,
+                                      setNumber,
+                                      {
+                                        reps:
+                                          event.target
+                                            .value === ''
+                                            ? undefined
+                                            : Number(
+                                                event
+                                                  .target
+                                                  .value,
+                                              ),
+                                      },
+                                    )
+                                  }
+                                />
+                              </div>
+                            )
+                          },
+                        )}
+                      </div>
                     </div>
                   </article>
                 )
@@ -286,7 +447,11 @@ function App() {
 
           <button
             type="button"
-            onClick={handleCompleteWorkout}
+            onClick={() =>
+              handleCompleteWorkout(
+                currentWorkout.templateId,
+              )
+            }
           >
             Завершить тренировку
           </button>
@@ -316,7 +481,44 @@ function App() {
           Сегодня по плану —{' '}
           {currentWorkout.title}
         </p>
+{lastWorkoutSession && (
+  <div>
+    <h2>Последняя тренировка</h2>
 
+    {lastWorkoutSession.exercises.map(
+      (exerciseResult) => {
+        const exercise = exercises.find(
+          (item) =>
+            item.id === exerciseResult.exerciseId,
+        )
+
+        if (!exercise) {
+          return null
+        }
+
+        return (
+          <div key={exerciseResult.exerciseId}>
+            <strong>{exercise.name}</strong>
+
+            <p>
+              {exerciseResult.sets
+                .map((set) => {
+                  const weight =
+                    set.weightKg ?? '—'
+
+                  const reps =
+                    set.reps ?? '—'
+
+                  return `${weight} кг × ${reps}`
+                })
+                .join(' · ')}
+            </p>
+          </div>
+        )
+      },
+    )}
+  </div>
+)}
         <article className="workout-card">
           <div>
             <p className="workout-status">
