@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import './App.css'
 
+import { resolveExerciseProgression } from './domain/program/progression/resolveExerciseProgression'
+
 import { OnboardingDaysPerWeek } from './components/OnboardingDaysPerWeek'
 import { OnboardingEnvironment } from './components/OnboardingEnvironment'
 import { OnboardingGoal } from './components/OnboardingGoal'
@@ -27,14 +29,21 @@ import {
 } from './storage/workoutHistoryStorage'
 
 import type { TrainingGoal } from './types/goal'
+
 import type {
   TrainingEnvironment,
   UserLevel,
 } from './types/program'
-import type { ExerciseTarget } from './types/training'
-import type { WorkoutSetResult } from './types/workoutSession'
 
-function formatExerciseTarget(target: ExerciseTarget) {
+import type { ExerciseTarget } from './types/training'
+
+import type {
+  WorkoutSetResult,
+} from './types/workoutSession'
+
+function formatExerciseTarget(
+  target: ExerciseTarget,
+) {
   const unit =
     target.type === 'reps'
       ? 'повторений'
@@ -81,8 +90,12 @@ function App() {
   const [workoutStarted, setWorkoutStarted] =
     useState(false)
 
-  const [workoutSetResults, setWorkoutSetResults] =
-    useState<Record<string, WorkoutSetResult[]>>({})
+  const [
+    workoutSetResults,
+    setWorkoutSetResults,
+  ] = useState<
+    Record<string, WorkoutSetResult[]>
+  >({})
 
   const [userProgress, setUserProgress] =
     useState(loadUserProgress)
@@ -97,25 +110,31 @@ function App() {
     selectedEnvironment,
     setSelectedEnvironment,
   ] = useState<TrainingEnvironment | null>(
-    savedOnboardingProfile?.environment ?? null,
+    savedOnboardingProfile?.environment ??
+      null,
   )
 
   const [
     selectedDaysPerWeek,
     setSelectedDaysPerWeek,
   ] = useState<2 | 3 | 4 | null>(
-    savedOnboardingProfile?.daysPerWeek ?? null,
+    savedOnboardingProfile?.daysPerWeek ??
+      null,
   )
 
-  const [selectedLevel, setSelectedLevel] =
-    useState<UserLevel | null>(
-      savedOnboardingProfile?.level ?? null,
-    )
+  const [
+    selectedLevel,
+    setSelectedLevel,
+  ] = useState<UserLevel | null>(
+    savedOnboardingProfile?.level ?? null,
+  )
 
-  const [selectedGoal, setSelectedGoal] =
-    useState<TrainingGoal | null>(
-      savedOnboardingProfile?.goal ?? null,
-    )
+  const [
+    selectedGoal,
+    setSelectedGoal,
+  ] = useState<TrainingGoal | null>(
+    savedOnboardingProfile?.goal ?? null,
+  )
 
   function handleEditProfile() {
     clearOnboardingProfile()
@@ -143,8 +162,8 @@ function App() {
 
     saveWorkoutSession(completedSession)
 
-    setWorkoutHistory([
-      ...workoutHistory,
+    setWorkoutHistory((currentHistory) => [
+      ...currentHistory,
       completedSession,
     ])
 
@@ -165,32 +184,38 @@ function App() {
     setNumber: number,
     patch: Partial<WorkoutSetResult>,
   ) {
-    setWorkoutSetResults((currentResults) => {
-      const exerciseSets =
-        currentResults[exerciseId] ?? []
+    setWorkoutSetResults(
+      (currentResults) => {
+        const exerciseSets =
+          currentResults[exerciseId] ?? []
 
-      const existingSet = exerciseSets.find(
-        (set) => set.setNumber === setNumber,
-      )
+        const existingSet =
+          exerciseSets.find(
+            (set) =>
+              set.setNumber === setNumber,
+          )
 
-      const nextSet: WorkoutSetResult = {
-        setNumber,
-        ...existingSet,
-        ...patch,
-      }
+        const nextSet: WorkoutSetResult = {
+          setNumber,
+          ...existingSet,
+          ...patch,
+        }
 
-      return {
-        ...currentResults,
-        [exerciseId]: [
-          ...exerciseSets.filter(
-            (set) => set.setNumber !== setNumber,
+        return {
+          ...currentResults,
+          [exerciseId]: [
+            ...exerciseSets.filter(
+              (set) =>
+                set.setNumber !== setNumber,
+            ),
+            nextSet,
+          ].sort(
+            (a, b) =>
+              a.setNumber - b.setNumber,
           ),
-          nextSet,
-        ].sort(
-          (a, b) => a.setNumber - b.setNumber,
-        ),
-      }
-    })
+        }
+      },
+    )
   }
 
   if (!selectedEnvironment) {
@@ -228,15 +253,19 @@ function App() {
       <OnboardingGoal
         onSelect={(goal) => {
           saveOnboardingProfile({
-            environment: selectedEnvironment,
-            daysPerWeek: selectedDaysPerWeek,
+            environment:
+              selectedEnvironment,
+            daysPerWeek:
+              selectedDaysPerWeek,
             level: selectedLevel,
             goal,
           })
 
           setSelectedGoal(goal)
         }}
-        onBack={() => setSelectedLevel(null)}
+        onBack={() =>
+          setSelectedLevel(null)
+        }
       />
     )
   }
@@ -254,11 +283,13 @@ function App() {
     return (
       <main className="app">
         <section className="home">
-          <h1>Тренировка недоступна</h1>
+          <h1>
+            Тренировка недоступна
+          </h1>
 
           <p className="subtitle">
-            Не удалось подобрать тренировку для
-            текущих настроек.
+            Не удалось подобрать тренировку
+            для текущих настроек.
           </p>
 
           <button
@@ -276,57 +307,77 @@ function App() {
     currentWorkoutResult.workout
 
   const currentProgram =
-    currentWorkoutResult.trainingPlan.baseProgram
-    const lastWorkoutSession =
-  workoutHistory[workoutHistory.length - 1] ?? null
-function handleStartWorkout() {
-  if (Object.keys(workoutSetResults).length > 0) {
-    setWorkoutStarted(true)
-    return
-  }
+    currentWorkoutResult.trainingPlan
+      .baseProgram
 
-  const initialResults: Record<
-    string,
-    WorkoutSetResult[]
-  > = {}
+  const lastWorkoutSession =
+    workoutHistory[
+      workoutHistory.length - 1
+    ] ?? null
 
-  for (const workoutExercise of currentWorkout.exercises) {
-    const previousExerciseResult = [
-      ...workoutHistory,
-    ]
-      .reverse()
-      .map((session) =>
-        session.exercises.find(
+  function handleStartWorkout() {
+    if (
+      Object.keys(workoutSetResults)
+        .length > 0
+    ) {
+      setWorkoutStarted(true)
+      return
+    }
+
+    const initialResults: Record<
+      string,
+      WorkoutSetResult[]
+    > = {}
+
+    for (
+      const workoutExercise of
+        currentWorkout.exercises
+    ) {
+      const previousExerciseResult = [
+        ...workoutHistory,
+      ]
+        .reverse()
+        .map((session) =>
+          session.exercises.find(
+            (result) =>
+              result.exerciseId ===
+              workoutExercise.exerciseId,
+          ),
+        )
+        .find(
           (result) =>
-            result.exerciseId ===
-            workoutExercise.exerciseId,
-        ),
-      )
-      .find((result) => result !== undefined)
+            result !== undefined,
+        )
 
-    initialResults[workoutExercise.exerciseId] =
-      Array.from(
-        { length: workoutExercise.sets },
+      initialResults[
+        workoutExercise.exerciseId
+      ] = Array.from(
+        {
+          length: workoutExercise.sets,
+        },
         (_, setIndex) => {
           const setNumber = setIndex + 1
 
           const previousSet =
             previousExerciseResult?.sets.find(
               (set) =>
-                set.setNumber === setNumber,
+                set.setNumber ===
+                setNumber,
             )
 
           return {
             setNumber,
-            weightKg: previousSet?.weightKg,
+            weightKg:
+              previousSet?.weightKg,
           }
         },
       )
+    }
+
+    setWorkoutSetResults(initialResults)
+    setWorkoutStarted(true)
   }
 
-  setWorkoutSetResults(initialResults)
-  setWorkoutStarted(true)
-}
   if (workoutStarted) {
     return (
       <main className="app">
@@ -345,50 +396,102 @@ function handleStartWorkout() {
             {currentProgram.title}
           </p>
 
-          <h1>{currentWorkout.title}</h1>
+          <h1>
+            {currentWorkout.title}
+          </h1>
 
           <p className="subtitle">
-            {currentWorkout.exercises.length}{' '}
+            {
+              currentWorkout.exercises
+                .length
+            }{' '}
             упражнений · около{' '}
-            {currentWorkout.estimatedMinutes} минут
+            {
+              currentWorkout
+                .estimatedMinutes
+            }{' '}
+            минут
           </p>
 
           <div className="exercise-list">
             {currentWorkout.exercises.map(
-              (workoutExercise, index) => {
-                const exercise = exercises.find(
-                  (item) =>
-                    item.id ===
-                    workoutExercise.exerciseId,
-                )
+              (
+                workoutExercise,
+                index,
+              ) => {
+                const exercise =
+                  exercises.find(
+                    (item) =>
+                      item.id ===
+                      workoutExercise.exerciseId,
+                  )
 
                 if (!exercise) {
                   return null
                 }
-const previousExerciseResult = [...workoutHistory]
-  .reverse()
-  .map((session) =>
-    session.exercises.find(
-      (result) =>
-        result.exerciseId ===
-        workoutExercise.exerciseId,
-    ),
-  )
-  .find((result) => result !== undefined)
+
+                const previousExerciseResult =
+                  [...workoutHistory]
+                    .reverse()
+                    .map((session) =>
+                      session.exercises.find(
+                        (result) =>
+                          result.exerciseId ===
+                          workoutExercise.exerciseId,
+                      ),
+                    )
+                    .find(
+                      (result) =>
+                        result !== undefined,
+                    )
+
+                const currentExerciseSets =
+                  workoutSetResults[
+                    workoutExercise
+                      .exerciseId
+                  ] ?? []
+
+                const allSetsCompleted =
+                  currentExerciseSets.filter(
+                    (set) =>
+                      set.reps !==
+                      undefined,
+                  ).length ===
+                  workoutExercise.sets
+
+                const progressionDecision =
+                  allSetsCompleted
+                    ? resolveExerciseProgression(
+                        {
+                          currentSets:
+                            currentExerciseSets,
+                          previousSets:
+                            previousExerciseResult
+                              ?.sets,
+                        },
+                      )
+                    : null
+
                 return (
                   <article
                     className="exercise-card"
-                    key={workoutExercise.slotId}
+                    key={
+                      workoutExercise.slotId
+                    }
                   >
                     <div className="exercise-number">
                       {index + 1}
                     </div>
 
                     <div>
-                      <h2>{exercise.name}</h2>
+                      <h2>
+                        {exercise.name}
+                      </h2>
 
                       <p>
-                        {workoutExercise.sets}{' '}
+                        {
+                          workoutExercise.sets
+                        }{' '}
                         подхода ·{' '}
                         {formatExerciseTarget(
                           workoutExercise.target,
@@ -402,29 +505,38 @@ const previousExerciseResult = [...workoutHistory]
                         )}{' '}
                         сек.
                       </p>
-{previousExerciseResult && (
-  <p>
-    В прошлый раз:{' '}
-    {previousExerciseResult.sets
-      .map((set) => {
-        const weight =
-          set.weightKg ?? '—'
 
-        const reps =
-          set.reps ?? '—'
+                      {previousExerciseResult && (
+                        <p>
+                          В прошлый раз:{' '}
+                          {previousExerciseResult.sets
+                            .map(
+                              (set) => {
+                                const weight =
+                                  set.weightKg ??
+                                  '—'
 
-        return `${weight} кг × ${reps}`
-      })
-      .join(' · ')}
-  </p>
-)}
+                                const reps =
+                                  set.reps ??
+                                  '—'
+
+                                return `${weight} кг × ${reps}`
+                              },
+                            )
+                            .join(' · ')}
+                        </p>
+                      )}
+
                       <div>
                         {Array.from(
                           {
                             length:
                               workoutExercise.sets,
                           },
-                          (_, setIndex) => {
+                          (
+                            _,
+                            setIndex,
+                          ) => {
                             const setNumber =
                               setIndex + 1
 
@@ -441,10 +553,15 @@ const previousExerciseResult = [...workoutHistory]
                             return (
                               <div
                                 className="set-row"
-                                key={setNumber}
+                                key={
+                                  setNumber
+                                }
                               >
                                 <span className="set-label">
-                                  Подход {setNumber}
+                                  Подход{' '}
+                                  {
+                                    setNumber
+                                  }
                                 </span>
 
                                 <input
@@ -457,14 +574,18 @@ const previousExerciseResult = [...workoutHistory]
                                     setResult?.weightKg ??
                                     ''
                                   }
-                                  onChange={(event) =>
+                                  onChange={(
+                                    event,
+                                  ) =>
                                     updateWorkoutSetResult(
                                       workoutExercise.exerciseId,
                                       setNumber,
                                       {
                                         weightKg:
-                                          event.target
-                                            .value === ''
+                                          event
+                                            .target
+                                            .value ===
+                                          ''
                                             ? undefined
                                             : Number(
                                                 event
@@ -486,14 +607,18 @@ const previousExerciseResult = [...workoutHistory]
                                     setResult?.reps ??
                                     ''
                                   }
-                                  onChange={(event) =>
+                                  onChange={(
+                                    event,
+                                  ) =>
                                     updateWorkoutSetResult(
                                       workoutExercise.exerciseId,
                                       setNumber,
                                       {
                                         reps:
-                                          event.target
-                                            .value === ''
+                                          event
+                                            .target
+                                            .value ===
+                                          ''
                                             ? undefined
                                             : Number(
                                                 event
@@ -509,6 +634,14 @@ const previousExerciseResult = [...workoutHistory]
                           },
                         )}
                       </div>
+
+                      {progressionDecision && (
+                        <p className="progression-message">
+                          {
+                            progressionDecision.message
+                          }
+                        </p>
+                      )}
                     </div>
                   </article>
                 )
@@ -552,66 +685,87 @@ const previousExerciseResult = [...workoutHistory]
           Сегодня по плану —{' '}
           {currentWorkout.title}
         </p>
-{lastWorkoutSession && (
-  <div>
-    <h2>Последняя тренировка</h2>
 
-    {lastWorkoutSession.exercises.map(
-      (exerciseResult) => {
-        const exercise = exercises.find(
-          (item) =>
-            item.id === exerciseResult.exerciseId,
-        )
+        {lastWorkoutSession && (
+          <div>
+            <h2>
+              Последняя тренировка
+            </h2>
 
-        if (!exercise) {
-          return null
-        }
+            {lastWorkoutSession.exercises.map(
+              (exerciseResult) => {
+                const exercise =
+                  exercises.find(
+                    (item) =>
+                      item.id ===
+                      exerciseResult.exerciseId,
+                  )
 
-        return (
-          <div key={exerciseResult.exerciseId}>
-            <strong>{exercise.name}</strong>
+                if (!exercise) {
+                  return null
+                }
 
-            <p>
-              {exerciseResult.sets
-                .map((set) => {
-                  const weight =
-                    set.weightKg ?? '—'
+                return (
+                  <div
+                    key={
+                      exerciseResult.exerciseId
+                    }
+                  >
+                    <strong>
+                      {exercise.name}
+                    </strong>
 
-                  const reps =
-                    set.reps ?? '—'
+                    <p>
+                      {exerciseResult.sets
+                        .map((set) => {
+                          const weight =
+                            set.weightKg ??
+                            '—'
 
-                  return `${weight} кг × ${reps}`
-                })
-                .join(' · ')}
-            </p>
+                          const reps =
+                            set.reps ?? '—'
+
+                          return `${weight} кг × ${reps}`
+                        })
+                        .join(' · ')}
+                    </p>
+                  </div>
+                )
+              },
+            )}
           </div>
-        )
-      },
-    )}
-  </div>
-)}
+        )}
+
         <article className="workout-card">
           <div>
             <p className="workout-status">
               Сегодня
             </p>
 
-            <h2>{currentWorkout.title}</h2>
+            <h2>
+              {currentWorkout.title}
+            </h2>
 
             <p>
-              {currentWorkout.exercises.length}{' '}
+              {
+                currentWorkout.exercises
+                  .length
+              }{' '}
               упражнений · около{' '}
-              {currentWorkout.estimatedMinutes}{' '}
+              {
+                currentWorkout
+                  .estimatedMinutes
+              }{' '}
               минут
             </p>
           </div>
 
           <button
-  type="button"
-  onClick={handleStartWorkout}
->
-  Начать тренировку
-</button>
+            type="button"
+            onClick={handleStartWorkout}
+          >
+            Начать тренировку
+          </button>
         </article>
       </section>
     </main>
