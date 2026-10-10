@@ -141,3 +141,43 @@ describe('resolveExerciseProgression', () => {
     expect(result).toBeNull()
   })
 })
+it('не считает низкий результат повторным, если рабочий вес изменился', () => {
+  const result = resolveExerciseProgression({
+    currentSets: [
+      {
+        setNumber: 1,
+        weightKg: 47.5,
+        reps: 10,
+      },
+      {
+        setNumber: 2,
+        weightKg: 47.5,
+        reps: 9,
+      },
+      {
+        setNumber: 3,
+        weightKg: 47.5,
+        reps: 8,
+      },
+    ],
+    previousSets: [
+      {
+        setNumber: 1,
+        weightKg: 50,
+        reps: 10,
+      },
+      {
+        setNumber: 2,
+        weightKg: 50,
+        reps: 9,
+      },
+      {
+        setNumber: 3,
+        weightKg: 50,
+        reps: 8,
+      },
+    ],
+  })
+
+  expect(result?.action).toBe('warning')
+})

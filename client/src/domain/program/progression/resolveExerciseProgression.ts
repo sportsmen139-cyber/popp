@@ -1,10 +1,5 @@
-import type {
-  WorkoutSetResult,
-} from '../../../types/workoutSession'
-
-import type {
-  ProgressionDecision,
-} from '../../../types/progression'
+import type { WorkoutSetResult } from '../../../types/workoutSession'
+import type { ProgressionDecision } from '../../../types/progression'
 
 import { decideProgression } from './decideProgression'
 
@@ -13,42 +8,80 @@ type ResolveExerciseProgressionInput = {
   previousSets?: WorkoutSetResult[]
 }
 
-function getLastSetReps(
+function getLastCompletedSet(
   sets: WorkoutSetResult[],
-): number | null {
+): WorkoutSetResult | null {
   const completedSets = sets
     .filter((set) => set.reps !== undefined)
     .sort(
       (a, b) => a.setNumber - b.setNumber,
     )
 
-  const lastSet =
-    completedSets[completedSets.length - 1]
+  return (
+    completedSets[
+      completedSets.length - 1
+    ] ?? null
+  )
+}
 
-  return lastSet?.reps ?? null
+function isSameWorkingWeight(
+  currentSet: WorkoutSetResult,
+  previousSet: WorkoutSetResult,
+) {
+  const currentWeight =
+    currentSet.weightKg
+
+  const previousWeight =
+    previousSet.weightKg
+
+  if (
+    currentWeight === undefined &&
+    previousWeight === undefined
+  ) {
+    return true
+  }
+
+  if (
+    currentWeight === undefined ||
+    previousWeight === undefined
+  ) {
+    return false
+  }
+
+  return currentWeight === previousWeight
 }
 
 export function resolveExerciseProgression(
   input: ResolveExerciseProgressionInput,
 ): ProgressionDecision | null {
-  const currentCleanReps =
-    getLastSetReps(input.currentSets)
+  const currentSet =
+    getLastCompletedSet(input.currentSets)
 
-  if (currentCleanReps === null) {
+  if (
+    currentSet === null ||
+    currentSet.reps === undefined
+  ) {
     return null
   }
 
-  const previousCleanReps =
+  const previousSet =
     input.previousSets
-      ? getLastSetReps(input.previousSets)
+      ? getLastCompletedSet(
+          input.previousSets,
+        )
       : null
 
   const previousLowPerformance =
-    previousCleanReps !== null &&
-    previousCleanReps <= 8
+    previousSet !== null &&
+    previousSet.reps !== undefined &&
+    previousSet.reps <= 8 &&
+    isSameWorkingWeight(
+      currentSet,
+      previousSet,
+    )
 
   return decideProgression({
-    cleanReps: currentCleanReps,
+    cleanReps: currentSet.reps,
     previousLowPerformance,
   })
 }
