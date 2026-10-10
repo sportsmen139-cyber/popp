@@ -318,7 +318,16 @@ function App() {
                 if (!exercise) {
                   return null
                 }
-
+const previousExerciseResult = [...workoutHistory]
+  .reverse()
+  .map((session) =>
+    session.exercises.find(
+      (result) =>
+        result.exerciseId ===
+        workoutExercise.exerciseId,
+    ),
+  )
+  .find((result) => result !== undefined)
                 return (
                   <article
                     className="exercise-card"
@@ -346,7 +355,22 @@ function App() {
                         )}{' '}
                         сек.
                       </p>
+{previousExerciseResult && (
+  <p>
+    В прошлый раз:{' '}
+    {previousExerciseResult.sets
+      .map((set) => {
+        const weight =
+          set.weightKg ?? '—'
 
+        const reps =
+          set.reps ?? '—'
+
+        return `${weight} кг × ${reps}`
+      })
+      .join(' · ')}
+  </p>
+)}
                       <div>
                         {Array.from(
                           {
