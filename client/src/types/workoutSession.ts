@@ -4,9 +4,18 @@ export type WorkoutSetResult = {
   weightKg?: number
 }
 
+export type ExerciseDifficulty =
+  | 'very_easy'
+  | 'normal'
+  | 'hard'
+  | 'very_hard'
+  | 'failed'
+
 export type WorkoutExerciseResult = {
   exerciseId: string
   sets: WorkoutSetResult[]
+
+  difficulty?: ExerciseDifficulty
 }
 
 export type WorkoutSessionResult = {
