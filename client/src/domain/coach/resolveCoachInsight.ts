@@ -4,6 +4,7 @@ export type CoachInsight = {
   id:
     | 'frequent_fatigue'
     | 'frequent_poor_sleep'
+    | 'frequent_shortened_sessions'
 
   title: string
   message: string
@@ -15,6 +16,8 @@ const FATIGUE_RATIO_THRESHOLD = 0.6
 
 const MINIMUM_SLEEP_OBSERVATIONS = 4
 const POOR_SLEEP_RATIO_THRESHOLD = 0.5
+
+const SHORTENED_SESSION_RATIO_THRESHOLD = 0.4
 
 export function resolveCoachInsights(
   memory: CoachMemory,
@@ -72,6 +75,22 @@ export function resolveCoachInsights(
           'В половине или более последних тренировок, где ты указал качество сна, сон был плохим. Это стоит учитывать вместе с текущим самочувствием.',
       })
     }
+  }
+
+  const shortenedSessionRatio =
+    memory.adaptation.shortened /
+    memory.analyzedSessions
+
+  if (
+    shortenedSessionRatio >=
+    SHORTENED_SESSION_RATIO_THRESHOLD
+  ) {
+    insights.push({
+      id: 'frequent_shortened_sessions',
+      title: 'Часто выбираешь короткую тренировку',
+      message:
+        'В нескольких последних тренировках ты выбирал сокращённый формат. Если этот паттерн сохранится, программу стоит лучше подстроить под доступное время.',
+    })
   }
 
   return insights

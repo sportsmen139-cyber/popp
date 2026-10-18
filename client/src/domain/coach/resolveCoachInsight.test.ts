@@ -157,4 +157,35 @@ describe('resolveCoachInsights', () => {
       'frequent_poor_sleep',
     ])
   })
+
+  it('returns shortened sessions insight at 40 percent', () => {
+    const memory =
+      createMemory(5, 0, 0)
+
+    memory.adaptation.shortened = 2
+
+    expect(
+      resolveCoachInsights(memory).map(
+        (insight) => insight.id,
+      ),
+    ).toContain(
+      'frequent_shortened_sessions',
+    )
+  })
+
+  it('does not return shortened sessions insight below 40 percent', () => {
+    const memory =
+      createMemory(5, 0, 0)
+
+    memory.adaptation.shortened = 1
+
+    expect(
+      resolveCoachInsights(memory).map(
+        (insight) => insight.id,
+      ),
+    ).not.toContain(
+      'frequent_shortened_sessions',
+    )
+  })
+
 })
