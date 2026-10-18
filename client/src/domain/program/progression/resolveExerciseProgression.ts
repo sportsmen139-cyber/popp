@@ -1,11 +1,24 @@
-import type { WorkoutSetResult } from '../../../types/workoutSession'
-import type { ProgressionDecision } from '../../../types/progression'
+import type {
+  ExerciseDifficulty,
+  WorkoutSetResult,
+} from '../../../types/workoutSession'
 
-import { decideProgression } from './decideProgression'
+import type {
+  ProgressionDecision,
+} from '../../../types/progression'
+
+import {
+  adjustProgressionForDifficulty,
+} from './adjustProgressionForDifficulty'
+
+import {
+  decideProgression,
+} from './decideProgression'
 
 type ResolveExerciseProgressionInput = {
   currentSets: WorkoutSetResult[]
   previousSets?: WorkoutSetResult[]
+  difficulty?: ExerciseDifficulty
 }
 
 function getLastSet(
@@ -72,8 +85,18 @@ export function resolveExerciseProgression(
       previousSet,
     )
 
-  return decideProgression({
-    cleanReps: currentSet.reps,
-    previousLowPerformance,
-  })
+  const baseDecision =
+    decideProgression({
+      cleanReps: currentSet.reps,
+      previousLowPerformance,
+    })
+
+  if (input.difficulty === undefined) {
+    return baseDecision
+  }
+
+  return adjustProgressionForDifficulty(
+    baseDecision,
+    input.difficulty,
+  )
 }

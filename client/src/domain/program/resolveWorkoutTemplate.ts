@@ -33,6 +33,7 @@ export function resolveWorkoutTemplate(
     resolvedExercises.push({
       slotId: slot.id,
       exerciseId,
+      role: slot.role,
       sets: slot.sets,
       target: slot.target,
       restSeconds: slot.restSeconds,

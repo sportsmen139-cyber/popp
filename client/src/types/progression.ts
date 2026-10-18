@@ -14,6 +14,9 @@ export type ProgressionReason =
   | 'repeated_low_performance'
   | 'seven_or_fewer_clean_reps'
   | 'technique_breakdown'
+  | 'difficulty_blocks_increase'
+  | 'very_hard_effort'
+  | 'failed_effort'
 
 export type ProgressionDecision = {
   action: ProgressionAction

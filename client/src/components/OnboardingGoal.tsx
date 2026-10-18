@@ -29,7 +29,7 @@ export function OnboardingGoal({
           Мы учтём её при подборе программы и упражнений.
         </p>
 
-        <article className="workout-card">
+        <article className="workout-card onboarding-buttons">
           <button
             type="button"
             onClick={() =>

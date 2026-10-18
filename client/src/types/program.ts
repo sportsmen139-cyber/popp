@@ -13,11 +13,6 @@ export type UserLevel =
   level: UserLevel
   availableEquipment?: string[]
   }
-export type TrainingObjective =
-  | 'general_fitness'
-  | 'muscle_gain'
-  | 'strength'
-  | 'body_composition'
 
 export type TrainingEmphasisId =
   | 'balanced'
@@ -107,8 +102,12 @@ export type BaseProgram = {
 export type ResolvedWorkoutExercise = {
   slotId: string
   exerciseId: string
+
+  role: WorkoutSlotRole
+
   sets: number
   target: ExerciseTarget
+
   restSeconds: {
     min?: number
     max: number

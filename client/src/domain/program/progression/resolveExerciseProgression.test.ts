@@ -204,4 +204,123 @@ describe('resolveExerciseProgression', () => {
 
     expect(result).toBeNull()
   })
+    it('сохраняет повышение веса после 12 повторений, если сложность нормальная', () => {
+    const result = resolveExerciseProgression({
+      currentSets: [
+        {
+          setNumber: 1,
+          reps: 10,
+          weightKg: 50,
+        },
+        {
+          setNumber: 2,
+          reps: 11,
+          weightKg: 50,
+        },
+        {
+          setNumber: 3,
+          reps: 12,
+          weightKg: 50,
+        },
+      ],
+      difficulty: 'normal',
+    })
+
+    expect(result?.action).toBe(
+      'increase_weight',
+    )
+  })
+
+  it('блокирует повышение веса после 12 повторений, если упражнение было тяжёлым', () => {
+    const result = resolveExerciseProgression({
+      currentSets: [
+        {
+          setNumber: 1,
+          reps: 10,
+          weightKg: 50,
+        },
+        {
+          setNumber: 2,
+          reps: 11,
+          weightKg: 50,
+        },
+        {
+          setNumber: 3,
+          reps: 12,
+          weightKg: 50,
+        },
+      ],
+      difficulty: 'hard',
+    })
+
+    expect(result?.action).toBe(
+      'keep_and_retest',
+    )
+
+    expect(result?.reason).toBe(
+      'difficulty_blocks_increase',
+    )
+  })
+
+  it('не повышает нагрузку после 12 повторений, если упражнение было очень тяжёлым', () => {
+    const result = resolveExerciseProgression({
+      currentSets: [
+        {
+          setNumber: 1,
+          reps: 10,
+          weightKg: 50,
+        },
+        {
+          setNumber: 2,
+          reps: 11,
+          weightKg: 50,
+        },
+        {
+          setNumber: 3,
+          reps: 12,
+          weightKg: 50,
+        },
+      ],
+      difficulty: 'very_hard',
+    })
+
+    expect(result?.action).toBe(
+      'keep_weight',
+    )
+
+    expect(result?.reason).toBe(
+      'very_hard_effort',
+    )
+  })
+
+  it('снижает нагрузку, если пользователь не смог выполнить упражнение', () => {
+    const result = resolveExerciseProgression({
+      currentSets: [
+        {
+          setNumber: 1,
+          reps: 10,
+          weightKg: 50,
+        },
+        {
+          setNumber: 2,
+          reps: 10,
+          weightKg: 50,
+        },
+        {
+          setNumber: 3,
+          reps: 10,
+          weightKg: 50,
+        },
+      ],
+      difficulty: 'failed',
+    })
+
+    expect(result?.action).toBe(
+      'reduce_weight',
+    )
+
+    expect(result?.reason).toBe(
+      'failed_effort',
+    )
+  })
 })

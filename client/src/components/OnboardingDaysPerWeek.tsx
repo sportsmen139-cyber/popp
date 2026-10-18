@@ -27,7 +27,7 @@ export function OnboardingDaysPerWeek({
           Выбери комфортное количество тренировок.
         </p>
 
-        <article className="workout-card">
+        <article className="workout-card onboarding-buttons">
           <button
             type="button"
             onClick={() => onSelect(2)}

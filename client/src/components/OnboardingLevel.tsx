@@ -29,7 +29,7 @@ export function OnboardingLevel({
           Это поможет подобрать подходящие упражнения.
         </p>
 
-        <article className="workout-card">
+        <article className="workout-card onboarding-buttons">
           <button
             type="button"
             onClick={() => onSelect('beginner')}
