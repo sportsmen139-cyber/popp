@@ -9,6 +9,8 @@ import { OnboardingLevel } from './components/OnboardingLevel'
 
 import { exercises } from './data/exercises'
 
+import { buildCoachMemory } from './domain/coach/buildCoachMemory'
+import { resolveCoachInsight } from './domain/coach/resolveCoachInsight'
 import { resolveCurrentWorkout } from './domain/program/resolveCurrentWorkout'
 import { resolveExerciseProgression } from './domain/program/progression/resolveExerciseProgression'
 import { applySessionAdaptation } from './domain/session/applySessionAdaptation'
@@ -545,6 +547,14 @@ function App() {
     workoutHistory[
       workoutHistory.length - 1
     ] ?? null
+
+  const coachMemory =
+    buildCoachMemory(workoutHistory)
+
+  const coachMemoryMinimumSessions = 5
+
+  const coachInsight =
+    resolveCoachInsight(coachMemory)
 
   function handleStartWorkout(
     workout: ResolvedWorkout,
@@ -1689,6 +1699,37 @@ function App() {
                     },
                   )}
                 </div>
+              )}
+            </article>
+
+            <article className="history-card">
+              <h2>Coach Memory</h2>
+
+              {coachMemory.analyzedSessions <
+              coachMemoryMinimumSessions ? (
+                <p className="subtitle">
+                  Собираю данные: {' '}
+                  {coachMemory.analyzedSessions}
+                  {' '}из{' '}
+                  {coachMemoryMinimumSessions}
+                  {' '}тренировок с check-in.
+                </p>
+              ) : coachInsight ? (
+                <>
+                  <strong>
+                    {coachInsight.title}
+                  </strong>
+
+                  <p className="subtitle">
+                    {coachInsight.message}
+                  </p>
+                </>
+              ) : (
+                <p className="subtitle">
+                  Пока устойчивых паттернов
+                  не обнаружено. Продолжаю
+                  наблюдать за тренировками.
+                </p>
               )}
             </article>
           </aside>
