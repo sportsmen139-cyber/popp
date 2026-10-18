@@ -4,7 +4,7 @@ import {
   it,
 } from 'vitest'
 
-import { resolveCoachInsight } from './resolveCoachInsight'
+import { resolveCoachInsights } from './resolveCoachInsight'
 
 import type { CoachMemory } from '../../types/coachMemory'
 
@@ -12,7 +12,15 @@ function createMemory(
   analyzedSessions: number,
   tired: number,
   poor: number,
+  poorSleep: number = 0,
+  normalSleep: number = 0,
+  goodSleep: number = 0,
 ): CoachMemory {
+  const recordedSleep =
+    poorSleep +
+    normalSleep +
+    goodSleep
+
   return {
     analyzedSessions,
 
@@ -27,10 +35,12 @@ function createMemory(
     },
 
     sleepCounts: {
-      good: 0,
-      normal: 0,
-      poor: 0,
-      not_provided: analyzedSessions,
+      good: goodSleep,
+      normal: normalSleep,
+      poor: poorSleep,
+      not_provided:
+        analyzedSessions -
+        recordedSleep,
     },
 
     symptomCounts: {
@@ -51,37 +61,100 @@ function createMemory(
   }
 }
 
-describe('resolveCoachInsight', () => {
-  it('does not create insight before 5 sessions', () => {
+describe('resolveCoachInsights', () => {
+  it('returns no insights before 5 sessions', () => {
     const memory =
       createMemory(4, 4, 0)
 
     expect(
-      resolveCoachInsight(memory),
-    ).toBeNull()
+      resolveCoachInsights(memory),
+    ).toEqual([])
   })
 
-  it('creates fatigue insight at 60 percent', () => {
+  it('returns fatigue insight at 60 percent', () => {
     const memory =
       createMemory(5, 3, 0)
 
     expect(
-      resolveCoachInsight(memory),
-    ).toEqual({
-      id: 'frequent_fatigue',
-      title:
-        'Замечаю частую усталость',
-      message:
-        'В большинстве сохранённых тренировок ты отмечал усталость или плохое самочувствие. Я буду учитывать этот паттерн при дальнейшей адаптации нагрузки.',
-    })
+      resolveCoachInsights(memory),
+    ).toEqual([
+      {
+        id: 'frequent_fatigue',
+        title:
+          'Замечаю частую усталость',
+        message:
+          'В большинстве последних тренировок ты отмечал усталость или плохое самочувствие. Этот паттерн стоит учитывать при оценке нагрузки.',
+      },
+    ])
   })
 
-  it('does not create fatigue insight below 60 percent', () => {
+  it('returns no fatigue insight below 60 percent', () => {
     const memory =
       createMemory(5, 2, 0)
 
     expect(
-      resolveCoachInsight(memory),
-    ).toBeNull()
+      resolveCoachInsights(memory),
+    ).toEqual([])
+  })
+
+  it('returns poor sleep insight when poor sleep reaches 50 percent', () => {
+    const memory =
+      createMemory(
+        5,
+        0,
+        0,
+        2,
+        1,
+        1,
+      )
+
+    expect(
+      resolveCoachInsights(memory),
+    ).toEqual([
+      {
+        id: 'frequent_poor_sleep',
+        title:
+          'Сон часто был плохим',
+        message:
+          'В половине или более последних тренировок, где ты указал качество сна, сон был плохим. Это стоит учитывать вместе с текущим самочувствием.',
+      },
+    ])
+  })
+
+  it('does not use missing sleep answers as good sleep', () => {
+    const memory =
+      createMemory(
+        5,
+        0,
+        0,
+        2,
+        0,
+        1,
+      )
+
+    expect(
+      resolveCoachInsights(memory),
+    ).toEqual([])
+  })
+
+  it('can return fatigue and poor sleep insights together', () => {
+    const memory =
+      createMemory(
+        5,
+        3,
+        0,
+        2,
+        1,
+        1,
+      )
+
+    expect(
+      resolveCoachInsights(memory).map(
+        (insight) => insight.id,
+      ),
+    ).toEqual([
+      'frequent_fatigue',
+      'frequent_poor_sleep',
+    ])
   })
 })

@@ -10,7 +10,7 @@ import { OnboardingLevel } from './components/OnboardingLevel'
 import { exercises } from './data/exercises'
 
 import { buildCoachMemory } from './domain/coach/buildCoachMemory'
-import { resolveCoachInsight } from './domain/coach/resolveCoachInsight'
+import { resolveCoachInsights } from './domain/coach/resolveCoachInsight'
 import { resolveCurrentWorkout } from './domain/program/resolveCurrentWorkout'
 import { resolveExerciseProgression } from './domain/program/progression/resolveExerciseProgression'
 import { applySessionAdaptation } from './domain/session/applySessionAdaptation'
@@ -553,8 +553,8 @@ function App() {
 
   const coachMemoryMinimumSessions = 5
 
-  const coachInsight =
-    resolveCoachInsight(coachMemory)
+  const coachInsights =
+    resolveCoachInsights(coachMemory)
 
   function handleStartWorkout(
     workout: ResolvedWorkout,
@@ -1714,15 +1714,21 @@ function App() {
                   {coachMemoryMinimumSessions}
                   {' '}тренировок с check-in.
                 </p>
-              ) : coachInsight ? (
+              ) : coachInsights.length > 0 ? (
                 <>
-                  <strong>
-                    {coachInsight.title}
-                  </strong>
+                  {coachInsights.map(
+                    (insight) => (
+                      <div key={insight.id}>
+                        <strong>
+                          {insight.title}
+                        </strong>
 
-                  <p className="subtitle">
-                    {coachInsight.message}
-                  </p>
+                        <p className="subtitle">
+                          {insight.message}
+                        </p>
+                      </div>
+                    ),
+                  )}
                 </>
               ) : (
                 <p className="subtitle">

@@ -1,23 +1,32 @@
 import type { CoachMemory } from '../../types/coachMemory'
 
 export type CoachInsight = {
-  id: 'frequent_fatigue'
+  id:
+    | 'frequent_fatigue'
+    | 'frequent_poor_sleep'
+
   title: string
   message: string
 }
 
 const MINIMUM_SESSIONS = 5
+
 const FATIGUE_RATIO_THRESHOLD = 0.6
 
-export function resolveCoachInsight(
+const MINIMUM_SLEEP_OBSERVATIONS = 4
+const POOR_SLEEP_RATIO_THRESHOLD = 0.5
+
+export function resolveCoachInsights(
   memory: CoachMemory,
-): CoachInsight | null {
+): CoachInsight[] {
   if (
     memory.analyzedSessions <
     MINIMUM_SESSIONS
   ) {
-    return null
+    return []
   }
+
+  const insights: CoachInsight[] = []
 
   const fatigueSessions =
     memory.feelingCounts.tired +
@@ -31,13 +40,39 @@ export function resolveCoachInsight(
     fatigueRatio >=
     FATIGUE_RATIO_THRESHOLD
   ) {
-    return {
+    insights.push({
       id: 'frequent_fatigue',
       title: 'Замечаю частую усталость',
       message:
-        'В большинстве сохранённых тренировок ты отмечал усталость или плохое самочувствие. Я буду учитывать этот паттерн при дальнейшей адаптации нагрузки.',
+        'В большинстве последних тренировок ты отмечал усталость или плохое самочувствие. Этот паттерн стоит учитывать при оценке нагрузки.',
+    })
+  }
+
+  const recordedSleepSessions =
+    memory.sleepCounts.good +
+    memory.sleepCounts.normal +
+    memory.sleepCounts.poor
+
+  if (
+    recordedSleepSessions >=
+    MINIMUM_SLEEP_OBSERVATIONS
+  ) {
+    const poorSleepRatio =
+      memory.sleepCounts.poor /
+      recordedSleepSessions
+
+    if (
+      poorSleepRatio >=
+      POOR_SLEEP_RATIO_THRESHOLD
+    ) {
+      insights.push({
+        id: 'frequent_poor_sleep',
+        title: 'Сон часто был плохим',
+        message:
+          'В половине или более последних тренировок, где ты указал качество сна, сон был плохим. Это стоит учитывать вместе с текущим самочувствием.',
+      })
     }
   }
 
-  return null
+  return insights
 }
