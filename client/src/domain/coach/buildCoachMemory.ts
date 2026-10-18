@@ -1,6 +1,8 @@
 import type { CoachMemory } from '../../types/coachMemory'
 import type { WorkoutSessionResult } from '../../types/workoutSession'
 
+const RECENT_SESSION_LIMIT = 8
+
 export function buildCoachMemory(
   workoutHistory: WorkoutSessionResult[],
 ): CoachMemory {
@@ -38,7 +40,15 @@ export function buildCoachMemory(
     },
   }
 
-  for (const session of workoutHistory) {
+  const recentSessions = workoutHistory
+    .filter(
+      (session) =>
+        session.sessionContext !==
+        undefined,
+    )
+    .slice(-RECENT_SESSION_LIMIT)
+
+  for (const session of recentSessions) {
     const context = session.sessionContext
 
     if (!context) {

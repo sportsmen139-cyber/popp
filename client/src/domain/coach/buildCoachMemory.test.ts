@@ -132,4 +132,42 @@ describe('buildCoachMemory', () => {
       shortened: 1,
     })
   })
+
+  it('uses only the latest 8 sessions with check-in', () => {
+    const history: WorkoutSessionResult[] =
+      Array.from(
+        { length: 10 },
+        (_, index) => ({
+          workoutTemplateId: `workout-${index + 1}`,
+          completedAt:
+            `2026-10-${String(index + 1).padStart(2, '0')}T10:00:00.000Z`,
+          exercises: [],
+          sessionContext: {
+            checkIn: {
+              feeling:
+                index < 2
+                  ? 'poor' as const
+                  : 'great' as const,
+              hasTrainingIssue: false,
+              symptoms: [],
+            },
+            adaptation: {
+              offered: false,
+              accepted: false,
+              actions: [
+                'keep_as_planned' as const,
+              ],
+            },
+          },
+        }),
+      )
+
+    const memory =
+      buildCoachMemory(history)
+
+    expect(memory.analyzedSessions).toBe(8)
+    expect(memory.feelingCounts.great).toBe(8)
+    expect(memory.feelingCounts.poor).toBe(0)
+  })
+
 })
