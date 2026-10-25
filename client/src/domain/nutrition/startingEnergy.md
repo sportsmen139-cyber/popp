@@ -79,7 +79,7 @@ not the runtime `confidence` field, which remains `low` for all starting outputs
 | Maximum/sum overlap envelope | Product modelling heuristic | Low; neither endpoint is observed | Avoid unconditional addition of overlapping signals | Explicit coverage, timestamps and overlap context |
 | 50 kcal outward rounding | Presentation/product rounding | N/A; not an accuracy guarantee | Avoid presenting a formula-derived single-kcal target | May remain as a presentation rule |
 | DRI 2023 EER | Published external population EER regressions [4, 5] | Reference only; individual PAL unknown | Independent regression/sanity comparison | Keep as reference; never replace observed maintenance automatically |
-| 25% reference warning | Engineering guardrail | Not a medical or physiological error limit | Detect large regression against all explicit PAL scenarios | Revisit using reviewed benchmark coverage, without fitting production to it |
+| 25% reference review threshold | Engineering diagnostic guardrail | Not a medical or physiological error limit | Suggest reviewing assumptions for a large difference from all selected population predictions | May be reviewed as an engineering threshold; never fit production to it |
 
 TEF depends on protein/carbohydrate/fat composition and other context; no macro
 composition is known or inferred here. The implementation solves
@@ -135,6 +135,39 @@ by Health Canada [4, 5]. Coefficients are isolated in `reference/dri2023Model.ts
 none is used in the production beta model. This is the 2023 model, **not** the
 older 2005 equation with a PA multiplier and height in metres.
 
+The equations directly predict TEE/EER at the **population level** for the given
+age, sex/calculation category, height, weight and PA category. For weight-stable
+adults, **EER = TEE**. Neither this identity nor a prediction from the equation is
+an individual measurement of energy expenditure.
+
+The distinction throughout this architecture is:
+
+- **Production estimate → initial hypothesis.**
+- **DRI → external population benchmark for diagnostic sanity checks.**
+- **Observed user data → future personalized calibration source.**
+
+A category equation is **not a lower or upper energy boundary for the category**.
+For example, an individual in the broad inactive category can have maintenance
+below its population equation prediction. Production below (or above) a category
+prediction does not by itself establish underestimation (or overestimation).
+Reference comparison does not calibrate production or define an intake target.
+
+### Adult PA categories and PAL uncertainty
+
+| Explicit PA category | Official PAL membership, age 19+ |
+| --- | --- |
+| inactive | 1.00 ≤ PAL < 1.53 |
+| low_active | 1.53 ≤ PAL < 1.68 |
+| active | 1.68 ≤ PAL < 1.85 |
+| very_active | 1.85 ≤ PAL < 2.50 |
+
+The lower bound is inclusive and the upper bound exclusive. These are PAL
+membership ranges, not kcal bounds, and no actual PAL is inferred from steps,
+work, training, a production midpoint or these reference outputs. Each reference
+scenario stores its PA category, `palRange.minInclusive/maxExclusive`, EER
+population prediction, source metadata and interpretation limitations. Several
+explicit scenarios retain uncertainty when activity does not identify a category.
+
 For explicit sex/calculation category and explicit PAL scenario:
 
 `EER kcal/day = intercept + ageCoefficient * ageYears + heightCoefficient * heightCm + weightCoefficient * weightKg`.
@@ -150,35 +183,54 @@ For explicit sex/calculation category and explicit PAL scenario:
 | Female | active | 710.25 | -7.01 | 6.54 | 12.34 |
 | Female | very_active | 511.83 | -7.01 | 9.07 | 12.56 |
 
-Source-verification status: the primary Health Canada and National Academies
-sites returned a network-proxy 403 in this environment during implementation.
-The citations and coefficient table are provided for review, but **live
-verification against the primary table remains pending**. Arithmetic examples
-and regression tests passing do not constitute that external source check or
-scientific validation. Exact domains were saved in the environment draft for
-review; a draft save does not apply networking or publish the environment.
+Source verification completed on **2026-10-25** against Health Canada's official
+"Equations to estimate energy requirement" page, sections "Adults 19 years and
+older" and "Physical activity level category definitions". All eight existing
+coefficient rows and all four adult PAL ranges match; the coefficients were not
+changed. Metadata records that verification route, the exact source sections and
+URLs, and the originating NASEM 2023 Chapter 5 / Table 5-16 reference. NCBI access
+remained unavailable in this environment; the live coefficient check used Health
+Canada directly. This transcription check is not individual accuracy validation.
 
 PAL is mandatory in the mathematical reference function. `validateStartingEnergy`
 accepts an explicit `palScenarios` array, computes each requested scenario and
 returns `EnergyEstimateValidation`: production result, references, absolute and
-percentage differences, eligibility and warnings. Empty scenario lists produce
+percentage differences, eligibility, structured diagnostics and review/input
+warnings. Empty scenario lists produce
 `no_pal_scenarios`, never an inferred PAL. Fixtures choose multiple scenarios
 explicitly; there is no hidden step-to-PAL or ActivityProfile.level-to-PAL mapping.
-The envelope of scenario outputs is not a statistical confidence interval.
+The numeric span of selected point predictions is named
+`referencePredictionSpanKcalPerDay`. It is neither an individual energy range
+nor a statistical confidence interval or the energy boundaries of a PA category.
 
 The midpoint of the production range exists **only in comparison diagnostics**;
 it is not a production recommendation. Differences use the reference estimate as
 the denominator: `100 * abs(midpoint - reference) / reference`. A
-`large_reference_discrepancy` warning is emitted only if every supplied valid
+`reference_divergence_review` diagnostic is emitted only if every supplied valid
 scenario differs by **more than 25%**. Equality to 25% does not trigger it.
-This is an engineering regression guardrail, not proof of acceptable individual
-accuracy. No warning does not mean either model is correct.
+`REFERENCE_DIVERGENCE_REVIEW_THRESHOLD_PERCENT` is an engineering diagnostic
+guardrail: **review the assumptions**, not "production is incorrect". It is not
+a physiological or medical error boundary and no comparison test forces a
+production estimate to meet it. Absence of a diagnostic is not an accuracy claim.
 
-Separate `production_range_below_reference_scenarios` and
-`production_range_above_reference_scenarios` warnings expose complete separation
-of the ranges even when midpoint differences are below 25%. Missing/unsupported
-reference inputs, unavailable production results and safety review have their own
-warnings. No warning changes production energy, confidence or automation gates.
+Structured diagnostics distinguish:
+
+| Kind / severity | Meaning |
+| --- | --- |
+| informational_difference / info | Ordinary comparison with population predictions, including a production range wholly below or above them |
+| large_divergence / review | Engineering threshold exceeded; review scenario suitability and assumptions, without declaring the production estimate wrong |
+| inconsistent_scenario / invalid or review | Non-finite/negative/invalid inputs, impossible reported totals, mismatched category/PAL metadata, unusable diagnostic arithmetic or conflicting training records |
+| insufficient_activity_information / review | Missing step/duration context or no explicit reference scenarios; actual PAL remains unknown |
+| reference_unavailable / review | Unsupported adult reference age, without changing production age policy |
+| safety_review / review | Existing production safety block; a mathematical reference cannot bypass it |
+
+The old `production_range_below_reference_scenarios` and
+`production_range_above_reference_scenarios` warnings were removed. Position
+relative to point predictions remains informational in
+`comparison.productionRangePosition` and a `population_prediction_comparison`
+diagnostic. `warnings` contains only actionable review/input codes; none changes
+production energy, confidence or automation gates. Invalid/non-finite arithmetic
+and category/PAL metadata mismatch are not treated as ordinary differences.
 
 ### Deterministic validation personas
 
@@ -186,21 +238,31 @@ Scenario choices below are benchmark hypotheses, not measured PAL labels. All
 male personas use age 30, height 175 cm, weight 75 kg; the female persona uses age
 30, height 165 cm, weight 60 kg. Optional other activity is explicitly zero.
 
-| Persona | Activity | Explicit DRI scenarios | Beta range kcal/day | DRI scenario envelope kcal/day | Midpoint below nearest scenario |
-| --- | --- | --- | ---: | ---: | ---: |
-| Sedentary male | Seated, 3000 steps, no training | inactive / low_active | 1700–2300 | 2623–2830 | 23.8% |
-| Moderate-step female | Seated, 7500 steps, no training | inactive / low_active | 1400–1950 | 2021–2183 | 17.1% |
-| Regular lifter | Mixed work, 8000 steps, 3 strength sessions / 180 min | low_active / active | 1850–2650 | 2830–3014 | 20.5% |
-| High-step user | Seated, 14000 steps, 4 strength sessions / 240 min, 120 min cardio | low_active / active / very_active | 2000–3100 | 2830–3322 | 9.9% |
-| Physical worker | Physical job, 12000 steps, 4 strength sessions / 240 min | active / very_active | 1950–2850 | 3014–3322 | 20.4% |
-| Missing steps | Mixed work, steps unknown, 3 strength sessions / 180 min | inactive / low_active / active | 1750–2600 | 2623–3014 | 17.1% |
+| Persona | Activity | Explicit DRI scenarios | Why compare these scenarios (diagnostic only) | Beta range kcal/day | Span of DRI point predictions kcal/day | Diagnostic midpoint difference from nearest prediction |
+| --- | --- | --- | --- | ---: | ---: | ---: |
+| Sedentary male | Seated, 3000 steps, no training | inactive / low_active | Contrast adjacent lower-activity scenarios; daily activity coverage is incomplete | 1700–2300 | 2623–2830 | -23.8% |
+| Moderate-step female | Seated, 7500 steps, no training | inactive / low_active | Steps without intensity/duration do not identify PAL | 1400–1950 | 2021–2183 | -17.1% |
+| Regular lifter | Mixed work, 8000 steps, 3 strength sessions / 180 min | low_active / active | Inspect adjacent scenarios; strength intensity and work duration unknown | 1850–2650 | 2830–3014 | -20.5% |
+| High-step user | Seated, 14000 steps, 4 strength sessions / 240 min, 120 min cardio | low_active / active / very_active | Broad contrast for several exercise modes with unknown intensity/overlap | 2000–3100 | 2830–3322 | -9.9% |
+| Physical worker | Physical job, 12000 steps, 4 strength sessions / 240 min | active / very_active | Inspect higher-activity scenarios without assuming hours, exertion or step independence | 1950–2850 | 3014–3322 | -20.4% |
+| Missing steps | Mixed work, steps unknown, 3 strength sessions / 180 min | inactive / low_active / active | Retain multiple scenarios because no step coverage identifies category | 1750–2600 | 2623–3014 | -17.1% |
 
-Five of six production ranges are entirely below the selected reference outputs.
-All six midpoints are below their closest scenario, despite not crossing the
-25% guardrail. **This is a finding to investigate, not a successful accuracy
-validation.** Investigate daily movement/work floors, scenario suitability and
-conservative overlap assumptions before building an automatic nutrition plan.
-Do not silently tune production coefficients to these six fixtures.
+Five of six production ranges are numerically below the selected point
+predictions; all six diagnostic midpoints are below their nearest prediction.
+**This does not establish systematic underestimation.** Inactive alone spans
+PAL 1.00–<1.53 and its equation prediction is not the lower bound of that category.
+These fixtures have no independently measured TEE or observed personal maintenance
+and cannot prove or rule out individual bias. Keep work, intensity, missing-data
+and overlap assumptions explicit; do not tune production to these six predictions.
+
+Each fixture records its category rationale, diagnostic-only purpose and the
+production's own pre-stage baseline. Persona regression tests check finite,
+positive, ordered output and a named **20% maximum change from each recorded
+production bound**, an engineering budget for these fixed fixtures. They do not
+require being within 25% of DRI, matching a DRI value or falling within its
+prediction span. A material future production change requires explicit baseline
+review. Separate tests protect all eight equations, category/PAL metadata,
+percentage arithmetic, extreme/non-finite inputs and diagnostic classification.
 
 ### Mathematical estimate versus eligibility
 
@@ -235,13 +297,18 @@ gates even when a mathematical reference can be calculated.
    [Dietary Reference Intakes for Energy](https://nap.nationalacademies.org/catalog/26818/dietary-reference-intakes-for-energy),
    DOI: `10.17226/26818`, adult EER equations.
 5. Health Canada,
-   [Dietary reference intakes: Reference values for energy](https://www.canada.ca/en/health-canada/services/food-nutrition/healthy-eating/dietary-reference-intakes/tables/reference-values-energy.html),
-   adult 19+ EER equations, sex/category and PAL-specific rows.
+   [Dietary reference intakes tables: Equations to estimate energy requirement](https://www.canada.ca/en/health-canada/services/food-nutrition/healthy-eating/dietary-reference-intakes/tables/equations-estimate-energy-requirement.html),
+   adult 19+ EER equations (section `a4`) and PAL definitions (section `a1`),
+   verified directly on 2026-10-25. Originating report: [4], Chapter 5 / Table 5-16.
 
 ## Next boundary
 
-Before a goal-adjustment stage, review the beta coefficients and collect explicit
-activity intensity, step coverage and overlap context. Later real-data calibration
-should replace this starting hypothesis, with its own confidence and explanations.
-Goal deficits/surpluses, macros, logging, wearables and calibration are not
-implemented by this change.
+The architecture can support a separate Goal Adjustment layer consuming the
+typed initial range, safety and low confidence; it does not require fitting the
+initial hypothesis to DRI category predictions. Goal policy and handling of
+uncertainty still need their own design and tests. Later Calibration Engine work
+should use observed user data to personalize maintenance, not use population EER
+as a substitute for those observations. Activity intensity, coverage and overlap
+remain useful future context. Goal deficits/surpluses, macros, logging, wearables
+and calibration are not implemented by this stage. Production coefficients,
+RMR uncertainty, TEF, MET defaults and calculation are unchanged.

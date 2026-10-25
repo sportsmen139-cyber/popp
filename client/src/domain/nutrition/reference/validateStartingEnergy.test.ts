@@ -1,18 +1,21 @@
 import { describe, expect, it } from 'vitest'
 import type { NutritionSafetyFlag } from '../../../types/nutrition'
-import type { Dri2023AdultEerEstimate } from '../../../types/nutritionEnergyValidation'
+import type { Dri2023AdultEerEstimate, Dri2023PalCategory } from '../../../types/nutritionEnergyValidation'
 import { estimateStartingEnergy } from '../estimateStartingEnergy'
 import {
   compareEnergyReferenceEstimates,
-  ENERGY_REFERENCE_WARNING_THRESHOLD_PERCENT,
+  REFERENCE_DIVERGENCE_REVIEW_THRESHOLD_PERCENT,
   validateStartingEnergy,
 } from './validateStartingEnergy'
-import { ENERGY_VALIDATION_PERSONAS } from './validationPersonas.fixtures'
+import { ENERGY_VALIDATION_PERSONAS, PERSONA_PRODUCTION_MAX_RELATIVE_CHANGE } from './validationPersonas.fixtures'
+import { estimateDri2023AdultEer } from './estimateDri2023AdultEer'
 
 const firstPersona = ENERGY_VALIDATION_PERSONAS[0]
 
-function syntheticReference(kcalPerDay: number): Dri2023AdultEerEstimate {
-  return { status: 'estimated', method: 'dri_2023_adult_eer', sourceDoi: '10.17226/26818', palCategory: 'inactive', kcalPerDay }
+function syntheticReference(kcalPerDay: number, palCategory: Dri2023PalCategory = 'inactive'): Dri2023AdultEerEstimate {
+  const metadata = estimateDri2023AdultEer({ age: 30, heightCm: 175, weightKg: 75, calculationCategory: 'male', palCategory })
+  if (metadata.status !== 'estimated') throw new Error('Missing test reference metadata')
+  return { ...metadata, kcalPerDay }
 }
 
 describe('starting energy reference validation', () => {
@@ -23,22 +26,34 @@ describe('starting energy reference validation', () => {
     expect(result.referenceEstimates.every(reference => reference.status === 'estimated')).toBe(true)
     expect(result.comparison).toBeDefined()
     expect(result.comparison?.differences.map(item => item.palCategory)).toEqual(persona.palScenarios)
-    // A broad, named engineering guardrail; never equality to DRI or a medical
-    // accuracy claim. A severe shift against ALL plausible scenarios must fail.
-    expect(result.comparison?.closestPercentageDifference).toBeLessThanOrEqual(ENERGY_REFERENCE_WARNING_THRESHOLD_PERCENT)
-    expect(result.warnings).not.toContain('large_reference_discrepancy')
+    expect(persona.scenarioRationale.trim().length).toBeGreaterThan(0)
+    expect(persona.comparisonPurpose).toBe('diagnostic_population_benchmark_only')
+    if (result.productionEstimate.status !== 'estimated') throw new Error('Missing production estimate')
+    // Catch huge/unexpected production changes against its OWN recorded baseline,
+    // independently of DRI predictions or the diagnostic review threshold.
+    for (const bound of ['min', 'max'] as const) {
+      const actual = result.productionEstimate.kcalPerDay[bound]
+      expect(Number.isFinite(actual)).toBe(true)
+      expect(actual).toBeGreaterThan(0)
+      expect(Math.abs(actual / persona.productionBaselineKcalPerDay[bound] - 1)).toBeLessThanOrEqual(PERSONA_PRODUCTION_MAX_RELATIVE_CHANGE)
+    }
+    expect(result.productionEstimate.kcalPerDay.min).toBeLessThanOrEqual(result.productionEstimate.kcalPerDay.max)
+    expect(Number.isFinite(result.comparison?.closestPercentageDifference)).toBe(true)
+    expect(result.diagnostics).toContainEqual({ code: 'population_prediction_comparison', kind: 'informational_difference', severity: 'info' })
     expect(result.productionEstimate).toEqual(estimateStartingEnergy(persona))
   })
 
   it('retains low completeness for missing steps rather than using reference to fill them', () => {
     const result = validateStartingEnergy(ENERGY_VALIDATION_PERSONAS[5])
     expect(result.productionEstimate).toMatchObject({ status: 'estimated', dataCompleteness: { level: 'low' }, confidence: 'low' })
+    expect(result.diagnostics).toContainEqual({ code: 'insufficient_activity_information', kind: 'insufficient_activity_information', severity: 'review' })
   })
 
-  it('makes the low production-range finding visible even below the 25% midpoint warning threshold', () => {
+  it('treats a production range below category predictions as information, not an underestimation warning', () => {
     const result = validateStartingEnergy(firstPersona)
-    expect(result.warnings).toContain('production_range_below_reference_scenarios')
-    expect(result.warnings).not.toContain('large_reference_discrepancy')
+    expect(result.comparison?.productionRangePosition).toBe('below_all_predictions')
+    expect(result.warnings).toEqual([])
+    expect(result.diagnostics).toEqual([{ code: 'population_prediction_comparison', kind: 'informational_difference', severity: 'info' }])
     expect(result.eligibility.automaticNutritionPlanAllowed).toBe(true)
   })
 
@@ -57,8 +72,9 @@ describe('starting energy reference validation', () => {
     expect(inactive.productionEstimate).toEqual(active.productionEstimate)
     expect(inactive.eligibility).toEqual(active.eligibility)
     expect(active.palSelection).toBe('explicit_scenarios_not_inferred')
-    expect(active.warnings).toContain('large_reference_discrepancy')
-    expect(inactive.warnings).not.toContain('large_reference_discrepancy')
+    expect(active.warnings).toContain('reference_divergence_review')
+    expect(active.diagnostics).toContainEqual({ code: 'reference_divergence_review', kind: 'large_divergence', severity: 'review' })
+    expect(inactive.warnings).not.toContain('reference_divergence_review')
   })
 
   it('warns on no supplied scenarios without inventing a PAL or blocking production', () => {
@@ -106,6 +122,12 @@ describe('starting energy reference validation', () => {
     expect(result.eligibility.automaticNutritionPlanAllowed).toBe(false)
     expect(result.eligibility.automaticFatLossAllowed).toBe(false)
     expect(result.warnings).toContain('production_estimate_unavailable')
+    expect(result.diagnostics).toContainEqual({ code: 'production_estimate_unavailable', kind: 'inconsistent_scenario', severity: 'invalid' })
+  })
+
+  it('distinguishes conflicting strength records from insufficient intensity/step context', () => {
+    const result = validateStartingEnergy({ ...firstPersona, trainingActivity: { strengthSessionsPerWeek: 0, estimatedStrengthMinutesPerWeek: 180 } })
+    expect(result.diagnostics).toContainEqual({ code: 'inconsistent_activity_inputs', kind: 'inconsistent_scenario', severity: 'review' })
   })
 })
 
@@ -115,37 +137,54 @@ describe('reference differences and engineering warnings', () => {
     expect(result).toMatchObject({
       productionMidpointKcalPerDay: 2000,
       differences: [{ signedDifferenceKcal: -500, absoluteDifferenceKcal: 500, percentageDifference: 20 }],
-      closestPercentageDifference: 20, largeDiscrepancy: false,
+      closestPercentageDifference: 20, divergenceReviewSuggested: false,
     })
   })
 
   it('warns for large deviations in either direction', () => {
-    expect(compareEnergyReferenceEstimates({ min: 500, max: 500 }, [syntheticReference(1000)])?.largeDiscrepancy).toBe(true)
-    expect(compareEnergyReferenceEstimates({ min: 1500, max: 1500 }, [syntheticReference(1000)])?.largeDiscrepancy).toBe(true)
+    expect(compareEnergyReferenceEstimates({ min: 500, max: 500 }, [syntheticReference(1000)])?.divergenceReviewSuggested).toBe(true)
+    expect(compareEnergyReferenceEstimates({ min: 1500, max: 1500 }, [syntheticReference(1000)])?.divergenceReviewSuggested).toBe(true)
   })
 
   it('does not warn at exactly 25%, but does above the documented boundary', () => {
-    expect(compareEnergyReferenceEstimates({ min: 1250, max: 1250 }, [syntheticReference(1000)])?.largeDiscrepancy).toBe(false)
-    expect(compareEnergyReferenceEstimates({ min: 1251, max: 1251 }, [syntheticReference(1000)])?.largeDiscrepancy).toBe(true)
+    expect(REFERENCE_DIVERGENCE_REVIEW_THRESHOLD_PERCENT).toBe(25)
+    expect(compareEnergyReferenceEstimates({ min: 1250, max: 1250 }, [syntheticReference(1000)])?.divergenceReviewSuggested).toBe(false)
+    expect(compareEnergyReferenceEstimates({ min: 1251, max: 1251 }, [syntheticReference(1000)])?.divergenceReviewSuggested).toBe(true)
   })
 
   it('warns only when every explicit scenario is far away, independent of order', () => {
-    const references = [syntheticReference(1000), { ...syntheticReference(2000), palCategory: 'active' as const }]
+    const references = [syntheticReference(1000), syntheticReference(2000, 'active')]
     const range = { min: 1900, max: 2100 }
-    expect(compareEnergyReferenceEstimates(range, references)?.largeDiscrepancy).toBe(false)
+    expect(compareEnergyReferenceEstimates(range, references)?.divergenceReviewSuggested).toBe(false)
     expect(compareEnergyReferenceEstimates(range, [...references].reverse())?.closestPercentageDifference).toBe(0)
   })
 
   it('distinguishes ranges entirely outside the scenarios from touching their envelope', () => {
     const references = [syntheticReference(1000), syntheticReference(2000)]
-    expect(compareEnergyReferenceEstimates({ min: 500, max: 999 }, references)?.productionRangePosition).toBe('below_all_scenarios')
-    expect(compareEnergyReferenceEstimates({ min: 2001, max: 2500 }, references)?.productionRangePosition).toBe('above_all_scenarios')
-    expect(compareEnergyReferenceEstimates({ min: 500, max: 1000 }, references)?.productionRangePosition).toBe('overlaps_scenario_envelope')
+    expect(compareEnergyReferenceEstimates({ min: 500, max: 999 }, references)?.productionRangePosition).toBe('below_all_predictions')
+    expect(compareEnergyReferenceEstimates({ min: 2001, max: 2500 }, references)?.productionRangePosition).toBe('above_all_predictions')
+    expect(compareEnergyReferenceEstimates({ min: 500, max: 1000 }, references)?.productionRangePosition).toBe('overlaps_prediction_span')
   })
 
   it('does not produce misleading percentages for absent or invalid reference/range inputs', () => {
     expect(compareEnergyReferenceEstimates({ min: 1000, max: 2000 }, [])).toBeUndefined()
     expect(compareEnergyReferenceEstimates({ min: 1000, max: 2000 }, [syntheticReference(0)])).toBeUndefined()
     expect(compareEnergyReferenceEstimates({ min: 2000, max: 1000 }, [syntheticReference(1500)])).toBeUndefined()
+    expect(compareEnergyReferenceEstimates({ min: NaN, max: 2000 }, [syntheticReference(1500)])).toBeUndefined()
+    expect(compareEnergyReferenceEstimates({ min: -100, max: 2000 }, [syntheticReference(1500)])).toBeUndefined()
+    expect(compareEnergyReferenceEstimates({ min: 1000, max: Infinity }, [syntheticReference(1500)])).toBeUndefined()
+    expect(compareEnergyReferenceEstimates({ min: 1000, max: 2000 }, [syntheticReference(NaN)])).toBeUndefined()
+    expect(compareEnergyReferenceEstimates({ min: 1e308, max: 1e308 }, [syntheticReference(1e-308)])).toBeUndefined()
+  })
+
+  it('rejects reference metadata pairing a PA category with another category PAL range', () => {
+    const wrongCategory = { ...syntheticReference(2000), palCategory: 'active' as const }
+    expect(compareEnergyReferenceEstimates({ min: 1700, max: 2300 }, [wrongCategory])).toBeUndefined()
+  })
+
+  it('keeps a range above a nearby population prediction informational', () => {
+    const result = compareEnergyReferenceEstimates({ min: 2001, max: 2050 }, [syntheticReference(2000)])
+    expect(result?.productionRangePosition).toBe('above_all_predictions')
+    expect(result?.divergenceReviewSuggested).toBe(false)
   })
 })

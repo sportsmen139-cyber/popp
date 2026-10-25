@@ -2,7 +2,12 @@ import type {
   Dri2023AdultEerInput,
   Dri2023AdultEerResult,
 } from '../../../types/nutritionEnergyValidation'
-import { DRI_2023_ADULT_EER_COEFFICIENTS, DRI_2023_MINIMUM_ADULT_AGE } from './dri2023Model'
+import {
+  DRI_2023_ADULT_EER_COEFFICIENTS,
+  DRI_2023_ADULT_PAL_RANGES,
+  DRI_2023_MINIMUM_ADULT_AGE,
+  DRI_2023_REFERENCE_SOURCE,
+} from './dri2023Model'
 
 /**
  * Mathematical 19+ reference for explicit PAL scenarios, not nutrition advice.
@@ -17,7 +22,7 @@ export function estimateDri2023AdultEer(input: Dri2023AdultEerInput): Dri2023Adu
   if (input.calculationCategory !== 'male' && input.calculationCategory !== 'female') {
     fields.push('calculationCategory')
   }
-  if (!['inactive', 'low_active', 'active', 'very_active'].includes(input.palCategory)) {
+  if (!Object.hasOwn(DRI_2023_ADULT_PAL_RANGES, input.palCategory)) {
     fields.push('palCategory')
   }
   if (fields.length > 0) return { status: 'invalid_input', fields }
@@ -32,6 +37,16 @@ export function estimateDri2023AdultEer(input: Dri2023AdultEerInput): Dri2023Adu
   }
   return {
     status: 'estimated', method: 'dri_2023_adult_eer', sourceDoi: '10.17226/26818',
-    palCategory: input.palCategory, kcalPerDay,
+    source: { ...DRI_2023_REFERENCE_SOURCE },
+    palCategory: input.palCategory,
+    palRange: { ...DRI_2023_ADULT_PAL_RANGES[input.palCategory] },
+    predictionKind: 'population_eer_prediction',
+    energyRelationship: 'eer_equals_tee_for_weight_stable_adults',
+    interpretationLimitations: [
+      'population_prediction_not_individual_measurement',
+      'prediction_not_category_energy_bound',
+      'actual_individual_pal_unknown',
+    ],
+    kcalPerDay,
   }
 }

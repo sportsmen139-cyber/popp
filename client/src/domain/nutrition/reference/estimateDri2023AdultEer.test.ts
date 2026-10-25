@@ -7,6 +7,30 @@ const input: Dri2023AdultEerInput = {
 }
 
 describe('estimateDri2023AdultEer', () => {
+  it.each([
+    ['inactive', 1.00, 1.53], ['low_active', 1.53, 1.68],
+    ['active', 1.68, 1.85], ['very_active', 1.85, 2.50],
+  ] as const)('records the official adult %s PAL membership range and interpretation', (palCategory, minInclusive, maxExclusive) => {
+    const result = estimateDri2023AdultEer({ ...input, palCategory })
+    expect(result).toMatchObject({
+      status: 'estimated', palCategory,
+      palRange: { minInclusive, maxExclusive },
+      predictionKind: 'population_eer_prediction',
+      energyRelationship: 'eer_equals_tee_for_weight_stable_adults',
+      source: {
+        reportDoi: '10.17226/26818', reportChapter: 5, reportTable: '5-16',
+        coefficientSourceSection: 'Adults 19 years and older',
+        verifiedAgainst: 'health_canada_official_equations',
+        coefficientsVerifiedOn: '2026-10-25',
+      },
+      interpretationLimitations: [
+        'population_prediction_not_individual_measurement',
+        'prediction_not_category_energy_bound',
+        'actual_individual_pal_unknown',
+      ],
+    })
+  })
+
   // Independent arithmetic examples of the published 2023 equations, not
   // expectations derived by importing the implementation coefficient table.
   it.each([
