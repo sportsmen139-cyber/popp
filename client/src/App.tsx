@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 
 import './App.css'
+import './components/ProgressScreen.css'
 
 import { OnboardingDaysPerWeek } from './components/OnboardingDaysPerWeek'
 import { OnboardingEnvironment } from './components/OnboardingEnvironment'
@@ -53,6 +54,8 @@ import type {
   WorkoutSessionContext,
   WorkoutSetResult,
 } from './types/workoutSession'
+
+const ProgressScreen = lazy(() => import('./components/ProgressScreen').then(module => ({ default: module.ProgressScreen })))
 
 function formatExerciseTarget(
   target: ExerciseTarget,
@@ -184,6 +187,7 @@ function formatExerciseHistory(
 }
 
 function App() {
+  const [activeScreen, setActiveScreen] = useState<'training' | 'progress'>('training')
   const [
     workoutStarted,
     setWorkoutStarted,
@@ -313,6 +317,7 @@ function App() {
   )
 
   function handleEditProfile() {
+    setActiveScreen('training')
     clearOnboardingProfile()
 
     setWorkoutStarted(false)
@@ -499,6 +504,12 @@ function App() {
         }
       />
     )
+  }
+
+  if (activeScreen === 'progress') {
+    return <Suspense fallback={<main className="app"><p role="status">Загружаем прогресс…</p></main>}>
+      <ProgressScreen history={workoutHistory} daysPerWeek={selectedDaysPerWeek} goal={selectedGoal} onBack={() => setActiveScreen('training')} />
+    </Suspense>
   }
 
   const currentWorkoutResult =
@@ -1171,20 +1182,21 @@ function App() {
   return (
     <main className="app">
       <section className="home">
-        <div className="top-bar">
+        <div className="top-bar home-top-bar">
           <p className="program-label">
             {currentProgram.title}
           </p>
 
-          <button
-            className="profile-button"
-            type="button"
-            onClick={
-              handleEditProfile
-            }
-          >
-            Изменить профиль
-          </button>
+          <div className="home-top-actions">
+            <button className="progress-open-button" type="button" onClick={() => setActiveScreen('progress')}>Мой прогресс</button>
+            <button
+              className="profile-button"
+              type="button"
+              onClick={handleEditProfile}
+            >
+              Изменить профиль
+            </button>
+          </div>
         </div>
 
         <h1>
