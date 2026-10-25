@@ -23,6 +23,7 @@ function LoadTooltip({ active, payload }: { active?: boolean; payload?: readonly
     <p>{number.format(point.averageWeightKg)} кг · средний вес</p>
     <p>{number.format(point.minWeightKg)}–{number.format(point.maxWeightKg)} кг · диапазон подходов</p>
     <p>Подходов с записью: {point.recordedSets} из {point.totalSets}</p>
+    {point.repsBySet.map(set => <p key={set.setNumber}>Подход {set.setNumber}: {set.reps === null ? 'повторения не записаны' : `${set.reps} повт.`}</p>)}
   </div>
 }
 
@@ -89,7 +90,7 @@ export function ProgressScreen({ history, daysPerWeek, goal, onBack }: {
       <div className="progress-charts">
         <section className="progress-card" aria-labelledby="load-title">
           <div className="progress-card-heading"><span className="progress-marker" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M4 4v16h16M7 15l5-5 4 3 5-7" /></svg></span><div>
-            <h2 id="load-title">Прогресс нагрузки</h2>
+            <h2 id="load-title">История рабочего веса</h2>
             <p>Средний записанный вес подхода · кг</p>
           </div></div>
           <label className="progress-exercise-label" htmlFor="progress-exercise">Упражнение</label>

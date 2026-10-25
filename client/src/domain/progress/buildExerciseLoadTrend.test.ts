@@ -30,6 +30,35 @@ describe('exercise load trend', () => {
     expect(buildExerciseLoadTrend({ history, window, exerciseId: 'squat' }).points.map(point => point.averageWeightKg)).toEqual([60, 65])
   })
 
+  it('keeps actual repetitions per set for the selected exercise without treating different reps as comparable progress', () => {
+    const first = recordedSession(progressDate(10, 8), 'squat', [set(2, 50, 8), set(1, 60, 10)])
+    first.exercises.push({ exerciseId: 'bench', sets: [set(1, 100, 20)] })
+    const history = [recordedSession(progressDate(10, 15), 'squat', [set(1, 70, 6), set(2, 70, 5)]), first]
+    const before = structuredClone(history)
+    const result = buildExerciseLoadTrend({ history, window, exerciseId: 'squat' })
+    expect(result.points.map(point => point.repsBySet)).toEqual([
+      [{ setNumber: 1, reps: 10 }, { setNumber: 2, reps: 8 }],
+      [{ setNumber: 1, reps: 6 }, { setNumber: 2, reps: 5 }],
+    ])
+    expect(result.points.map(point => point.averageWeightKg)).toEqual([55, 70])
+    expect(result.status).toBe('ready')
+    expect(result.comparableChange).toBeNull()
+    expect(history).toEqual(before)
+  })
+
+  it('preserves known repetitions in incomplete records without inventing missing/invalid reps', () => {
+    const history = [recordedSession(progressDate(10, 8), 'squat', [
+      { setNumber: 1, weightKg: 60 }, set(2, 60, NaN), set(3, 60, 0), set(4, undefined, 8),
+    ])]
+    const result = buildExerciseLoadTrend({ history, window, exerciseId: 'squat' })
+    expect(result.points[0].repsBySet).toEqual([
+      { setNumber: 1, reps: null }, { setNumber: 2, reps: null },
+      { setNumber: 3, reps: null }, { setNumber: 4, reps: 8 },
+    ])
+    expect(result.points[0].averageWeightKg).toBeNull()
+    expect(result.comparableChange).toBeNull()
+  })
+
   it('keeps missing/partial weight records as null gaps and never substitutes zero', () => {
     const history = [recordedSession(progressDate(10, 1)), recordedSession(progressDate(10, 8), 'squat', [set(1, 60), set(2)]), recordedSession(progressDate(10, 15))]
     expect(buildExerciseLoadTrend({ history, window, exerciseId: 'squat' }).points.map(point => point.averageWeightKg)).toEqual([60, null, 60])

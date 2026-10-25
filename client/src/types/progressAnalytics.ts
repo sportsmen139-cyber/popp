@@ -27,6 +27,8 @@ export type ExerciseLoadPoint = {
   maxWeightKg: number | null
   recordedSets: number
   totalSets: number
+  /** Recorded repetitions in set order; missing/invalid values remain unknown. */
+  repsBySet: Array<{ setNumber: number; reps: number | null }>
 }
 
 export type ExerciseLoadChange = {

@@ -40,6 +40,11 @@ export function buildExerciseLoadTrend(input: {
       maxWeightKg: fullSets ? Math.max(...weights) : null,
       recordedSets: sets.filter(isCompleteSet).length,
       totalSets: sets.length,
+      repsBySet: sets.filter(set => Number.isInteger(set.setNumber) && set.setNumber > 0)
+        .map(set => ({
+          setNumber: set.setNumber,
+          reps: typeof set.reps === 'number' && Number.isInteger(set.reps) && set.reps > 0 ? set.reps : null,
+        })),
     }
   })
   const validPoints = points.filter(point => point.averageWeightKg !== null)
