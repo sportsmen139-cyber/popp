@@ -5,6 +5,7 @@ export type GoalType =
   | 'exercise_performance'
   | 'endurance'
   | 'body_composition'
+  | 'return_to_training'
 
 export type MuscleGroupGoalTarget =
   | 'glutes'

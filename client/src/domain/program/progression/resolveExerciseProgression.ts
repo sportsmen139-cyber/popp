@@ -21,14 +21,41 @@ type ResolveExerciseProgressionInput = {
   difficulty?: ExerciseDifficulty
 }
 
-function getLastSet(
+function getWeakestCompletedSet(
   sets: WorkoutSetResult[],
 ): WorkoutSetResult | null {
-  const sortedSets = [...sets].sort(
-    (a, b) => a.setNumber - b.setNumber,
-  )
+  if (sets.length === 0) {
+    return null
+  }
 
-  return sortedSets[sortedSets.length - 1] ?? null
+  if (
+    sets.some(
+      (set) => set.reps === undefined,
+    )
+  ) {
+    return null
+  }
+
+  return [...sets]
+    .sort(
+      (a, b) =>
+        a.setNumber - b.setNumber,
+    )
+    .reduce(
+      (weakestSet, currentSet) => {
+        const weakestReps =
+          weakestSet.reps ?? Infinity
+
+        const currentReps =
+          currentSet.reps ?? Infinity
+
+        if (currentReps <= weakestReps) {
+          return currentSet
+        }
+
+        return weakestSet
+      },
+    )
 }
 
 function isSameWorkingWeight(
@@ -61,33 +88,39 @@ function isSameWorkingWeight(
 export function resolveExerciseProgression(
   input: ResolveExerciseProgressionInput,
 ): ProgressionDecision | null {
-  const currentSet =
-    getLastSet(input.currentSets)
+  const weakestCurrentSet =
+    getWeakestCompletedSet(
+      input.currentSets,
+    )
 
   if (
-    currentSet === null ||
-    currentSet.reps === undefined
+    weakestCurrentSet === null ||
+    weakestCurrentSet.reps === undefined
   ) {
     return null
   }
 
-  const previousSet =
+  const weakestPreviousSet =
     input.previousSets
-      ? getLastSet(input.previousSets)
+      ? getWeakestCompletedSet(
+          input.previousSets,
+        )
       : null
 
   const previousLowPerformance =
-    previousSet !== null &&
-    previousSet.reps !== undefined &&
-    previousSet.reps <= 8 &&
+    weakestPreviousSet !== null &&
+    weakestPreviousSet.reps !==
+      undefined &&
+    weakestPreviousSet.reps <= 8 &&
     isSameWorkingWeight(
-      currentSet,
-      previousSet,
+      weakestCurrentSet,
+      weakestPreviousSet,
     )
 
   const baseDecision =
     decideProgression({
-      cleanReps: currentSet.reps,
+      cleanReps:
+        weakestCurrentSet.reps,
       previousLowPerformance,
     })
 

@@ -49,6 +49,7 @@ import type { SessionAdaptation } from './types/sessionAdaptation'
 import type { ExerciseTarget } from './types/training'
 
 import type {
+  ExerciseDifficulty,
   WorkoutSessionContext,
   WorkoutSetResult,
 } from './types/workoutSession'
@@ -260,6 +261,13 @@ function App() {
   >({})
 
   const [
+    workoutExerciseDifficulty,
+    setWorkoutExerciseDifficulty,
+  ] = useState<
+    Record<string, ExerciseDifficulty>
+  >({})
+
+  const [
     userProgress,
     setUserProgress,
   ] = useState(loadUserProgress)
@@ -338,6 +346,10 @@ function App() {
         ([exerciseId, sets]) => ({
           exerciseId,
           sets,
+          difficulty:
+            workoutExerciseDifficulty[
+              exerciseId
+            ],
         }),
       ),
 
@@ -367,6 +379,7 @@ function App() {
     setUserProgress(nextProgress)
 
     setWorkoutSetResults({})
+    setWorkoutExerciseDifficulty({})
     setWorkoutStarted(false)
     setShowSessionCheckIn(false)
     setSessionFeeling(null)
@@ -843,6 +856,11 @@ function App() {
                           previousSets:
                             previousExerciseResult
                               ?.sets,
+
+                          difficulty:
+                            workoutExerciseDifficulty[
+                              workoutExercise.exerciseId
+                            ],
                         },
                       )
                     : null
@@ -974,11 +992,6 @@ function App() {
                                 {
                                   setNumber
                                 }
-
-                                {setNumber ===
-                                workoutExercise.sets
-                                  ? ' · тестовый'
-                                  : ''}
                               </span>
 
                               <div className="set-field set-field-weight">
@@ -1083,6 +1096,47 @@ function App() {
                           )
                         },
                       )}
+                    </div>
+
+                    <div className="exercise-difficulty-block">
+                      <p className="session-question-hint">
+                        Как далось?
+                      </p>
+
+                      <div className="session-feeling-options">
+                        {([
+                          ['very_easy', 'Легко'],
+                          ['normal', 'Нормально'],
+                          ['hard', 'Тяжело'],
+                          ['very_hard', 'Очень тяжело'],
+                          ['failed', 'Не получилось'],
+                        ] as const).map(
+                          ([difficulty, label]) => (
+                            <button
+                              key={difficulty}
+                              type="button"
+                              className={`session-feeling-button ${
+                                workoutExerciseDifficulty[
+                                  workoutExercise.exerciseId
+                                ] === difficulty
+                                  ? 'is-selected'
+                                  : ''
+                              }`}
+                              onClick={() =>
+                                setWorkoutExerciseDifficulty(
+                                  (current) => ({
+                                    ...current,
+                                    [workoutExercise.exerciseId]:
+                                      difficulty,
+                                  }),
+                                )
+                              }
+                            >
+                              {label}
+                            </button>
+                          ),
+                        )}
+                      </div>
                     </div>
 
                     {progressionDecision && (
