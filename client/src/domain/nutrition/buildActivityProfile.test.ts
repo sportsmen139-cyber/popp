@@ -125,5 +125,27 @@ describe('buildActivityProfile', () => {
     expect(
       result.otherActivityMinutesPerWeek,
     ).toBe(0)
+
+    expect(result.dataAvailability).toEqual({
+      cardioMinutesPerWeek: 'missing',
+      otherActivityMinutesPerWeek: 'missing',
+    })
+  })
+
+  it('отличает явно указанный ноль от отсутствующих данных об активности', () => {
+    const result = buildActivityProfile({
+      nutritionProfile: createNutritionProfile({
+        cardioMinutesPerWeek: 0,
+        otherActivityMinutesPerWeek: 0,
+      }),
+      trainingActivity: {
+        strengthSessionsPerWeek: 0,
+        estimatedStrengthMinutesPerWeek: 0,
+      },
+    })
+    expect(result.dataAvailability).toEqual({
+      cardioMinutesPerWeek: 'reported',
+      otherActivityMinutesPerWeek: 'reported',
+    })
   })
 })

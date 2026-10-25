@@ -148,5 +148,12 @@ export function buildActivityProfile(
     cardioMinutesPerWeek,
 
     otherActivityMinutesPerWeek,
+
+    dataAvailability: {
+      cardioMinutesPerWeek:
+        nutritionProfile.cardioMinutesPerWeek === undefined ? 'missing' : 'reported',
+      otherActivityMinutesPerWeek:
+        nutritionProfile.otherActivityMinutesPerWeek === undefined ? 'missing' : 'reported',
+    },
   }
 }
