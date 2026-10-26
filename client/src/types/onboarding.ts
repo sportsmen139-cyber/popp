@@ -1,4 +1,5 @@
 import type { TrainingGoal } from './goal'
+import type { EquipmentId } from './equipment'
 import type {
   TrainingEnvironment,
   UserLevel,
@@ -9,5 +10,5 @@ export type OnboardingProfile = {
   daysPerWeek: 2 | 3 | 4
   level: UserLevel
   goal: TrainingGoal
-  availableEquipment?: string[]
+  availableEquipment?: EquipmentId[]
 }

@@ -1,4 +1,5 @@
 import type { ExerciseTarget } from './training'
+import type { EquipmentInventory, EquipmentSelectionPolicy } from './equipment'
 
 export type TrainingEnvironment =
   | 'gym'
@@ -11,7 +12,9 @@ export type UserLevel =
   | 'advanced'
   export type ExerciseSelectionContext = {
   level: UserLevel
-  availableEquipment?: string[]
+  environment: TrainingEnvironment
+  inventory: EquipmentInventory
+  equipmentPolicy: EquipmentSelectionPolicy
   }
 
 export type TrainingEmphasisId =
@@ -36,6 +39,7 @@ export type TrainingEmphasis = {
   rules: EmphasisRule[]
 }
 
+/** Legacy slot categories; detailed exercise mechanics live in exerciseCatalog. */
 export type MovementPattern =
   | 'squat'
   | 'hinge'

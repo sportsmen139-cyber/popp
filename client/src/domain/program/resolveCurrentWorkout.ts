@@ -6,6 +6,8 @@ import type {
 
 import { resolveNextWorkout } from './resolveNextWorkout'
 import { resolveTrainingPlan } from './resolveTrainingPlan'
+import { createExerciseSelectionContext } from './resolveEquipment'
+import type { EquipmentId, EquipmentSelectionPolicy } from '../../types/equipment'
 
 type ResolveCurrentWorkoutInput = {
   environment: TrainingEnvironment
@@ -16,12 +18,13 @@ type ResolveCurrentWorkoutInput = {
 
   completedWorkoutsCount: number
 
-  availableEquipment?: string[]
+  availableEquipment?: readonly EquipmentId[]
 }
 
 type ResolveCurrentWorkoutFailureReason =
   | 'training_plan_not_found'
   | 'workout_unavailable'
+  | 'invalid_equipment_inventory'
 type ResolveCurrentWorkoutResult =
   | {
       ok: true
@@ -31,6 +34,10 @@ type ResolveCurrentWorkoutResult =
       workout: NonNullable<
         ReturnType<typeof resolveNextWorkout>
       >
+      equipmentResolution: {
+        inventoryStatus: 'known' | 'not_collected'
+        policy: EquipmentSelectionPolicy
+      }
     }
   | {
       ok: false
@@ -53,16 +60,21 @@ export function resolveCurrentWorkout(
   }
 }
 
+  const context = createExerciseSelectionContext({
+    environment: input.environment,
+    level: input.level,
+    availableEquipment: input.availableEquipment,
+  })
+  if (context.inventory.status === 'invalid') {
+    return { ok: false, reason: 'invalid_equipment_inventory' }
+  }
+
   const workout = resolveNextWorkout({
     baseProgram: trainingPlan.baseProgram,
     emphasisId: trainingPlan.emphasisId,
     completedWorkoutsCount:
       input.completedWorkoutsCount,
-    context: {
-      level: input.level,
-      availableEquipment:
-        input.availableEquipment,
-    },
+    context,
   })
 
   if (!workout) {
@@ -76,5 +88,6 @@ export function resolveCurrentWorkout(
   ok: true,
   trainingPlan,
   workout,
+  equipmentResolution: { inventoryStatus: context.inventory.status, policy: context.equipmentPolicy },
 }
 }

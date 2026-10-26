@@ -19,6 +19,7 @@ type ResolveNextWorkoutInput = {
 export function resolveNextWorkout(
   input: ResolveNextWorkoutInput,
 ) {
+  if (!input.baseProgram.environments.includes(input.context.environment)) return null
   if (input.baseProgram.workoutTemplateIds.length === 0) {
     return null
   }

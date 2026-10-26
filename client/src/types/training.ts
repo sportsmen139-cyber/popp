@@ -1,3 +1,7 @@
+import type { ExerciseEquipmentRequirements } from './equipment'
+import type { ExerciseMovementMetadata } from './exerciseCatalog'
+import type { TrainingEnvironment } from './program'
+
 export type ExerciseVideoType =
   | 'technique'
   | 'setup'
@@ -15,7 +19,11 @@ export type Exercise = {
   name: string
 
   muscleGroups: string[]
-  equipment: string[]
+  environments: readonly TrainingEnvironment[]
+  equipment: ExerciseEquipmentRequirements
+  movement: ExerciseMovementMetadata
+  /** Prescriptions remain in workout slots; time support does not add a timer. */
+  supportedTargetTypes: readonly [TargetType, ...TargetType[]]
   difficulty: 'beginner' | 'intermediate' | 'advanced'
 
   videos: ExerciseVideo[]

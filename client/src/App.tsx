@@ -281,7 +281,7 @@ function App() {
     setWorkoutHistory,
   ] = useState(loadWorkoutHistory)
 
-  const [savedOnboardingProfile] =
+  const [savedOnboardingProfile, setSavedOnboardingProfile] =
     useState(loadOnboardingProfile)
 
   const [
@@ -319,6 +319,7 @@ function App() {
   function handleEditProfile() {
     setActiveScreen('training')
     clearOnboardingProfile()
+    setSavedOnboardingProfile(null)
 
     setWorkoutStarted(false)
     setShowSessionCheckIn(false)
@@ -527,6 +528,7 @@ function App() {
 
       goal:
         selectedGoal,
+      availableEquipment: savedOnboardingProfile?.availableEquipment,
     })
 
   if (!currentWorkoutResult.ok) {
@@ -538,9 +540,9 @@ function App() {
           </h1>
 
           <p className="subtitle">
-            Не удалось подобрать
-            тренировку для текущих
-            настроек.
+            {currentWorkoutResult.reason === 'invalid_equipment_inventory'
+              ? 'Сохранённый список оборудования не распознан. Обнови профиль перед подбором тренировки.'
+              : 'Не удалось подобрать тренировку для текущих настроек.'}
           </p>
 
           <button
@@ -559,6 +561,10 @@ function App() {
 
   const currentWorkout =
     currentWorkoutResult.workout
+
+  const equipmentNotice = currentWorkoutResult.equipmentResolution.policy === 'provisional_gym'
+    ? 'Оборудование зала пока не указано. План предварительный: проверь доступность инвентаря выбранных упражнений.'
+    : null
 
   const activeWorkout =
     sessionWorkout ?? currentWorkout
@@ -793,6 +799,8 @@ function App() {
             }{' '}
             минут
           </p>
+
+          {equipmentNotice && <p className="workout-meta" role="note">{equipmentNotice}</p>}
 
           <div className="exercise-list">
             {activeWorkout.exercises.map(
@@ -1207,6 +1215,8 @@ function App() {
           Сегодня всё готово —
           остаётся начать.
         </p>
+
+        {equipmentNotice && <p className="workout-meta" role="note">{equipmentNotice}</p>}
 
         <div className="dashboard-grid">
           <section className="dashboard-main">

@@ -4,6 +4,7 @@ import { trainingEmphases } from '../../data/trainingEmphases'
 import { workoutTemplates } from '../../data/workoutTemplates'
 
 import { resolveWorkoutTemplate } from './resolveWorkoutTemplate'
+import { createExerciseSelectionContext } from './resolveEquipment'
 
 describe('resolveWorkoutTemplate', () => {
   it('выбирает разные упражнения для Balanced и Glutes', () => {
@@ -26,17 +27,13 @@ describe('resolveWorkoutTemplate', () => {
     const balancedWorkout = resolveWorkoutTemplate(
       template,
       balanced,
-      {
-        level: 'intermediate',
-      },
+      createExerciseSelectionContext({ level: 'intermediate', environment: 'gym' }),
     )
 
     const glutesWorkout = resolveWorkoutTemplate(
       template,
       glutes,
-      {
-        level: 'intermediate',
-      },
+      createExerciseSelectionContext({ level: 'intermediate', environment: 'gym' }),
     )
 
     if (!balancedWorkout || !glutesWorkout) {
@@ -75,10 +72,7 @@ describe('resolveWorkoutTemplate', () => {
     const workout = resolveWorkoutTemplate(
       template,
       balanced,
-      {
-        level: 'intermediate',
-        availableEquipment: [],
-      },
+      createExerciseSelectionContext({ level: 'intermediate', environment: 'gym', availableEquipment: [] }),
     )
 
     expect(workout).not.toBeNull()
@@ -110,10 +104,7 @@ describe('resolveWorkoutTemplate', () => {
     const workout = resolveWorkoutTemplate(
       template,
       balanced,
-      {
-        level: 'intermediate',
-        availableEquipment: [],
-      },
+      createExerciseSelectionContext({ level: 'intermediate', environment: 'gym', availableEquipment: [] }),
     )
 
     expect(workout).toBeNull()
@@ -152,10 +143,7 @@ it('пропускает optional-слот, если для него нет уп
   const workout = resolveWorkoutTemplate(
     template,
     balanced,
-    {
-      level: 'intermediate',
-      availableEquipment: [],
-    },
+    createExerciseSelectionContext({ level: 'intermediate', environment: 'gym', availableEquipment: [] }),
   )
 
   expect(workout).not.toBeNull()

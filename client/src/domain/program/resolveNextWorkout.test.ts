@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { basePrograms } from '../../data/basePrograms'
 
 import { resolveNextWorkout } from './resolveNextWorkout'
+import { createExerciseSelectionContext } from './resolveEquipment'
 
 describe('resolveNextWorkout', () => {
   it('выдаёт тренировки по порядку A → B → C → A', () => {
@@ -14,9 +15,7 @@ describe('resolveNextWorkout', () => {
       throw new Error('Не найдена программа gym-fullbody-3')
     }
 
-    const context = {
-      level: 'intermediate' as const,
-    }
+    const context = createExerciseSelectionContext({ level: 'intermediate', environment: 'gym' })
 
     const workout0 = resolveNextWorkout({
       baseProgram,

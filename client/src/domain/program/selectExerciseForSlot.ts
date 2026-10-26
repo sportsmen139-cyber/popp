@@ -1,4 +1,5 @@
 import { exercises } from '../../data/exercises'
+import { resolveEquipmentEligibility } from './resolveEquipment'
 
 import type {
   ExerciseSelectionContext,
@@ -36,16 +37,13 @@ if (!levelMatches) {
   return false
 }
 
-if (context.availableEquipment === undefined) {
-  return true
+if (!exercise.environments.includes(context.environment) ||
+    exercise.movement.status !== 'classified' ||
+    !exercise.supportedTargetTypes.includes(slot.target.type)) {
+  return false
 }
 
-const equipmentMatches = exercise.equipment.every(
-  (equipmentItem) =>
-    context.availableEquipment?.includes(equipmentItem),
-)
-
-return equipmentMatches
+return resolveEquipmentEligibility(exercise.equipment, context) !== 'unavailable'
     })
 
   if (eligibleExerciseIds.length === 0) {
