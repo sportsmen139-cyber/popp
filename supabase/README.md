@@ -1,8 +1,19 @@
-# Supabase preparation — Stage 1
+# Supabase staging foundations
 
-Status: **repository preparation only; no cloud connection or DDL**.
+Status: **Stage 2A source preparation; no cloud connection, deployment or DDL**.
 The current Mini App, all domain calculations and the three localStorage keys
 are unchanged. No local data has been read for upload, exported, or migrated.
+
+## Stage 2A status
+
+An isolated Deno HMAC validator, bounded fail-closed Edge handler, synthetic
+security tests and local ES256 crypto PoC are now prepared under `functions/`.
+Valid initData still receives 503: there is no session, JWT or account issuance.
+Project key acceptance, live Telegram protocol review and SQL/session/role design
+remain explicit deployment gates. See [AUTH_FOUNDATION.md](AUTH_FOUNDATION.md)
+for source details, test commands, Secrets setup and the SQL review boundary.
+
+The sections below record the Stage 1 baseline and its still-required next steps.
 
 ## Staging project record
 
@@ -21,7 +32,7 @@ Project ref/URL, publishable key, database credentials, Telegram credentials and
 signing keys were not supplied or discovered. A project name is not its ref;
 no hostname, credentials, cloud resources or users have been guessed or created.
 
-## Prepared files
+## Stage 1 prepared files
 
 - Root `.gitignore`: environment files throughout the repo, private key formats,
   common credential exports, local secret directories, Supabase CLI state and

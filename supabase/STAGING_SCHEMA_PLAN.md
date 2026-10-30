@@ -6,6 +6,10 @@ does not claim that its entire schema is already necessary for the first smoke
 test. The first test is isolated staging with authorized test identities and
 synthetic workout results, not real tester data or a connection from the live UI.
 
+Stage 2A adds isolated validator/handler tests, not tables or JWT login. The four
+auth tables below remain a design until the
+[gateway/session review boundary](AUTH_FOUNDATION.md#sql-review-boundary) is resolved.
+
 ## 1. Four auth foundation tables
 
 | Table | Minimum responsibility and constraints |

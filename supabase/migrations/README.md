@@ -4,6 +4,11 @@ This directory intentionally contains **no `.sql` files yet**. Stage 1 does not
 define, apply or seed a database. A no-op SQL file would create a misleading
 migration version; an unfinished schema would cross the auth/RLS review boundary.
 
+Stage 2A also stops before executable SQL: actual project key acceptance, gateway
+DB role, issuer/session helper and refresh/replay transaction remain unresolved.
+The HMAC source/tests do not settle those privileges. See the explicit
+[auth foundation review boundary](../AUTH_FOUNDATION.md#sql-review-boundary).
+
 ## Naming and workflow for the implementation stage
 
 - One reviewed change per `<YYYYMMDDHHMMSS>_<snake_case_description>.sql`.
