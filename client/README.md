@@ -1,5 +1,23 @@
 # React + TypeScript + Vite
 
+## Supabase preparation (Stage 1)
+
+The application still uses its existing local storage. No Supabase SDK is
+installed or initialized, and no environment file is required to run tests,
+build, or use the current application.
+
+The placeholder template is [`.env.example`](.env.example). Vite runs from
+`client/`, so any future developer configuration belongs in the ignored
+`client/.env.local`, not a repository-root `.env`. Copying or filling the template
+does not activate a backend. Both `VITE_*` values are public browser configuration;
+never put server credentials in them.
+
+See the [integration status and next-stage boundaries](../supabase/README.md),
+[reserved API adapter location](src/api/supabase/README.md), and
+[migration convention](../supabase/migrations/README.md).
+
+## Vite template reference
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

@@ -1,1 +1,50 @@
 .DS_Store
+
+# Environment values are local, including those in nested apps and tools.
+.env
+.env.*
+*.env
+*.env.*
+.envrc
+.envrc.*
+
+# Only placeholder templates belong in Git.
+!.env.example
+!.env.*.example
+!*.env.example
+!*.env.*.example
+!.envrc.example
+
+# Private keys, credential exports and local secret directories.
+*.pem
+*.key
+*.p8
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa
+id_ed25519
+.netrc
+.pgpass
+.npmrc
+.pypirc
+.dockercfg
+.secrets
+.secrets.*
+.secrets/
+secrets/
+credentials/
+credentials.json
+secrets.json
+service-account*.json
+service_account*.json
+
+# Supabase CLI state and local database backups, never SQL migrations.
+.supabase/
+/supabase/.temp/
+/supabase/.branches/
+/supabase/backups/
+*.dump
+*.backup
+*.sql.gz
