@@ -1,0 +1,137 @@
+{
+  "source_sha256": "1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a",
+  "bundle_hash": "2df06832f5dff2e8e07fe29e839cc4119dd3c4c474d6acca36a080300d94431c",
+  "program_id": "PRG_000002",
+  "program_version": 1,
+  "scope": {
+    "alternative_exercises": [
+      "EX_000007",
+      "EX_000009",
+      "EX_000012",
+      "EX_000015",
+      "EX_000021",
+      "EX_000024",
+      "EX_000030",
+      "EX_000046",
+      "EX_000047",
+      "EX_000081",
+      "EX_000083",
+      "EX_000084",
+      "EX_000086",
+      "EX_000113",
+      "EX_000114",
+      "EX_000125",
+      "EX_000128",
+      "EX_000136"
+    ],
+    "alternative_slot_links": 90,
+    "alternatives": [
+      "ALT_000467",
+      "ALT_000468",
+      "ALT_000469",
+      "ALT_000470",
+      "ALT_000471",
+      "ALT_000472",
+      "ALT_000473",
+      "ALT_000474",
+      "ALT_000475",
+      "ALT_000476",
+      "ALT_000479",
+      "ALT_000480",
+      "ALT_000482",
+      "ALT_000483",
+      "ALT_000484",
+      "ALT_000485",
+      "ALT_000486",
+      "ALT_000487"
+    ],
+    "core_exercises": [
+      "EX_000006",
+      "EX_000013",
+      "EX_000022",
+      "EX_000044",
+      "EX_000082",
+      "EX_000085",
+      "EX_000106",
+      "EX_000112",
+      "EX_000121",
+      "EX_000135"
+    ],
+    "phases": 3,
+    "sessions": 9,
+    "slots": 45,
+    "timed_slots": 0
+  },
+  "review_units": {
+    "alternative": 18,
+    "concept": 11,
+    "equipment": 26,
+    "evidence": 32,
+    "exercise": 28,
+    "family": 17,
+    "muscle": 35,
+    "pattern": 9,
+    "program": 1
+  },
+  "covered_source_records": 829,
+  "source_statuses": {
+    "NEEDS_REVIEW": 829
+  },
+  "questions": [
+    {
+      "code": "EQUIPMENT_REQUIREMENTS_UNKNOWN",
+      "entity": "EX_000082",
+      "role": "core"
+    },
+    {
+      "code": "EQUIPMENT_REQUIREMENTS_UNKNOWN",
+      "entity": "EX_000135",
+      "role": "core"
+    },
+    {
+      "code": "EQUIPMENT_REQUIREMENTS_UNKNOWN",
+      "entity": "EX_000136",
+      "role": "alternative_target"
+    },
+    {
+      "code": "ALTERNATIVE_C_REQUIRES_PROGRAM_CHANGE",
+      "entity": "ALT_000475"
+    },
+    {
+      "code": "ALTERNATIVE_UNIT_CHANGE",
+      "entity": "ALT_000476",
+      "target": "EX_000136"
+    },
+    {
+      "code": "ALTERNATIVE_C_REQUIRES_PROGRAM_CHANGE",
+      "entity": "ALT_000487"
+    }
+  ],
+  "structural_issues": [],
+  "real_trainer_decisions_recorded": 0,
+  "approved_units": 0,
+  "release_blockers": [
+    "program_not_approved",
+    "mandatory_dependencies_not_approved",
+    "equipment_contract_unresolved",
+    "typed_alternative_prescription_unresolved",
+    "engine_support_not_verified",
+    "publication_rights_not_confirmed"
+  ],
+  "required_engine_capabilities": [
+    "versioned_program_assignment",
+    "finite_eight_week_cycle",
+    "phase_hold_and_resume",
+    "source_cycle_day_order",
+    "rir_capture_and_comparability",
+    "two_exposure_progression",
+    "device_load_recalibration",
+    "source_fatigue_missed_session_rules",
+    "source_adaptation_limits",
+    "immutable_versioned_history",
+    "contextual_alternatives_b_c",
+    "typed_alternative_unit_changes"
+  ],
+  "runtime_enabled": false,
+  "full_content_committed": false
+}

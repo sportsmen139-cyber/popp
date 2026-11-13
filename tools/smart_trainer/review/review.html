@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Trainer — проверка пилота</title><link rel="stylesheet" href="/review.css">
+<script type="module" src="/review-ui.mjs"></script>
+</head>
+<body><main>
+<header><p class="eyebrow">Smart Trainer · локальная проверка</p><h1>Проверка пилотной программы</h1><p id="pilot-title">Загружаем локальную выборку…</p></header>
+<aside class="notice">Это внутренний review. Исходные статусы и XLSX не меняются. Решения сохраняются отдельно; контент не публикуется для пользователей.</aside>
+<p id="snapshot" class="meta"></p><div id="metrics" class="metrics"></div>
+<section class="reviewer-box" aria-label="Проверяющий">
+<label for="reviewer">Кто проверяет? <span>Обязательно для решения</span></label>
+<input id="reviewer" maxlength="120" autocomplete="off" placeholder="Имя проверяющего">
+<p class="meta">Имя указывается явно. Это локальный журнал, без серверного подтверждения личности.</p>
+</section>
+<div class="workspace"><nav aria-label="Карточки проверки">
+<label for="filter">Раздел</label><select id="filter">
+<option value="program">Программа и восемь недель</option><option value="core">Основные упражнения</option>
+<option value="alternative_target">Упражнения для замен</option><option value="alternative">Связи замен</option>
+<option value="definitions">Оборудование, мышцы, справочники</option><option value="all">Вся выборка пилота</option>
+<optgroup label="Определения по виду"><option value="equipment">Только оборудование</option><option value="muscle">Только мышцы</option><option value="pattern">Только паттерны</option><option value="family">Только семейства</option><option value="concept">Только понятия</option><option value="evidence">Только источники</option></optgroup>
+</select><label for="entity">Карточка</label><select id="entity"></select>
+<button id="refresh" type="button" class="secondary">Обновить журнал</button>
+<a href="/api/journal" download>Скачать журнал JSON</a>
+<div id="readiness" class="readiness"></div>
+</nav><section class="content">
+<article id="card"></article>
+<section id="dependencies" class="panel"></section>
+<section class="panel" aria-label="Решение тренера">
+<h2>Решение по карточке</h2><p class="meta">Одно решение охватывает явно перечисленный состав карточки: технику, биомеханику и её исходные связи. Общие определения проверяются как зависимости отдельно.</p>
+<label for="comment">Комментарий</label><textarea id="comment" maxlength="4000" rows="4"></textarea>
+<label class="check"><input id="ack" type="checkbox"><span>Я содержательно проверил выбранную карточку или отмеченные зависимости и явно принимаю решение по их полному составу.</span></label>
+<div class="actions"><button id="approve" type="button">Утвердить</button><button id="correction" type="button" class="secondary">Требуется исправление</button><button id="reject" type="button" class="secondary">Отклонить</button><button id="note" type="button" class="secondary">Оставить комментарий</button></div>
+<button id="approve-selected" type="button" class="secondary">Утвердить отмеченные зависимости</button>
+<p id="action-hint" class="meta"></p><p id="status" role="status"></p>
+<p class="meta">Комментарий обязателен для исправления, отклонения и заметки. Черновики остаются только до закрытия страницы. Подтверждение сохранения появляется после записи журнала на диск.</p>
+</section><section id="history" class="panel"></section>
+</section></div>
+</main></body></html>

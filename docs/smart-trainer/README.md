@@ -3,6 +3,11 @@
 Подтверждены реальный XLSX, 142 вкладки, 203 EX и 108 полных программ.
 Аудит и импорт не активируют новый контент в приложении.
 
+Stage 3: [локальный Trainer Review и запуск](PILOT_REVIEW_UI.md),
+[вопросы тренеру по PRG_000002](PILOT_TRAINER_REVIEW.md),
+[план Engine](PILOT_ENGINE_PLAN.md), [scope и блокеры](pilot/summary.json).
+Пилот подготовлен к проверке; фактических утверждений тренера пока нет.
+
 - [Полный аудит](IMPORT_AUDIT.md) — факты, статусы, версии, конкретные конфликты.
 - [Schema mapping](SCHEMA_MAPPING.md) — все исходные поля и правила сохранения.
 - [Legacy mapping 45 IDs](LEGACY_EXERCISE_MAPPING.csv) — сравнение с evidence, без aliases.
