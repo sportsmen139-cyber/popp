@@ -48,3 +48,10 @@ service_account*.json
 *.dump
 *.backup
 *.sql.gz
+
+# Private workbook snapshots and full content previews; publication rights pending.
+/.local/smart-trainer/
+
+# Offline Python tooling caches.
+__pycache__/
+*.py[cod]

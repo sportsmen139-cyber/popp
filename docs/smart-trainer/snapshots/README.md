@@ -1,23 +1,17 @@
-# Source snapshots — пока пусто
+# Зарегистрированный snapshot
 
-Не создавать фиктивный snapshot или checksum. Реального XLSX/CSV здесь ещё нет.
-До первого commit источника проверить разрешение владельца на распространение
-текстов/видео и отсутствие персональных данных, credentials, скрытых листов с
-секретами, комментариев и внешних ссылок с токенами. Приватный snapshot допустим
-в отдельном контролируемом хранилище; его SHA256 и воспроизводимый manifest можно
-держать в Git без публикации оригинала.
+Оригинал получен и проверен 2026-11-13: 142 вкладки, 5 083 138 bytes, SHA256
+`1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a`.
+Достоверная дата экспорта неизвестна; label 26.10.2026 — дата архитектурной надписи.
+[Receipt](../audit/snapshot-receipt.json) фиксирует это отдельно от даты аудита.
 
-Receipt будущего snapshot должен содержать:
+Права на распространение полного workbook/контента не установлены, поэтому
+оригинал не хранится в Git. Полные immutable artifacts находятся в ignored
+`.local/smart-trainer/<sha>/schema-1-importer-1.0.0/`.
+Здесь в публичной документации только hash, агрегаты, IDs, mappings, rows/ranges
+и результаты проверок, без полного текста инструкций или видеоматериалов.
 
-- `source_spreadsheet_id`: `1RbkoiW_6cq4UbojCPBrYmNRmt_sOEA8VMHGpDxoas-0`;
-- source URL и дату/время фактического экспорта (`captured_at`, timezone);
-- формат и SHA256 точных исходных bytes, размер, schema/importer version;
-- workbook sheet names/IDs и исходные row numbers;
-- физические строки, unique keys, blank/duplicate/invalid/rejected/review counts;
-- исходные formula strings + cached results и статус свежести/recalculation;
-- audit diagnostics, normalized output hash, отдельный publication review receipt.
-
-Сначала сохранить оригинал без пересохранения/пересортировки, вычислить SHA256
-локальным `sha256sum`, затем извлекать данные read-only. Повтор одного receipt
-не создаёт новые IDs/revisions и не меняет review decisions. Исправления — новый
-snapshot и новый отчёт, а не изменение применённого релиза.
+Для воспроизведения нужен оригинальный файл с тем же SHA256 и команды из
+[tools README](../../../tools/smart_trainer/README.md). Importer сохраняет исходные
+bytes, не пересохраняет XLSX и не скачивает Google-источник. Повторный запуск
+не меняет artifacts; конфликт файлов не перезаписывается.

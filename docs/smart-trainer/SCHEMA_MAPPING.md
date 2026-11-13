@@ -1,129 +1,91 @@
-# Контракт будущего импорта и совместимости
+# Подтверждённая schema и изолированный catalog adapter
 
-Это **проект mapping**, не утверждение о колонках непрочитанной Google-книги и не
-SQL-миграция. Точные названия/типы колонок заполняются только по snapshot.
-Training Engine и его источники сейчас остаются прежними.
+Проверено по реальному snapshot SHA256
+`1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a`.
+Полная техническая schema: [tools/smart_trainer/schema.json](../../tools/smart_trainer/schema.json).
+Она фиксирует порядок 174 полей девяти таблиц, типы, required/conditional и enums,
+сверенные с 02/03/08/11. Изменение заголовков/лишние data columns не принимается
+как прежняя schema. Mutable field dictionary из нового XLSX не отменяет проверки.
 
-## Путь данных
+## Pipeline и сохранение
 
 ```text
-read-only workbook snapshot (version, SHA256, source rows, formulas + cached values)
-  → source-specific schema validation (после аудита колонок)
-  → normalized immutable content + row diagnostics
-  → внутренний preview с исходными статусами
-  → явный trainer approval + publication release
-  → typed catalog adapter после проверки engine capabilities
+original XLSX bytes + SHA256, read-only
+ → OOXML cells (all 142 sheets; raw values + formulas + caches + shared expansion)
+ → strict source schema and FK/versions audit
+ → normalized flat tables (32 100 rows, source sheet/row, status unchanged)
+ → version-bound exercise/program preview tree
+ → ignored local HTML/JSON, stage=imported, publication=disabled
 ```
 
-Google Sheets не участвует в runtime. Импорт одного и того же snapshot/schema
-version должен давать те же ключи, порядок, counts и output hash. Ключи:
-`(exercise_id,version)`, `(program_id,program_version)`, полные source session/slot
-keys из книги. Изменённое содержимое под уже импортированной версией — конфликт,
-а не last-write-wins. Approval — отдельная запись review; повторный импорт не
-переписывает решения. Новый snapshot не является автоматической публикацией.
+Импорт не использует Google в runtime и не импортируется React или Engine.
+Original bytes сохраняются рядом с полными private artifacts и hash каждого
+файла в manifest. Flat rows не дедуплицируются по names или aliases. Ошибочные
+header/IDs/types отказывают в импорте; содержательные конфликты остаются в audit
+и preview без автоматической «починки». Existing snapshot с иными bytes не
+перезаписывается. Schema/importer version входят в destination и manifest.
 
-## Сохранение полей
+## Реальные поля → normalized storage
 
-Колонка Source sheet ниже обозначает ожидаемую область **по заданию**, а не
-подтверждённую схему. Все исходные поля сохраняются losslessly в raw snapshot.
-Неизвестные tokens остаются диагностикой, никогда default-approved/default-empty.
-
-| Source data | Ожидаемая область | Normalized contract / ограничение |
-| --- | --- | --- |
-| exercise_id, version, name_ru, name_en | 12 | Stable identity + immutable revision; разные версии не склеивать |
-| concept_id, family_id, primary_pattern, exercise_type | 03/04/11/12 | Controlled FK с source vocabulary; не приводить автоматически к legacy pattern |
-| minimum_level, prerequisites | 12/14 | Source level + directed prerequisite edges; проверить self/dependency cycles |
-| location membership | 12/14 | Explicit environment relation; пустое не значит все среды |
-| equipment combinations | 11/12/14 | EquipmentOption[] OR; items[] AND; unknown отдельный статус |
-| load_type, assistance_mode, measurement_unit | 11/12 | Controlled fields; «кг помощи», «кг суммарно», «кг на гантель» не эквивалентны |
-| setup, execution_standard, common_errors | 12/13 | Source strings/list structure, без автогенерации инструкций |
-| progression_options, regression_options, limitations | 12/13 | Preserve options/constraints; текст не становится исполняемой формулой |
-| biomechanics | 13/14 | Explicit variant traits, sources; prerequisite для identity mapping |
-| muscle relations | 14 | PRIMARY / SECONDARY / STABILIZER, не EMG и не количественная активация |
-| evidence references, review_status, trainer_comment | 20–22 + linked rows | References + исходный review token; комментарий не approval |
-| program_id, program_version, environment, goal, level, equipment | 16 | Full program identity/revision + explicit requirements |
-| days_per_week, duration, phases, weeks | 16/17 | Preserve cycle hierarchy; 8 недель нельзя заменить бесконечной одной неделей |
-| session_id, slot_id, exercise/order | 17/18 | Уникальный slot instance внутри точной версии/недели/сессии; не exerciseId как ID слота |
-| sets/reps/time/distance/RIR/rest | 18 | Tagged prescriptions + units; не перегружать поле reps временем/метрами |
-| miss/fatigue/adaptation rules | 09/10/16–18 | Версионированные правила и допустимые ограничения; unsupported → preview only |
-| weekly volume | 19 | Source declared + independent validated calculation, provenance обоих |
-| substitutes | 05/15 | Directed edge, category A/B/C, context/dose rules, source review state |
-
-## Legacy mapping layer
-
-Текущий draft: [LEGACY_EXERCISE_MAPPING.csv](LEGACY_EXERCISE_MAPPING.csv).
-Поля: `legacy_exercise_id → new_exercise_id + new_exercise_version → match_type →
-confidence → decision → evidence`. 45 строк в состоянии `PENDING_SOURCE`.
-
-После аудита допустимы EXACT, SAME_EXERCISE_DIFFERENT_NAME, DIFFERENT_VARIANT,
-AMBIGUOUS, NO_MATCH. Confidence означает степень подтверждения reviewer'ом,
-не вычисленную вероятность по строковому сходству. У каждого решения нужны
-source sheet/row/version + сравнение grip, machine, laterality, bench angle,
-bodyweight/assistance, barbell/dumbbell, ROM и resistance.
-
-История продолжает хранить исходный legacy ID; aliases не переписывают записи,
-веса и reps. Даже EXACT не разрешает автоматически переносить кг между
-разными единицами или equipment contexts. DIFFERENT_VARIANT/AMBIGUOUS/NO_MATCH
-никогда не объединяют историю и не выбираются как identity alias.
-Нужна замороженная legacy name resolver layer для чтения старой истории после
-будущего расширения; сейчас её роль продолжает выполнять неизменный массив 45
-упражнений. Никакой новый alias не подключён к UI/Progress/Load Engine.
-
-## Состояния контента
-
-`imported` — прочитано, но не проверено; `validated` — структура/FK проверены;
-`trainer_approved` — есть явное содержательное решение;
-`published` — точная revision включена в отдельный опубликованный release.
-Это отдельные gates, а не автоматическая цепочка повышений статуса.
-Исходные NEEDS_REVIEW/REJECTED сохраняются; их нельзя выдавать автоматическому
-resolver или механически превращать в APPROVED. Importer не выполняется,
-новых записей в рабочем каталоге нет.
-
-## Coverage matrix
-
-Пока источник недоступен, реальную матрицу 108 программ составить нельзя.
-Для каждой будущей строки нужны source program ID/version, Environment × Level ×
-Days per Week × Goal, phase/week completeness и список unsupported capabilities.
-Заявленные 64/28/16 не доказывают покрытие конкретных combinations.
-
-| Кодовая база сейчас | Level | Frequency | Goal / факт поддержки |
-| --- | --- | --- | --- |
-| Gym, `gym-fullbody-3` v1, A/B/C | beginner/intermediate/advanced | 3 | general_fitness → balanced; hypertrophy/glutes → glutes; exercise_performance/pull_up → pullups |
-| Gym | те же | 2/4 | Нет подходящей программы; интерфейс сохраняет явное unavailable state |
-| Home / Outdoor | те же | 2/3/4 | Нет активной программы в текущем resolver |
-| Любая среда | любой | 1 | Onboarding и BaseProgram union 2/3/4 не поддерживают 1; не менять молча |
-| Программы из Google Sheets | Не проверено | Не проверено | Ни одна ещё не признана совместимой |
-
-Текущий код умеет выбирать A/B/C по счётчику завершений, адаптировать одну
-сессию по check-in и предлагать прежнюю локальную progression по reps/weight/
-difficulty. Это не cycle scheduler и не исполнение правил новой таблицы.
-`ExerciseTarget` знает time/distance, но logger/Load Engine не доказывают их
-полную поддержку; наличие union member недостаточно для подключения программы.
-
-Отдельный следующий engine этап: фазовый calendar/cycle state, week/session
-assignment, пропуски и переходы/повторы, modality-specific result types/units,
-RIR, program-specific progression, fatigue rules и adaptation limits. Каждое
-расширение требует regression fixtures и решения о миграции назначения программы.
-Старый Gym/3 resolver сохранять до полного regression review.
-
-## Направленные замены
-
-A (CLOSE) не переносит кг автоматически. B (GOOD) требует контекст/equipment/
-level/dose review. C (PARTIAL) — согласованное изменение программы. X→Y не даёт
-Y→X; X→Y и Y→Z не дают X→Z. Каждое ребро имеет собственную версию, причину,
-ограничения и approval. NEEDS_REVIEW/REJECTED связи отключены. Цикл разрешённых
-явных встречных ребер не равнозначен циклу prerequisites; аудит различает их.
-
-## Обязательные проверки: честное состояние
-
-| Требование | Сейчас |
+| Source | Сохранение |
 | --- | --- |
-| 45 IDs, прежний resolver, equipment/environments | Зафиксированы существующими catalog migration regression tests |
-| Старые Workout/Session/Load/Progression/Progress | Исходники и тесты не менялись; unit suite + browser storage fixture regression |
-| Дубли новых упражнений / названия | BLOCKED_SOURCE; отсутствие новых строк не является проверкой 200 записей |
-| NEEDS_REVIEW/REJECTED не публикуются | Из Sheets ничего не импортировано; видео gate отдельно покрыт тестами; будущий importer ещё требует tests |
-| Ссылочная целостность 200/108 | BLOCKED_SOURCE; нет ложного passing/skipped теста на придуманных данных |
-| Program coverage / substitutions | BLOCKED_SOURCE + будущий engine review |
+| 12: exercise_id/version/name_ru/name_en | Stable keys и exact revision; все 203 строки, включая 3 REJECTED |
+| concept_id/family_id/primary_pattern/exercise_type/minimum_level | Controlled source tokens + FK; не преобразуются в старые 24 movement или 26 equipment IDs |
+| technical_prerequisites/strength_prerequisites/balance_requirements | Полный исходный текст; не превращается в придуманный dependency graph |
+| primary_goal/load_type/assistance_mode/measurement_unit | Раздельные поля; assistance kg, device kg, dumbbell kg не склеиваются |
+| setup/execution_standard/common_errors/progression_options/regression_options/limitations | Сохраняются без переформулирования в private catalog |
+| display_muscles/evidence_notes/review_status/trainer_comment | Сохраняются вместе с source row; комментарий/наличие строки не approval |
+| 13: все 21 поля | exercise_id/version + body/support/segment/laterality/grip/limb/resistance/ROM/contraction/fatigue/environment/status |
+| 14: все 14 полей | Typed directed relations; definitions не становятся упражнениями |
+| EQUIPMENT_REQUIRED requirement_group | OR комплектов, AND items внутри группы; отсутствие строк → unknown, не equipment-free |
+| EQUIPMENT_OPTIONAL | Отдельные optional relations, не обязательные items |
+| MUSCLE role/volume_role/volume_coefficient | PRIMARY/SECONDARY/STABILIZER отдельно от DIRECT/INDIRECT/STABILIZATION и nullable coefficient |
+| LOCATION / SECONDARY_PATTERN / SECONDARY_GOAL / EVIDENCE / PROGRAM_TARGET | Сохранены source context, target, conditions и review state |
+| 15: все 20 полей | Directed source/target revisions, A/B/C, goal/role/level/dose, differences/eligibility/adjustment, RECALIBRATE/confidence/reason/status |
+| 16: все 26 полей | Full cycle/version, format/split/delivery/environment/goal/context/level/equipment/frequency/cycle days/weeks/time/specialization/rules/status |
+| 17: все 15 полей | Scoped phase key `(program_id,program_version,phase_id)`, weeks, calendar cycle day, warmup и session |
+| 18: все 25 полей | Slot instance ID, exact EX revision, ordered dose + minimum/skip/cut/pair rules; не exercise ID как slot ID |
+| 19: все 16 полей | Original numeric values и formula/cache provenance; unknown coefficients/modelled_sets остаются null |
+| 20: все 11 полей | Review log, entity/version/category, reviewer/date/comments/correction/supersedes без выдуманных решений |
 
-Каталог, programs, taxonomy и history не перезаписываются. Источник остаётся
-нужным условием завершения этапов 1–5, а не формальностью после написания кода.
+12/13/16 содержат revision number; session связан с program_version. У slot и
+volume нет собственного явного version field: source_version для SLOT relations
+проверяется через parent program revision, а не назначается по умолчанию 1.
+Volume привязан к program_id/phase_id без собственного program_version — schema
+gap для будущей multi-revision cloud модели; текущий файл содержит одну revision
+каждого program ID. Schema v1 input ожидает одну текущую запись ID; смешанный
+исторический журнал revisions требует отдельного source adapter, не last-write-wins.
+
+## Формулы и views
+
+Raw cell содержит original expression, shared attributes и cached value отдельно.
+Shared formulas переводятся с корректными relative/$ refs; оригинал не теряется.
+Пустые/отсутствующие caches не равны нулю. При проверке известной суммирующей
+грамматики используются только числовые операции/VLOOKUP по точным IDs — нет
+Excel execution, eval, макросов или обращения по внешним ссылкам.
+
+Все supporting/architecture листы сохранены в raw snapshot. 23–33 и 34–141
+используются для сверки, не как второе хранилище canonical entities. Прямые row refs
+в части visuals не становятся идентичностью importer; normalized связи используют IDs.
+
+## Legacy mapping
+
+[LEGACY_EXERCISE_MAPPING.csv](LEGACY_EXERCISE_MAPPING.csv) содержит все 45 старых IDs,
+selected new revision только при определённом варианте, отдельный candidate_ids,
+source rows, SHA256, confidence и evidence. Ambiguous selected ID пустой.
+Decision в каждой строке KEEP_LEGACY_NO_HISTORY_MERGE; ни один runtime alias не создан.
+Mapping валидируется на полноту, snapshot, names, source IDs/versions и решения.
+Exact/renamed engineering match не означает разрешение переноса исторических кг.
+
+## Допуск контента и следующие границы
+
+`imported` / `validated` / `trainer_approved` / `published` — разные состояния.
+Сейчас только imported. Структурная проверка не повышает source review_status;
+NEEDS_REVIEW и REJECTED сохранены дословно. Promotion API/SQL/cloud upload нет.
+
+[program-compatibility.csv](audit/program-compatibility.csv) содержит весь цикл,
+реальную частоту/среду/goal/level и blockers по каждой программе.
+[coverage.csv](audit/coverage.csv) содержит все 216 combinations, включая нули.
+Нулевое полное engine compatibility не означает, что программы неправильные:
+их phase/cycle/rules ещё не представлены текущим runtime. Старый Gym/3, workouts,
+Session/Load/Progression, Coach/Progress/Nutrition и localStorage не менялись.

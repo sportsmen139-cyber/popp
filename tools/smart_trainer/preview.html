@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Trainer — внутренний preview</title>
+<style>
+:root{font-family:system-ui,sans-serif;color:#1b2723;background:#f3f0e8}*{box-sizing:border-box}body{max-width:1000px;margin:auto;padding:24px}h1{font-size:28px}aside{padding:16px;background:#f7e4da;border:1px solid #bd4b32;border-radius:12px}label,select{display:block;width:100%;margin-block:12px}select,button{min-height:48px;font:inherit;padding:10px}article{background:#fcfbf8;border:1px solid #e1dcd1;border-radius:16px;padding:20px;margin-top:16px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}summary{min-height:48px;padding-block:12px;cursor:pointer}button{margin:8px 8px 8px 0}small{overflow-wrap:anywhere}
+</style>
+<main><h1>Smart Trainer · внутренний preview</h1>
+<aside>Только проверка исходного контента. Все статусы сохранены. Никакие упражнения или программы не опубликованы и не подключены к Training Engine.</aside>
+<p>Полный набор и исходные формулы доступны в соседних JSON. Нет сетевых запросов, отправки данных или кнопки публикации.</p>
+<small id="receipt"></small>
+<label>Что смотреть<select id="kind"><option value="exercises">Упражнения</option><option value="programs">Полные программы</option></select></label>
+<label>Запись<select id="record"></select></label><article id="details"></article></main>
+<script id="data" type="application/json">__DATA__</script>
+<script>
+'use strict';
+const data=JSON.parse(document.getElementById('data').textContent);
+const kind=document.getElementById('kind'), record=document.getElementById('record'), details=document.getElementById('details');
+document.getElementById('receipt').textContent='Snapshot SHA256: '+data.source_sha256;
+function text(tag,value,parent=details){const el=document.createElement(tag);el.textContent=value;parent.append(el);return el;}
+function show(){
+ details.replaceChildren();const entry=data[kind.value][Number(record.value)];if(!entry)return;
+ text('h2',entry.record.name_ru);text('p',entry.record.review_status+' · imported · публикация отключена');
+ if(kind.value==='programs'){
+  for(const phase of entry.phases){const box=text('section','');text('h3',phase.phase_id,box);
+   for(const session of phase.sessions){text('h4',session.record.session_name,box);text('p','Недели '+session.record.phase_week_start+'–'+session.record.phase_week_end+' · день цикла '+session.record.cycle_day,box);
+    for(const slot of session.slots){const disclosure=document.createElement('details');box.append(disclosure);text('summary',slot.slot_id+' · '+slot.exercise_id+' · '+slot.sets+' подходов · '+slot.review_status,disclosure);text('pre',JSON.stringify(slot,null,2),disclosure);}
+   }
+  }
+ }
+ const raw=document.createElement('details');details.append(raw);text('summary','Полная запись, связи и исходные поля',raw);text('pre',JSON.stringify(entry,null,2),raw);
+}
+function list(){record.replaceChildren();data[kind.value].forEach((entry,index)=>{const item=document.createElement('option');item.value=index;item.textContent=(entry.record.exercise_id||entry.record.program_id)+' · '+entry.record.name_ru+' · '+entry.record.review_status;record.append(item);});show();}
+kind.addEventListener('change',list);record.addEventListener('change',show);list();
+</script></html>

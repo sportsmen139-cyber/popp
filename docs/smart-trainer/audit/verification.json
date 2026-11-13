@@ -1,0 +1,23 @@
+{
+  "checks": [
+    "Original XLSX SHA256",
+    "Every artifact SHA256",
+    "142 raw sheets preserved",
+    "All normalized fields and review states: 12_Упражнения",
+    "All normalized fields and review states: 13_Биомеханика",
+    "All normalized fields and review states: 14_Связи",
+    "All normalized fields and review states: 15_Замены",
+    "All normalized fields and review states: 16_Программы",
+    "All normalized fields and review states: 17_Сессии",
+    "All normalized fields and review states: 18_Состав_сессий",
+    "All normalized fields and review states: 19_Недельный_объём",
+    "All normalized fields and review states: 20_Проверка",
+    "All phases/sessions/slots retained exactly once",
+    "Imported status only; publication disabled",
+    "Independent openpyxl values and expanded shared formulas"
+  ],
+  "raw_cells": 626587,
+  "independently_compared_values": 626587,
+  "independently_compared_formulas": 103552,
+  "source_sha256": "1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a"
+}

@@ -1,0 +1,1297 @@
+{
+  "version": "1",
+  "header_row": 4,
+  "sheets": {
+    "12_Упражнения": [
+      "exercise_id",
+      "name_ru",
+      "name_en",
+      "version",
+      "concept_id",
+      "primary_pattern",
+      "family_id",
+      "exercise_type",
+      "minimum_level",
+      "technical_prerequisites",
+      "strength_prerequisites",
+      "balance_requirements",
+      "primary_goal",
+      "load_type",
+      "assistance_mode",
+      "measurement_unit",
+      "setup",
+      "execution_standard",
+      "common_errors",
+      "progression_options",
+      "regression_options",
+      "limitations",
+      "display_muscles",
+      "evidence_notes",
+      "review_status",
+      "trainer_comment"
+    ],
+    "13_Биомеханика": [
+      "exercise_id",
+      "version",
+      "joint_actions",
+      "body_position",
+      "support_configuration",
+      "moving_segment",
+      "laterality",
+      "grip",
+      "limb_position",
+      "resistance_direction",
+      "resistance_profile",
+      "rom_start",
+      "rom_end",
+      "rom_adjustments",
+      "stability_demand",
+      "contraction_mode",
+      "local_fatigue_notes",
+      "systemic_fatigue_notes",
+      "environment_requirements",
+      "review_status",
+      "trainer_comment"
+    ],
+    "14_Связи": [
+      "link_id",
+      "relation_type",
+      "source_id",
+      "source_version",
+      "target_id",
+      "value_ru",
+      "value_en",
+      "role",
+      "requirement_group",
+      "volume_role",
+      "volume_coefficient",
+      "conditions",
+      "review_status",
+      "trainer_comment"
+    ],
+    "15_Замены": [
+      "alternative_id",
+      "source_exercise_id",
+      "target_exercise_id",
+      "source_version",
+      "target_version",
+      "equivalence",
+      "goal",
+      "program_role",
+      "level",
+      "rep_min",
+      "rep_max",
+      "preserved_features",
+      "differences",
+      "eligibility_conditions",
+      "prescription_adjustment",
+      "load_history_policy",
+      "confidence",
+      "reason",
+      "review_status",
+      "trainer_comment"
+    ],
+    "16_Программы": [
+      "program_id",
+      "name_ru",
+      "name_en",
+      "version",
+      "format",
+      "split_structure",
+      "delivery_method",
+      "primary_location",
+      "primary_goal",
+      "context",
+      "level",
+      "prerequisites",
+      "minimum_equipment",
+      "days_per_week",
+      "cycle_length_days",
+      "duration_weeks",
+      "session_min_minutes",
+      "session_max_minutes",
+      "specialization",
+      "distinctiveness_reason",
+      "progression_rule",
+      "fatigue_management",
+      "missed_session_rule",
+      "adaptation_limits",
+      "review_status",
+      "trainer_comment"
+    ],
+    "17_Сессии": [
+      "session_id",
+      "program_id",
+      "program_version",
+      "phase_id",
+      "phase_name",
+      "phase_week_start",
+      "phase_week_end",
+      "cycle_day",
+      "session_name",
+      "session_type",
+      "main_task",
+      "estimated_minutes",
+      "warmup_rule",
+      "review_status",
+      "trainer_comment"
+    ],
+    "18_Состав_сессий": [
+      "slot_id",
+      "session_id",
+      "exercise_id",
+      "exercise_version",
+      "exercise_display",
+      "movement_pattern",
+      "order_index",
+      "priority",
+      "sets",
+      "rep_min",
+      "rep_max",
+      "time_seconds",
+      "distance_meters",
+      "rir_min",
+      "rir_max",
+      "difficulty_target",
+      "rest_min_seconds",
+      "rest_max_seconds",
+      "minimum_sets",
+      "can_skip",
+      "cut_rank",
+      "skip_consequence",
+      "pair_group",
+      "review_status",
+      "trainer_comment"
+    ],
+    "19_Недельный_объём": [
+      "volume_id",
+      "program_id",
+      "phase_id",
+      "target_id",
+      "target_role",
+      "direct_sets",
+      "indirect_sets",
+      "indirect_coefficient",
+      "modelled_sets",
+      "specific_practice_sets",
+      "sessions_per_week",
+      "target_min",
+      "target_max",
+      "accounting_notes",
+      "review_status",
+      "trainer_comment"
+    ],
+    "20_Проверка": [
+      "review_id",
+      "entity_type",
+      "entity_id",
+      "entity_version",
+      "check_category",
+      "review_status",
+      "reviewer",
+      "reviewed_at",
+      "trainer_comment",
+      "correction_required",
+      "supersedes_version"
+    ]
+  },
+  "fields": {
+    "12_Упражнения": {
+      "exercise_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "name_ru": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "name_en": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "version": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "concept_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "primary_pattern": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "pattern"
+      },
+      "family_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "exercise_type": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "exercise_type"
+      },
+      "minimum_level": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "level"
+      },
+      "technical_prerequisites": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "strength_prerequisites": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "balance_requirements": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "primary_goal": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "goal"
+      },
+      "load_type": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "load"
+      },
+      "assistance_mode": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "assistance"
+      },
+      "measurement_unit": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "measure"
+      },
+      "setup": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "execution_standard": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "common_errors": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "progression_options": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "regression_options": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "limitations": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "display_muscles": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "evidence_notes": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "review_status": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "review_status"
+      },
+      "trainer_comment": {
+        "type": "TEXT",
+        "required": "NO",
+        "dictionary": null
+      }
+    },
+    "13_Биомеханика": {
+      "exercise_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "version": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "joint_actions": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "body_position": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "support_configuration": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "moving_segment": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "laterality": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "side"
+      },
+      "grip": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "limb_position": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "resistance_direction": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "resistance_profile": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "rom_start": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "rom_end": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "rom_adjustments": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "stability_demand": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "contraction_mode": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "mode"
+      },
+      "local_fatigue_notes": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "systemic_fatigue_notes": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "environment_requirements": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "review_status": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "review_status"
+      },
+      "trainer_comment": {
+        "type": "TEXT",
+        "required": "NO",
+        "dictionary": null
+      }
+    },
+    "14_Связи": {
+      "link_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "relation_type": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "relation"
+      },
+      "source_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "source_version": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "target_id": {
+        "type": "TEXT",
+        "required": "CONDITIONAL",
+        "dictionary": null
+      },
+      "value_ru": {
+        "type": "TEXT",
+        "required": "CONDITIONAL",
+        "dictionary": null
+      },
+      "value_en": {
+        "type": "TEXT",
+        "required": "NO",
+        "dictionary": null
+      },
+      "role": {
+        "type": "TEXT",
+        "required": "CONDITIONAL",
+        "dictionary": null
+      },
+      "requirement_group": {
+        "type": "TEXT",
+        "required": "CONDITIONAL",
+        "dictionary": null
+      },
+      "volume_role": {
+        "type": "ENUM",
+        "required": "CONDITIONAL",
+        "dictionary": "volume_role"
+      },
+      "volume_coefficient": {
+        "type": "DECIMAL",
+        "required": "CONDITIONAL",
+        "dictionary": null
+      },
+      "conditions": {
+        "type": "TEXT",
+        "required": "NO",
+        "dictionary": null
+      },
+      "review_status": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "review_status"
+      },
+      "trainer_comment": {
+        "type": "TEXT",
+        "required": "NO",
+        "dictionary": null
+      }
+    },
+    "15_Замены": {
+      "alternative_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "source_exercise_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "target_exercise_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "source_version": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "target_version": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "equivalence": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "equivalence"
+      },
+      "goal": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "goal"
+      },
+      "program_role": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "priority"
+      },
+      "level": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "level"
+      },
+      "rep_min": {
+        "type": "INTEGER",
+        "required": "CONDITIONAL",
+        "dictionary": null
+      },
+      "rep_max": {
+        "type": "INTEGER",
+        "required": "CONDITIONAL",
+        "dictionary": null
+      },
+      "preserved_features": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "differences": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "eligibility_conditions": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "prescription_adjustment": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "load_history_policy": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "load_policy"
+      },
+      "confidence": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "confidence"
+      },
+      "reason": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "review_status": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "review_status"
+      },
+      "trainer_comment": {
+        "type": "TEXT",
+        "required": "NO",
+        "dictionary": null
+      }
+    },
+    "16_Программы": {
+      "program_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "name_ru": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "name_en": {
+        "type": "TEXT",
+        "required": "NO",
+        "dictionary": null
+      },
+      "version": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "format": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "format"
+      },
+      "split_structure": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "split"
+      },
+      "delivery_method": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "method"
+      },
+      "primary_location": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "location"
+      },
+      "primary_goal": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "goal"
+      },
+      "context": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "context"
+      },
+      "level": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "level"
+      },
+      "prerequisites": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "minimum_equipment": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "days_per_week": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "cycle_length_days": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "duration_weeks": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "session_min_minutes": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "session_max_minutes": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "specialization": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "distinctiveness_reason": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "progression_rule": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "fatigue_management": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "missed_session_rule": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "adaptation_limits": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "review_status": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "review_status"
+      },
+      "trainer_comment": {
+        "type": "TEXT",
+        "required": "NO",
+        "dictionary": null
+      }
+    },
+    "17_Сессии": {
+      "session_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "program_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "program_version": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "phase_id": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "phase_name": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "phase_week_start": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "phase_week_end": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "cycle_day": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "session_name": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "session_type": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "main_task": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "estimated_minutes": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "warmup_rule": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "review_status": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "review_status"
+      },
+      "trainer_comment": {
+        "type": "TEXT",
+        "required": "NO",
+        "dictionary": null
+      }
+    },
+    "18_Состав_сессий": {
+      "slot_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "session_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "exercise_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "exercise_version": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "exercise_display": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "movement_pattern": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "pattern"
+      },
+      "order_index": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "priority": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "priority"
+      },
+      "sets": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "rep_min": {
+        "type": "INTEGER",
+        "required": "CONDITIONAL",
+        "dictionary": null
+      },
+      "rep_max": {
+        "type": "INTEGER",
+        "required": "CONDITIONAL",
+        "dictionary": null
+      },
+      "time_seconds": {
+        "type": "INTEGER",
+        "required": "CONDITIONAL",
+        "dictionary": null
+      },
+      "distance_meters": {
+        "type": "DECIMAL",
+        "required": "CONDITIONAL",
+        "dictionary": null
+      },
+      "rir_min": {
+        "type": "INTEGER",
+        "required": "CONDITIONAL",
+        "dictionary": null
+      },
+      "rir_max": {
+        "type": "INTEGER",
+        "required": "CONDITIONAL",
+        "dictionary": null
+      },
+      "difficulty_target": {
+        "type": "TEXT",
+        "required": "CONDITIONAL",
+        "dictionary": null
+      },
+      "rest_min_seconds": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "rest_max_seconds": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "minimum_sets": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "can_skip": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "yes_no"
+      },
+      "cut_rank": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "skip_consequence": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "pair_group": {
+        "type": "TEXT",
+        "required": "NO",
+        "dictionary": null
+      },
+      "review_status": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "review_status"
+      },
+      "trainer_comment": {
+        "type": "TEXT",
+        "required": "NO",
+        "dictionary": null
+      }
+    },
+    "19_Недельный_объём": {
+      "volume_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "program_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "phase_id": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "target_id": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "target_role": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "target_role"
+      },
+      "direct_sets": {
+        "type": "DECIMAL",
+        "required": "YES",
+        "dictionary": null
+      },
+      "indirect_sets": {
+        "type": "DECIMAL",
+        "required": "YES",
+        "dictionary": null
+      },
+      "indirect_coefficient": {
+        "type": "DECIMAL",
+        "required": "CONDITIONAL",
+        "dictionary": null
+      },
+      "modelled_sets": {
+        "type": "DECIMAL",
+        "required": "CALCULATED",
+        "dictionary": null
+      },
+      "specific_practice_sets": {
+        "type": "DECIMAL",
+        "required": "YES",
+        "dictionary": null
+      },
+      "sessions_per_week": {
+        "type": "DECIMAL",
+        "required": "YES",
+        "dictionary": null
+      },
+      "target_min": {
+        "type": "DECIMAL",
+        "required": "YES",
+        "dictionary": null
+      },
+      "target_max": {
+        "type": "DECIMAL",
+        "required": "YES",
+        "dictionary": null
+      },
+      "accounting_notes": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "review_status": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "review_status"
+      },
+      "trainer_comment": {
+        "type": "TEXT",
+        "required": "NO",
+        "dictionary": null
+      }
+    },
+    "20_Проверка": {
+      "review_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "entity_type": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "entity_id": {
+        "type": "ID",
+        "required": "YES",
+        "dictionary": null
+      },
+      "entity_version": {
+        "type": "INTEGER",
+        "required": "YES",
+        "dictionary": null
+      },
+      "check_category": {
+        "type": "TEXT",
+        "required": "YES",
+        "dictionary": null
+      },
+      "review_status": {
+        "type": "ENUM",
+        "required": "YES",
+        "dictionary": "review_status"
+      },
+      "reviewer": {
+        "type": "TEXT",
+        "required": "CONDITIONAL",
+        "dictionary": null
+      },
+      "reviewed_at": {
+        "type": "DATE",
+        "required": "CONDITIONAL",
+        "dictionary": null
+      },
+      "trainer_comment": {
+        "type": "TEXT",
+        "required": "NO",
+        "dictionary": null
+      },
+      "correction_required": {
+        "type": "TEXT",
+        "required": "NO",
+        "dictionary": null
+      },
+      "supersedes_version": {
+        "type": "INTEGER",
+        "required": "NO",
+        "dictionary": null
+      }
+    }
+  },
+  "enums": {
+    "review_status": [
+      "APPROVED",
+      "DRAFT",
+      "NEEDS_CORRECTION",
+      "NEEDS_REVIEW",
+      "REJECTED"
+    ],
+    "level": [
+      "ADVANCED",
+      "BEGINNER",
+      "INTERMEDIATE"
+    ],
+    "confidence": [
+      "HIGH",
+      "LOW",
+      "MEDIUM"
+    ],
+    "equivalence": [
+      "A",
+      "B",
+      "C"
+    ],
+    "priority": [
+      "ACCESSORY",
+      "PRIMARY",
+      "SECONDARY"
+    ],
+    "location": [
+      "GYM",
+      "HOME",
+      "OUTDOOR"
+    ],
+    "yes_no": [
+      "NO",
+      "YES"
+    ],
+    "exercise_type": [
+      "COMPOUND",
+      "ISOLATION",
+      "MULTI_JOINT_STABILITY"
+    ],
+    "goal": [
+      "EXERCISE_PERFORMANCE",
+      "GENERAL_FITNESS",
+      "HYPERTROPHY",
+      "MUSCULAR_ENDURANCE",
+      "POWER",
+      "STRENGTH"
+    ],
+    "format": [
+      "FULL_BODY",
+      "SPLIT"
+    ],
+    "split": [
+      "BODY_PART_SPLIT",
+      "FULL_BODY",
+      "HYBRID",
+      "PUSH_PULL_LEGS",
+      "UPPER_LOWER"
+    ],
+    "method": [
+      "CIRCUIT",
+      "MIXED",
+      "PAIRED_SETS",
+      "STRAIGHT_SETS"
+    ],
+    "target_role": [
+      "PRIMARY_TARGET",
+      "SECONDARY_TARGET"
+    ],
+    "muscle_role": [
+      "PRIMARY",
+      "SECONDARY",
+      "STABILIZER"
+    ],
+    "mode": [
+      "DYNAMIC",
+      "ECCENTRIC_ONLY",
+      "ISOMETRIC"
+    ],
+    "measure": [
+      "METERS",
+      "REPS",
+      "SECONDS"
+    ],
+    "load": [
+      "BODYWEIGHT",
+      "CABLE",
+      "FREE_WEIGHT",
+      "HOUSEHOLD_OBJECT",
+      "MACHINE",
+      "RESISTANCE_BAND"
+    ],
+    "assistance": [
+      "ADDED_RESISTANCE",
+      "ASSISTED",
+      "NONE"
+    ],
+    "relation": [
+      "ALIAS_EN",
+      "ALIAS_RU",
+      "CONCEPT",
+      "EQUIPMENT_DEF",
+      "EQUIPMENT_OPTIONAL",
+      "EQUIPMENT_REQUIRED",
+      "EVIDENCE",
+      "LOCATION",
+      "MUSCLE",
+      "MUSCLE_DEF",
+      "PROGRAM_TARGET",
+      "SECONDARY_FAMILY",
+      "SECONDARY_GOAL",
+      "SECONDARY_PATTERN",
+      "SLOT_ALTERNATIVE"
+    ],
+    "context": [
+      "BODY_COMPOSITION_SUPPORT",
+      "RETURN_TO_TRAINING",
+      "STANDARD"
+    ],
+    "side": [
+      "ALTERNATING",
+      "BILATERAL",
+      "UNILATERAL"
+    ],
+    "volume_role": [
+      "DIRECT",
+      "INDIRECT",
+      "STABILIZATION"
+    ],
+    "load_policy": [
+      "RECALIBRATE",
+      "TRAINER_DEFINED",
+      "USE_SAME_EXERCISE_HISTORY"
+    ],
+    "relation_type": [
+      "SLOT_ALTERNATIVE"
+    ],
+    "pattern": [
+      "ANKLE_DORSIFLEXION",
+      "CALF_RAISE",
+      "CARRY",
+      "CORE_ANTI_EXTENSION",
+      "CORE_ANTI_FLEXION",
+      "CORE_ANTI_LATERAL_FLEXION",
+      "CORE_ANTI_ROTATION",
+      "CORE_EXTENSION",
+      "CORE_FLEXION",
+      "CORE_LATERAL_FLEXION",
+      "CORE_ROTATION",
+      "CRAWL",
+      "CYCLIC_JUMP",
+      "DIP_PUSH",
+      "ELBOW_EXTENSION",
+      "ELBOW_FLEXION",
+      "FOREARM_PRONATION",
+      "FOREARM_SUPINATION",
+      "GRIP",
+      "HINGE",
+      "HIP_ABDUCTION",
+      "HIP_ADDUCTION",
+      "HIP_EXTENSION",
+      "HIP_EXTERNAL_ROTATION",
+      "HIP_FLEXION",
+      "HIP_INTERNAL_ROTATION",
+      "HORIZONTAL_PULL",
+      "HORIZONTAL_PUSH",
+      "INCLINE_PUSH",
+      "JUMP_LATERAL",
+      "JUMP_VERTICAL",
+      "KNEE_EXTENSION",
+      "KNEE_FLEXION",
+      "LOADED_MARCH",
+      "LUNGE",
+      "SCAPULAR_DEPRESSION",
+      "SCAPULAR_ELEVATION",
+      "SCAPULAR_PROTRACTION",
+      "SCAPULAR_RETRACTION",
+      "SCAPULAR_UPWARD_ROTATION",
+      "SHOULDER_ABDUCTION",
+      "SHOULDER_EXTENSION",
+      "SHOULDER_EXTERNAL_ROTATION",
+      "SHOULDER_FLEXION",
+      "SHOULDER_HORIZONTAL_ABDUCTION",
+      "SHOULDER_HORIZONTAL_ADDUCTION",
+      "SHOULDER_INTERNAL_ROTATION",
+      "SQUAT",
+      "SQUAT_THRUST",
+      "STEP_UP",
+      "VERTICAL_PULL",
+      "VERTICAL_PUSH",
+      "WRIST_EXTENSION",
+      "WRIST_FLEXION"
+    ],
+    "session_type": [
+      "BACK_BICEPS",
+      "CHEST_BACK",
+      "CHEST_TRICEPS",
+      "CORE",
+      "FULL_BODY",
+      "LEGS",
+      "LOWER_BODY",
+      "PULL",
+      "PUSH",
+      "SHOULDERS_ARMS",
+      "UPPER_BODY"
+    ]
+  }
+}

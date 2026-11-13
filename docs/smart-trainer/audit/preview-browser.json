@@ -1,0 +1,12 @@
+{
+  "checks": [
+    "203 real source exercise revisions selectable",
+    "REJECTED source record shown as rejected, never published",
+    "108 real programs selectable; first/last/return/one-day examples retain three phases",
+    "320/390/1280px layout fits viewport",
+    "No runtime errors, external requests or delivery calls"
+  ],
+  "errors": [],
+  "externalRequests": [],
+  "note": "Local file preview, no deployment or production data."
+}
