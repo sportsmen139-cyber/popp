@@ -1,0 +1,911 @@
+{
+  "normal": {
+    "fitness-onboarding-profile": {
+      "environment": "gym",
+      "daysPerWeek": 3,
+      "level": "beginner",
+      "goal": {
+        "goalType": "general_fitness",
+        "target": {
+          "type": "whole_body"
+        },
+        "priority": "normal"
+      }
+    },
+    "fitness-user-progress": {
+      "completedWorkoutsCount": 5
+    },
+    "fitness-workout-history": [
+      {
+        "workoutTemplateId": "gym-fullbody-a",
+        "completedAt": "2026-11-03T09:00:00.000Z",
+        "exercises": [
+          {
+            "exerciseId": "leg-press",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 20,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 20,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 20,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "chest-press-machine",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 25,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 25,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 25,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "lat-pulldown",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 30,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 30,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 30,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "hyperextension",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 35,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 35,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 35,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "dumbbell-biceps-curl",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 40,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 40,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 40,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          }
+        ],
+        "sessionContext": {
+          "checkIn": {
+            "feeling": "normal",
+            "hasTrainingIssue": false,
+            "symptoms": []
+          },
+          "adaptation": {
+            "offered": false,
+            "accepted": false,
+            "actions": [
+              "keep_as_planned"
+            ],
+            "reason": "Сегодня нет причин менять запланированную тренировку."
+          }
+        }
+      },
+      {
+        "workoutTemplateId": "gym-fullbody-b",
+        "completedAt": "2026-11-05T09:00:00.000Z",
+        "exercises": [
+          {
+            "exerciseId": "step-up",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 22.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 22.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 22.5,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "seated-cable-row",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 27.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 27.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 27.5,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "incline-chest-press-machine",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 32.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 32.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 32.5,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "hip-extension-machine",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 37.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 37.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 37.5,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "crunch",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 42.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 42.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 42.5,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          }
+        ],
+        "sessionContext": {
+          "checkIn": {
+            "feeling": "normal",
+            "hasTrainingIssue": false,
+            "symptoms": []
+          },
+          "adaptation": {
+            "offered": false,
+            "accepted": false,
+            "actions": [
+              "keep_as_planned"
+            ],
+            "reason": "Сегодня нет причин менять запланированную тренировку."
+          }
+        }
+      },
+      {
+        "workoutTemplateId": "gym-fullbody-c",
+        "completedAt": "2026-11-07T09:00:00.000Z",
+        "exercises": [
+          {
+            "exerciseId": "hyperextension",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 25,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 25,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 25,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "chest-press-machine",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 30,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 30,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 30,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "close-grip-lat-pulldown",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 35,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 35,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 35,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "leg-press",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 40,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 40,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 40,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "standing-calf-raise",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 45,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 45,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 45,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          }
+        ],
+        "sessionContext": {
+          "checkIn": {
+            "feeling": "normal",
+            "hasTrainingIssue": false,
+            "symptoms": []
+          },
+          "adaptation": {
+            "offered": false,
+            "accepted": false,
+            "actions": [
+              "keep_as_planned"
+            ],
+            "reason": "Сегодня нет причин менять запланированную тренировку."
+          }
+        }
+      },
+      {
+        "workoutTemplateId": "gym-fullbody-a",
+        "completedAt": "2026-11-09T09:00:00.000Z",
+        "exercises": [
+          {
+            "exerciseId": "leg-press",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 27.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 27.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 27.5,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "chest-press-machine",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 32.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 32.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 32.5,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "lat-pulldown",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 37.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 37.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 37.5,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "hyperextension",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 42.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 42.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 42.5,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "dumbbell-biceps-curl",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 47.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 47.5,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 47.5,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          }
+        ],
+        "sessionContext": {
+          "checkIn": {
+            "feeling": "normal",
+            "hasTrainingIssue": false,
+            "symptoms": []
+          },
+          "adaptation": {
+            "offered": false,
+            "accepted": false,
+            "actions": [
+              "keep_as_planned"
+            ],
+            "reason": "Сегодня нет причин менять запланированную тренировку."
+          }
+        }
+      },
+      {
+        "workoutTemplateId": "gym-fullbody-b",
+        "completedAt": "2026-11-11T09:00:00.000Z",
+        "exercises": [
+          {
+            "exerciseId": "step-up",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 30,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 30,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 30,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "seated-cable-row",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 35,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 35,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 35,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "incline-chest-press-machine",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 40,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 40,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 40,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "hip-extension-machine",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 45,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 45,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 45,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "crunch",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 50,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 50,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 50,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          }
+        ],
+        "sessionContext": {
+          "checkIn": {
+            "feeling": "normal",
+            "hasTrainingIssue": false,
+            "symptoms": []
+          },
+          "adaptation": {
+            "offered": false,
+            "accepted": false,
+            "actions": [
+              "keep_as_planned"
+            ],
+            "reason": "Сегодня нет причин менять запланированную тренировку."
+          }
+        }
+      }
+    ]
+  },
+  "accepted": {
+    "fitness-onboarding-profile": {
+      "environment": "gym",
+      "daysPerWeek": 3,
+      "level": "beginner",
+      "goal": {
+        "goalType": "general_fitness",
+        "target": {
+          "type": "whole_body"
+        },
+        "priority": "normal"
+      }
+    },
+    "fitness-user-progress": {
+      "completedWorkoutsCount": 1
+    },
+    "fitness-workout-history": [
+      {
+        "workoutTemplateId": "gym-fullbody-a",
+        "completedAt": "2026-11-13T09:00:00.000Z",
+        "exercises": [
+          {
+            "exerciseId": "leg-press",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 20,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 20,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 20,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "chest-press-machine",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 25,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 25,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 25,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "lat-pulldown",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 30,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 30,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 30,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          }
+        ],
+        "sessionContext": {
+          "checkIn": {
+            "feeling": "tired",
+            "sleepQuality": "poor",
+            "hasTrainingIssue": false,
+            "symptoms": [],
+            "availableMinutes": 20
+          },
+          "adaptation": {
+            "offered": true,
+            "accepted": true,
+            "actions": [
+              "hold_load",
+              "reduce_accessory_volume",
+              "increase_rest",
+              "shorten_session"
+            ],
+            "reason": "Сегодня самочувствие указывает на повышенную усталость или дискомфорт. Предлагаю не повышать нагрузку, сохранить основные упражнения и немного сократить дополнительный объём. Сегодня у тебя около 20 минут вместо запланированных 60. Предлагаю сохранить основные упражнения и сократить менее важный объём.",
+            "targetMinutes": 20
+          }
+        }
+      }
+    ]
+  },
+  "declined": {
+    "fitness-onboarding-profile": {
+      "environment": "gym",
+      "daysPerWeek": 3,
+      "level": "beginner",
+      "goal": {
+        "goalType": "general_fitness",
+        "target": {
+          "type": "whole_body"
+        },
+        "priority": "normal"
+      }
+    },
+    "fitness-user-progress": {
+      "completedWorkoutsCount": 1
+    },
+    "fitness-workout-history": [
+      {
+        "workoutTemplateId": "gym-fullbody-a",
+        "completedAt": "2026-11-13T09:00:00.000Z",
+        "exercises": [
+          {
+            "exerciseId": "leg-press",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 20,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 20,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 20,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "chest-press-machine",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 25,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 25,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 25,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "lat-pulldown",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 30,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 30,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 30,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "hyperextension",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 35,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 35,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 35,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          },
+          {
+            "exerciseId": "dumbbell-biceps-curl",
+            "sets": [
+              {
+                "setNumber": 1,
+                "weightKg": 40,
+                "reps": 12
+              },
+              {
+                "setNumber": 2,
+                "weightKg": 40,
+                "reps": 12
+              },
+              {
+                "setNumber": 3,
+                "weightKg": 40,
+                "reps": 12
+              }
+            ],
+            "difficulty": "normal"
+          }
+        ],
+        "sessionContext": {
+          "checkIn": {
+            "feeling": "tired",
+            "sleepQuality": "poor",
+            "hasTrainingIssue": false,
+            "symptoms": [],
+            "availableMinutes": 20
+          },
+          "adaptation": {
+            "offered": true,
+            "accepted": false,
+            "actions": [
+              "hold_load",
+              "reduce_accessory_volume",
+              "increase_rest",
+              "shorten_session"
+            ],
+            "reason": "Сегодня самочувствие указывает на повышенную усталость или дискомфорт. Предлагаю не повышать нагрузку, сохранить основные упражнения и немного сократить дополнительный объём. Сегодня у тебя около 20 минут вместо запланированных 60. Предлагаю сохранить основные упражнения и сократить менее важный объём.",
+            "targetMinutes": 20
+          }
+        }
+      }
+    ]
+  }
+}

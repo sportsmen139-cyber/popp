@@ -1,55 +1,36 @@
-type OnboardingDaysPerWeekProps = {
-  onSelect: (daysPerWeek: 2 | 3 | 4) => void
-  onBack: () => void
-}
+import { OnboardingShell } from './ui/Primitives'
 
 export function OnboardingDaysPerWeek({
   onSelect,
   onBack,
-}: OnboardingDaysPerWeekProps) {
+}: {
+  onSelect: (daysPerWeek: 2 | 3 | 4) => void
+  onBack: () => void
+}) {
   return (
-    <main className="app">
-      <section className="home">
-        <button
-  className="back-button"
-  type="button"
-  onClick={onBack}
->
-  ← Назад
-</button>
-        <p className="program-label">
-          Шаг 2 из 4
-        </p>
-
-        <h1>Сколько раз в неделю?</h1>
-
-        <p className="subtitle">
-          Выбери комфортное количество тренировок.
-        </p>
-
-        <article className="workout-card onboarding-buttons">
+    <OnboardingShell
+      step={2}
+      title="Сколько раз в неделю?"
+      description="Выбери число тренировок в своём недельном плане."
+      onBack={onBack}
+    >
+      <div className="frequency-options">
+        {([2, 3, 4] as const).map((days) => (
           <button
+            className="frequency-option"
+            key={days}
             type="button"
-            onClick={() => onSelect(2)}
+            aria-label={`${days} раза в неделю`}
+            onClick={() => onSelect(days)}
           >
-            2 раза в неделю
+            <strong>{days}</strong>
+            <span>
+              раза
+              <br />в неделю
+            </span>
           </button>
-
-          <button
-            type="button"
-            onClick={() => onSelect(3)}
-          >
-            3 раза в неделю
-          </button>
-
-          <button
-            type="button"
-            onClick={() => onSelect(4)}
-          >
-            4 раза в неделю
-          </button>
-        </article>
-      </section>
-    </main>
+        ))}
+      </div>
+    </OnboardingShell>
   )
 }

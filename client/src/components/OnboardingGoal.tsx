@@ -1,83 +1,58 @@
 import type { TrainingGoal } from '../types/goal'
-
-type OnboardingGoalProps = {
-  onSelect: (goal: TrainingGoal) => void
-  onBack: () => void
-}
+import { OnboardingChoice, OnboardingShell } from './ui/Primitives'
 
 export function OnboardingGoal({
   onSelect,
   onBack,
-}: OnboardingGoalProps) {
+}: {
+  onSelect: (goal: TrainingGoal) => void
+  onBack: () => void
+}) {
   return (
-    <main className="app">
-      <section className="home">
-        <button
-  className="back-button"
-  type="button"
-  onClick={onBack}
->
-  ← Назад
-</button>
-        <p className="program-label">
-          Шаг 4 из 4
-        </p>
-
-        <h1>Какая у тебя главная цель?</h1>
-
-        <p className="subtitle">
-          Мы учтём её при подборе программы и упражнений.
-        </p>
-
-        <article className="workout-card onboarding-buttons">
-          <button
-            type="button"
-            onClick={() =>
-              onSelect({
-                goalType: 'general_fitness',
-                target: {
-                  type: 'whole_body',
-                },
-                priority: 'normal',
-              })
-            }
-          >
-            Поддерживать форму
-          </button>
-
-          <button
-            type="button"
-            onClick={() =>
-              onSelect({
-                goalType: 'hypertrophy',
-                target: {
-                  type: 'muscle_group',
-                  id: 'glutes',
-                },
-                priority: 'high',
-              })
-            }
-          >
-            Увеличить ягодицы
-          </button>
-
-          <button
-            type="button"
-            onClick={() =>
-              onSelect({
-                goalType: 'exercise_performance',
-                target: {
-                  type: 'exercise',
-                  id: 'pull_up',
-                },
-                priority: 'high',
-              })
-            }
-          >
-            Лучше подтягиваться
-          </button>
-        </article>
-      </section>
-    </main>
+    <OnboardingShell
+      step={4}
+      title="Какая у тебя главная цель?"
+      description="Добавим нужный акцент в подбор упражнений."
+      onBack={onBack}
+    >
+      <div className="choice-list">
+        <OnboardingChoice
+          number="01"
+          label="Поддерживать форму"
+          hint="Сбалансированный подход"
+          onClick={() =>
+            onSelect({
+              goalType: 'general_fitness',
+              target: { type: 'whole_body' },
+              priority: 'normal',
+            })
+          }
+        />
+        <OnboardingChoice
+          number="02"
+          label="Увеличить ягодицы"
+          hint="Акцент на ягодичные мышцы"
+          onClick={() =>
+            onSelect({
+              goalType: 'hypertrophy',
+              target: { type: 'muscle_group', id: 'glutes' },
+              priority: 'high',
+            })
+          }
+        />
+        <OnboardingChoice
+          number="03"
+          label="Лучше подтягиваться"
+          hint="Работа над подтягиваниями"
+          onClick={() =>
+            onSelect({
+              goalType: 'exercise_performance',
+              target: { type: 'exercise', id: 'pull_up' },
+              priority: 'high',
+            })
+          }
+        />
+      </div>
+    </OnboardingShell>
   )
 }

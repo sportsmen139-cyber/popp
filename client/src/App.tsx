@@ -1,12 +1,21 @@
 import { lazy, Suspense, useState } from 'react'
 
 import './App.css'
-import './components/ProgressScreen.css'
 
 import { OnboardingDaysPerWeek } from './components/OnboardingDaysPerWeek'
 import { OnboardingEnvironment } from './components/OnboardingEnvironment'
 import { OnboardingGoal } from './components/OnboardingGoal'
 import { OnboardingLevel } from './components/OnboardingLevel'
+import {
+  ActionButton,
+  AppHeader,
+  EquipmentNote,
+  Icon,
+  OptionButton,
+  SelectionGroup,
+} from './components/ui/Primitives'
+import { useScreenFocus, useVisualViewportInset } from './components/ui/useScreenFocus'
+import { ProgressBoundary } from './components/ui/ProgressBoundary'
 
 import { exercises } from './data/exercises'
 
@@ -23,29 +32,15 @@ import {
   saveOnboardingProfile,
 } from './storage/onboardingStorage'
 
-import {
-  loadUserProgress,
-  saveUserProgress,
-} from './storage/progressStorage'
+import { loadUserProgress, saveUserProgress } from './storage/progressStorage'
 
-import {
-  loadWorkoutHistory,
-  saveWorkoutSession,
-} from './storage/workoutHistoryStorage'
+import { loadWorkoutHistory, saveWorkoutSession } from './storage/workoutHistoryStorage'
 
 import type { TrainingGoal } from './types/goal'
 
-import type {
-  ResolvedWorkout,
-  TrainingEnvironment,
-  UserLevel,
-} from './types/program'
+import type { ResolvedWorkout, TrainingEnvironment, UserLevel } from './types/program'
 
-import type {
-  SessionFeeling,
-  SessionSymptom,
-  SleepQuality,
-} from './types/session'
+import type { SessionFeeling, SessionSymptom, SleepQuality } from './types/session'
 import type { SessionAdaptation } from './types/sessionAdaptation'
 import type { ExerciseTarget } from './types/training'
 
@@ -55,17 +50,12 @@ import type {
   WorkoutSetResult,
 } from './types/workoutSession'
 
-const ProgressScreen = lazy(() => import('./components/ProgressScreen').then(module => ({ default: module.ProgressScreen })))
+const ProgressScreen = lazy(() =>
+  import('./components/ProgressScreen').then((module) => ({ default: module.ProgressScreen })),
+)
 
-function formatExerciseTarget(
-  target: ExerciseTarget,
-) {
-  const unit =
-    target.type === 'reps'
-      ? 'повторений'
-      : target.type === 'time'
-        ? 'сек.'
-        : 'м'
+function formatExerciseTarget(target: ExerciseTarget) {
+  const unit = target.type === 'reps' ? 'повторений' : target.type === 'time' ? 'сек.' : 'м'
 
   if (target.mode === 'range') {
     return `${target.min}–${target.max} ${unit}`
@@ -86,16 +76,8 @@ function formatExerciseTarget(
   return 'максимальная дистанция'
 }
 
-function formatRestSeconds(
-  restSeconds: {
-    min?: number
-    max: number
-  },
-) {
-  if (
-    restSeconds.min !== undefined &&
-    restSeconds.min !== restSeconds.max
-  ) {
+function formatRestSeconds(restSeconds: { min?: number; max: number }) {
+  if (restSeconds.min !== undefined && restSeconds.min !== restSeconds.max) {
     return `${restSeconds.min}–${restSeconds.max}`
   }
 
@@ -107,9 +89,7 @@ type ExerciseHistoryDisplay = {
   secondary?: string
 }
 
-function formatExerciseHistory(
-  sets: WorkoutSetResult[] | undefined,
-): ExerciseHistoryDisplay {
+function formatExerciseHistory(sets: WorkoutSetResult[] | undefined): ExerciseHistoryDisplay {
   if (!sets || sets.length === 0) {
     return {
       primary: 'Пока нет записей',
@@ -117,15 +97,8 @@ function formatExerciseHistory(
   }
 
   const meaningfulSets = [...sets]
-    .sort(
-      (a, b) =>
-        a.setNumber - b.setNumber,
-    )
-    .filter(
-      (set) =>
-        set.weightKg !== undefined ||
-        set.reps !== undefined,
-    )
+    .sort((a, b) => a.setNumber - b.setNumber)
+    .filter((set) => set.weightKg !== undefined || set.reps !== undefined)
 
   if (meaningfulSets.length === 0) {
     return {
@@ -133,53 +106,37 @@ function formatExerciseHistory(
     }
   }
 
-  const hasAnyWeight =
-    meaningfulSets.some(
-      (set) =>
-        set.weightKg !== undefined,
-    )
+  const hasAnyWeight = meaningfulSets.some((set) => set.weightKg !== undefined)
 
-  const hasAnyReps =
-    meaningfulSets.some(
-      (set) =>
-        set.reps !== undefined,
-    )
+  const hasAnyReps = meaningfulSets.some((set) => set.reps !== undefined)
 
   if (hasAnyWeight && !hasAnyReps) {
     const weights = meaningfulSets
-      .filter(
-        (set) =>
-          set.weightKg !== undefined,
-      )
+      .filter((set) => set.weightKg !== undefined)
       .map((set) => set.weightKg)
       .join(' / ')
 
     return {
       primary: `Вес: ${weights} кг`,
-      secondary:
-        'Повторения не записаны',
+      secondary: 'Повторения не записаны',
     }
   }
 
-  const records = meaningfulSets.map(
-    (set) => {
-      const hasWeight =
-        set.weightKg !== undefined
+  const records = meaningfulSets.map((set) => {
+    const hasWeight = set.weightKg !== undefined
 
-      const hasReps =
-        set.reps !== undefined
+    const hasReps = set.reps !== undefined
 
-      if (hasWeight && hasReps) {
-        return `${set.weightKg} кг × ${set.reps}`
-      }
+    if (hasWeight && hasReps) {
+      return `${set.weightKg} кг × ${set.reps}`
+    }
 
-      if (hasWeight) {
-        return `${set.weightKg} кг · повторения не указаны`
-      }
+    if (hasWeight) {
+      return `${set.weightKg} кг · повторения не указаны`
+    }
 
-      return `${set.reps} повт. · вес не указан`
-    },
-  )
+    return `${set.reps} повт. · вес не указан`
+  })
 
   return {
     primary: records.join(' · '),
@@ -188,133 +145,71 @@ function formatExerciseHistory(
 
 function App() {
   const [activeScreen, setActiveScreen] = useState<'training' | 'progress'>('training')
-  const [
-    workoutStarted,
-    setWorkoutStarted,
-  ] = useState(false)
+  const [workoutStarted, setWorkoutStarted] = useState(false)
 
-  const [
-    showSessionCheckIn,
-    setShowSessionCheckIn,
-  ] = useState(false)
+  const [showSessionCheckIn, setShowSessionCheckIn] = useState(false)
 
-  const [
-    sessionFeeling,
-    setSessionFeeling,
-  ] = useState<SessionFeeling | null>(
+  const [sessionFeeling, setSessionFeeling] = useState<SessionFeeling | null>(null)
+
+  const [sessionSleepQuality, setSessionSleepQuality] = useState<SleepQuality | null>(null)
+
+  const [sessionHasTrainingIssue, setSessionHasTrainingIssue] = useState<boolean | null>(null)
+
+  const [sessionSymptoms, setSessionSymptoms] = useState<SessionSymptom[]>([])
+
+  const [showSessionTimeOptions, setShowSessionTimeOptions] = useState(false)
+
+  const [sessionAvailableMinutes, setSessionAvailableMinutes] = useState<number | null>(null)
+
+  const [sessionAdaptation, setSessionAdaptation] = useState<SessionAdaptation | null>(null)
+
+  const [sessionWorkout, setSessionWorkout] = useState<ResolvedWorkout | null>(null)
+
+  const [workoutSessionContext, setWorkoutSessionContext] = useState<WorkoutSessionContext | null>(
     null,
   )
 
-  const [
-    sessionSleepQuality,
-    setSessionSleepQuality,
-  ] = useState<SleepQuality | null>(
-    null,
-  )
+  const [workoutSetResults, setWorkoutSetResults] = useState<Record<string, WorkoutSetResult[]>>({})
 
-  const [
-    sessionHasTrainingIssue,
-    setSessionHasTrainingIssue,
-  ] = useState<boolean | null>(
-    null,
-  )
-
-  const [
-    sessionSymptoms,
-    setSessionSymptoms,
-  ] = useState<SessionSymptom[]>([])
-
-  const [
-    showSessionTimeOptions,
-    setShowSessionTimeOptions,
-  ] = useState(false)
-
-  const [
-    sessionAvailableMinutes,
-    setSessionAvailableMinutes,
-  ] = useState<number | null>(
-    null,
-  )
-
-  const [
-    sessionAdaptation,
-    setSessionAdaptation,
-  ] = useState<SessionAdaptation | null>(
-    null,
-  )
-
-  const [
-    sessionWorkout,
-    setSessionWorkout,
-  ] = useState<ResolvedWorkout | null>(
-    null,
-  )
-
-  const [
-    workoutSessionContext,
-    setWorkoutSessionContext,
-  ] = useState<WorkoutSessionContext | null>(
-    null,
-  )
-
-  const [
-    workoutSetResults,
-    setWorkoutSetResults,
-  ] = useState<
-    Record<string, WorkoutSetResult[]>
-  >({})
-
-  const [
-    workoutExerciseDifficulty,
-    setWorkoutExerciseDifficulty,
-  ] = useState<
+  const [workoutExerciseDifficulty, setWorkoutExerciseDifficulty] = useState<
     Record<string, ExerciseDifficulty>
   >({})
 
-  const [
-    userProgress,
-    setUserProgress,
-  ] = useState(loadUserProgress)
+  const [userProgress, setUserProgress] = useState(loadUserProgress)
 
-  const [
-    workoutHistory,
-    setWorkoutHistory,
-  ] = useState(loadWorkoutHistory)
+  const [workoutHistory, setWorkoutHistory] = useState(loadWorkoutHistory)
 
-  const [savedOnboardingProfile, setSavedOnboardingProfile] =
-    useState(loadOnboardingProfile)
+  const [savedOnboardingProfile, setSavedOnboardingProfile] = useState(loadOnboardingProfile)
 
-  const [
-    selectedEnvironment,
-    setSelectedEnvironment,
-  ] = useState<TrainingEnvironment | null>(
-    savedOnboardingProfile?.environment ??
-      null,
+  const [selectedEnvironment, setSelectedEnvironment] = useState<TrainingEnvironment | null>(
+    savedOnboardingProfile?.environment ?? null,
   )
 
-  const [
-    selectedDaysPerWeek,
-    setSelectedDaysPerWeek,
-  ] = useState<2 | 3 | 4 | null>(
-    savedOnboardingProfile?.daysPerWeek ??
-      null,
+  const [selectedDaysPerWeek, setSelectedDaysPerWeek] = useState<2 | 3 | 4 | null>(
+    savedOnboardingProfile?.daysPerWeek ?? null,
   )
 
-  const [
-    selectedLevel,
-    setSelectedLevel,
-  ] = useState<UserLevel | null>(
-    savedOnboardingProfile?.level ??
-      null,
+  const [selectedLevel, setSelectedLevel] = useState<UserLevel | null>(
+    savedOnboardingProfile?.level ?? null,
   )
 
-  const [
-    selectedGoal,
-    setSelectedGoal,
-  ] = useState<TrainingGoal | null>(
-    savedOnboardingProfile?.goal ??
-      null,
+  const [selectedGoal, setSelectedGoal] = useState<TrainingGoal | null>(
+    savedOnboardingProfile?.goal ?? null,
   )
+
+  useScreenFocus(
+    [
+      activeScreen,
+      workoutStarted,
+      showSessionCheckIn,
+      sessionAdaptation !== null,
+      selectedEnvironment !== null,
+      selectedDaysPerWeek !== null,
+      selectedLevel !== null,
+      selectedGoal !== null,
+    ].join(':'),
+  )
+  useVisualViewportInset()
 
   function handleEditProfile() {
     setActiveScreen('training')
@@ -338,47 +233,26 @@ function App() {
     setSelectedGoal(null)
   }
 
-  function handleCompleteWorkout(
-    workoutTemplateId: string,
-  ) {
+  function handleCompleteWorkout(workoutTemplateId: string) {
     const completedSession = {
       workoutTemplateId,
-      completedAt:
-        new Date().toISOString(),
+      completedAt: new Date().toISOString(),
 
-      exercises: Object.entries(
-        workoutSetResults,
-      ).map(
-        ([exerciseId, sets]) => ({
-          exerciseId,
-          sets,
-          difficulty:
-            workoutExerciseDifficulty[
-              exerciseId
-            ],
-        }),
-      ),
+      exercises: Object.entries(workoutSetResults).map(([exerciseId, sets]) => ({
+        exerciseId,
+        sets,
+        difficulty: workoutExerciseDifficulty[exerciseId],
+      })),
 
-      sessionContext:
-        workoutSessionContext ??
-        undefined,
+      sessionContext: workoutSessionContext ?? undefined,
     }
 
-    saveWorkoutSession(
-      completedSession,
-    )
+    saveWorkoutSession(completedSession)
 
-    setWorkoutHistory(
-      (currentHistory) => [
-        ...currentHistory,
-        completedSession,
-      ],
-    )
+    setWorkoutHistory((currentHistory) => [...currentHistory, completedSession])
 
     const nextProgress = {
-      completedWorkoutsCount:
-        userProgress.completedWorkoutsCount +
-        1,
+      completedWorkoutsCount: userProgress.completedWorkoutsCount + 1,
     }
 
     saveUserProgress(nextProgress)
@@ -404,80 +278,43 @@ function App() {
     setNumber: number,
     patch: Partial<WorkoutSetResult>,
   ) {
-    setWorkoutSetResults(
-      (currentResults) => {
-        const exerciseSets =
-          currentResults[exerciseId] ??
-          []
+    setWorkoutSetResults((currentResults) => {
+      const exerciseSets = currentResults[exerciseId] ?? []
 
-        const existingSet =
-          exerciseSets.find(
-            (set) =>
-              set.setNumber ===
-              setNumber,
-          )
+      const existingSet = exerciseSets.find((set) => set.setNumber === setNumber)
 
-        const nextSet: WorkoutSetResult =
-          {
-            setNumber,
-            ...existingSet,
-            ...patch,
-          }
+      const nextSet: WorkoutSetResult = {
+        setNumber,
+        ...existingSet,
+        ...patch,
+      }
 
-        return {
-          ...currentResults,
+      return {
+        ...currentResults,
 
-          [exerciseId]: [
-            ...exerciseSets.filter(
-              (set) =>
-                set.setNumber !==
-                setNumber,
-            ),
-
-            nextSet,
-          ].sort(
-            (a, b) =>
-              a.setNumber -
-              b.setNumber,
-          ),
-        }
-      },
-    )
+        [exerciseId]: [...exerciseSets.filter((set) => set.setNumber !== setNumber), nextSet].sort(
+          (a, b) => a.setNumber - b.setNumber,
+        ),
+      }
+    })
   }
 
   if (!selectedEnvironment) {
-    return (
-      <OnboardingEnvironment
-        onSelect={
-          setSelectedEnvironment
-        }
-      />
-    )
+    return <OnboardingEnvironment onSelect={setSelectedEnvironment} />
   }
 
   if (!selectedDaysPerWeek) {
     return (
       <OnboardingDaysPerWeek
-        onSelect={
-          setSelectedDaysPerWeek
-        }
-        onBack={() =>
-          setSelectedEnvironment(null)
-        }
+        onSelect={setSelectedDaysPerWeek}
+        onBack={() => setSelectedEnvironment(null)}
       />
     )
   }
 
   if (!selectedLevel) {
     return (
-      <OnboardingLevel
-        onSelect={setSelectedLevel}
-        onBack={() =>
-          setSelectedDaysPerWeek(
-            null,
-          )
-        }
-      />
+      <OnboardingLevel onSelect={setSelectedLevel} onBack={() => setSelectedDaysPerWeek(null)} />
     )
   }
 
@@ -486,195 +323,155 @@ function App() {
       <OnboardingGoal
         onSelect={(goal) => {
           saveOnboardingProfile({
-            environment:
-              selectedEnvironment,
+            environment: selectedEnvironment,
 
-            daysPerWeek:
-              selectedDaysPerWeek,
+            daysPerWeek: selectedDaysPerWeek,
 
-            level:
-              selectedLevel,
+            level: selectedLevel,
 
             goal,
           })
 
           setSelectedGoal(goal)
         }}
-        onBack={() =>
-          setSelectedLevel(null)
-        }
+        onBack={() => setSelectedLevel(null)}
       />
     )
   }
 
   if (activeScreen === 'progress') {
-    return <Suspense fallback={<main className="app"><p role="status">Загружаем прогресс…</p></main>}>
-      <ProgressScreen history={workoutHistory} daysPerWeek={selectedDaysPerWeek} goal={selectedGoal} onBack={() => setActiveScreen('training')} />
-    </Suspense>
+    return (
+      <ProgressBoundary onBack={() => setActiveScreen('training')}>
+        <Suspense
+          fallback={
+            <main className="app">
+              <section className="home">
+                <AppHeader />
+                <p className="loading-state" role="status">
+                  Загружаем прогресс…
+                </p>
+              </section>
+            </main>
+          }
+        >
+          <ProgressScreen
+            history={workoutHistory}
+            daysPerWeek={selectedDaysPerWeek}
+            goal={selectedGoal}
+            onBack={() => setActiveScreen('training')}
+          />
+        </Suspense>
+      </ProgressBoundary>
+    )
   }
 
-  const currentWorkoutResult =
-    resolveCurrentWorkout({
-      ...userProgress,
+  const currentWorkoutResult = resolveCurrentWorkout({
+    ...userProgress,
 
-      environment:
-        selectedEnvironment,
+    environment: selectedEnvironment,
 
-      daysPerWeek:
-        selectedDaysPerWeek,
+    daysPerWeek: selectedDaysPerWeek,
 
-      level:
-        selectedLevel,
+    level: selectedLevel,
 
-      goal:
-        selectedGoal,
-      availableEquipment: savedOnboardingProfile?.availableEquipment,
-    })
+    goal: selectedGoal,
+    availableEquipment: savedOnboardingProfile?.availableEquipment,
+  })
 
   if (!currentWorkoutResult.ok) {
     return (
       <main className="app">
         <section className="home">
-          <h1>
-            Тренировка недоступна
-          </h1>
+          <AppHeader />
+          <div className="unavailable-state">
+            <p className="eyebrow">Проверь настройки плана</p>
+            <h1>Тренировка недоступна</h1>
 
-          <p className="subtitle">
-            {currentWorkoutResult.reason === 'invalid_equipment_inventory'
-              ? 'Сохранённый список оборудования не распознан. Обнови профиль перед подбором тренировки.'
-              : 'Не удалось подобрать тренировку для текущих настроек.'}
-          </p>
+            <p className="subtitle">
+              {currentWorkoutResult.reason === 'invalid_equipment_inventory'
+                ? 'Сохранённый список оборудования не распознан. Обнови профиль перед подбором тренировки.'
+                : 'Не удалось подобрать тренировку для текущих настроек.'}
+            </p>
 
-          <button
-            className="primary-button"
-            type="button"
-            onClick={
-              handleEditProfile
-            }
-          >
-            Изменить профиль
-          </button>
+            <button className="primary-button" type="button" onClick={handleEditProfile}>
+              Изменить профиль
+            </button>
+          </div>
         </section>
       </main>
     )
   }
 
-  const currentWorkout =
-    currentWorkoutResult.workout
+  const currentWorkout = currentWorkoutResult.workout
 
-  const equipmentNotice = currentWorkoutResult.equipmentResolution.policy === 'provisional_gym'
-    ? 'Оборудование зала пока не указано. План предварительный: проверь доступность инвентаря выбранных упражнений.'
-    : null
+  const equipmentNotice =
+    currentWorkoutResult.equipmentResolution.policy === 'provisional_gym'
+      ? 'Оборудование зала пока не указано. План предварительный: проверь доступность инвентаря выбранных упражнений.'
+      : null
 
-  const activeWorkout =
-    sessionWorkout ?? currentWorkout
+  const activeWorkout = sessionWorkout ?? currentWorkout
 
-  const currentProgram =
-    currentWorkoutResult.trainingPlan
-      .baseProgram
+  const currentProgram = currentWorkoutResult.trainingPlan.baseProgram
 
-  const lastWorkoutSession =
-    workoutHistory[
-      workoutHistory.length - 1
-    ] ?? null
+  const lastWorkoutSession = workoutHistory[workoutHistory.length - 1] ?? null
 
-  const coachMemory =
-    buildCoachMemory(workoutHistory)
+  const coachMemory = buildCoachMemory(workoutHistory)
 
   const coachMemoryMinimumSessions = 5
 
-  const coachInsights =
-    resolveCoachInsights(coachMemory)
+  const coachInsights = resolveCoachInsights(coachMemory)
 
-  function handleStartWorkout(
-    workout: ResolvedWorkout,
-  ) {
+  function handleStartWorkout(workout: ResolvedWorkout) {
     setShowSessionCheckIn(false)
 
-    if (
-      Object.keys(
-        workoutSetResults,
-      ).length > 0
-    ) {
+    if (Object.keys(workoutSetResults).length > 0) {
       setWorkoutStarted(true)
       return
     }
 
     setSessionWorkout(workout)
 
-    const initialResults: Record<
-      string,
-      WorkoutSetResult[]
-    > = {}
+    const initialResults: Record<string, WorkoutSetResult[]> = {}
 
-    for (
-      const workoutExercise of
-        workout.exercises
-    ) {
-      const previousExerciseResult =
-        [...workoutHistory]
-          .reverse()
-          .map((session) =>
-            session.exercises.find(
-              (result) =>
-                result.exerciseId ===
-                workoutExercise.exerciseId,
-            ),
-          )
-          .find(
-            (result) =>
-              result !== undefined,
-          )
+    for (const workoutExercise of workout.exercises) {
+      const previousExerciseResult = [...workoutHistory]
+        .reverse()
+        .map((session) =>
+          session.exercises.find((result) => result.exerciseId === workoutExercise.exerciseId),
+        )
+        .find((result) => result !== undefined)
 
-      initialResults[
-        workoutExercise.exerciseId
-      ] = Array.from(
+      initialResults[workoutExercise.exerciseId] = Array.from(
         {
-          length:
-            workoutExercise.sets,
+          length: workoutExercise.sets,
         },
 
         (_, setIndex) => {
-          const setNumber =
-            setIndex + 1
+          const setNumber = setIndex + 1
 
-          const previousSet =
-            previousExerciseResult?.sets.find(
-              (set) =>
-                set.setNumber ===
-                setNumber,
-            )
+          const previousSet = previousExerciseResult?.sets.find(
+            (set) => set.setNumber === setNumber,
+          )
 
           return {
             setNumber,
 
-            weightKg:
-              previousSet?.weightKg,
+            weightKg: previousSet?.weightKg,
           }
         },
       )
     }
 
-    setWorkoutSetResults(
-      initialResults,
-    )
+    setWorkoutSetResults(initialResults)
 
     setWorkoutStarted(true)
   }
 
-  function toggleSessionSymptom(
-    symptom: SessionSymptom,
-  ) {
-    setSessionSymptoms(
-      (currentSymptoms) =>
-        currentSymptoms.includes(symptom)
-          ? currentSymptoms.filter(
-              (item) => item !== symptom,
-            )
-          : [
-              ...currentSymptoms,
-              symptom,
-            ],
+  function toggleSessionSymptom(symptom: SessionSymptom) {
+    setSessionSymptoms((currentSymptoms) =>
+      currentSymptoms.includes(symptom)
+        ? currentSymptoms.filter((item) => item !== symptom)
+        : [...currentSymptoms, symptom],
     )
   }
 
@@ -683,44 +480,28 @@ function App() {
       return
     }
 
-    if (
-      sessionHasTrainingIssue === null
-    ) {
+    if (sessionHasTrainingIssue === null) {
       return
     }
 
     const checkIn = {
       feeling: sessionFeeling,
-      sleepQuality:
-        sessionSleepQuality ??
-        undefined,
-      hasTrainingIssue:
-        sessionHasTrainingIssue,
-      symptoms:
-        sessionHasTrainingIssue
-          ? sessionSymptoms
-          : [],
-      availableMinutes:
-        sessionAvailableMinutes ??
-        undefined,
+      sleepQuality: sessionSleepQuality ?? undefined,
+      hasTrainingIssue: sessionHasTrainingIssue,
+      symptoms: sessionHasTrainingIssue ? sessionSymptoms : [],
+      availableMinutes: sessionAvailableMinutes ?? undefined,
     }
 
-    const adaptation =
-      resolveSessionAdaptation(
-        checkIn,
-        currentWorkout.estimatedMinutes,
-      )
+    const adaptation = resolveSessionAdaptation(checkIn, currentWorkout.estimatedMinutes)
 
     setWorkoutSessionContext({
       checkIn,
       adaptation: {
-        offered:
-          adaptation.requiresConfirmation,
+        offered: adaptation.requiresConfirmation,
         accepted: false,
         actions: adaptation.actions,
         reason: adaptation.reason,
-        targetMinutes:
-          adaptation.targetMinutes,
+        targetMinutes: adaptation.targetMinutes,
       },
     })
 
@@ -738,24 +519,19 @@ function App() {
       return
     }
 
-    setWorkoutSessionContext(
-      (currentContext) =>
-        currentContext === null
-          ? null
-          : {
-              ...currentContext,
-              adaptation: {
-                ...currentContext.adaptation,
-                accepted: true,
-              },
+    setWorkoutSessionContext((currentContext) =>
+      currentContext === null
+        ? null
+        : {
+            ...currentContext,
+            adaptation: {
+              ...currentContext.adaptation,
+              accepted: true,
             },
+          },
     )
 
-    const adaptedWorkout =
-      applySessionAdaptation(
-        currentWorkout,
-        sessionAdaptation,
-      )
+    const adaptedWorkout = applySessionAdaptation(currentWorkout, sessionAdaptation)
 
     handleStartWorkout(adaptedWorkout)
   }
@@ -769,419 +545,243 @@ function App() {
     return (
       <main className="app">
         <section className="workout-screen">
-          <button
-            className="back-button"
-            type="button"
-            onClick={() =>
-              setWorkoutStarted(false)
-            }
-          >
-            ← Назад
-          </button>
-
-          <p className="program-label">
-            {currentProgram.title}
-          </p>
-
-          <h1>
-            {activeWorkout.title}
-          </h1>
-
-          <p className="subtitle">
-            {
-              activeWorkout
-                .exercises.length
-            }{' '}
-            упражнений · около{' '}
-            {
-              activeWorkout
-                .estimatedMinutes
-            }{' '}
-            минут
-          </p>
-
-          {equipmentNotice && <p className="workout-meta" role="note">{equipmentNotice}</p>}
+          <AppHeader>
+            <ActionButton variant="text" onClick={() => setWorkoutStarted(false)}>
+              <Icon name="back" />К плану
+            </ActionButton>
+          </AppHeader>
+          <header className="workout-heading">
+            <p className="program-label">{currentProgram.title}</p>
+            <h1>{activeWorkout.title}</h1>
+            <p className="subtitle">
+              {activeWorkout.exercises.length} упражнений · около {activeWorkout.estimatedMinutes}{' '}
+              минут
+            </p>
+          </header>
+          <EquipmentNote message={equipmentNotice} />
 
           <div className="exercise-list">
-            {activeWorkout.exercises.map(
-              (
-                workoutExercise,
-                index,
-              ) => {
-                const exercise =
-                  exercises.find(
-                    (item) =>
-                      item.id ===
-                      workoutExercise.exerciseId,
-                  )
+            {activeWorkout.exercises.map((workoutExercise, index) => {
+              const exercise = exercises.find((item) => item.id === workoutExercise.exerciseId)
 
-                if (!exercise) {
-                  return null
-                }
+              if (!exercise) {
+                return null
+              }
 
-                const previousExerciseResult =
-                  [...workoutHistory]
-                    .reverse()
-                    .map(
-                      (session) =>
-                        session.exercises.find(
-                          (
-                            result,
-                          ) =>
-                            result.exerciseId ===
-                            workoutExercise.exerciseId,
-                        ),
-                    )
-                    .find(
-                      (result) =>
-                        result !==
-                        undefined,
-                    )
+              const previousExerciseResult = [...workoutHistory]
+                .reverse()
+                .map((session) =>
+                  session.exercises.find(
+                    (result) => result.exerciseId === workoutExercise.exerciseId,
+                  ),
+                )
+                .find((result) => result !== undefined)
 
-                const currentExerciseSets =
-                  workoutSetResults[
-                    workoutExercise
-                      .exerciseId
-                  ] ?? []
+              const currentExerciseSets = workoutSetResults[workoutExercise.exerciseId] ?? []
 
-                const allSetsCompleted =
-                  currentExerciseSets.filter(
-                    (set) =>
-                      set.reps !==
-                      undefined,
-                  ).length ===
-                  workoutExercise.sets
+              const allSetsCompleted =
+                currentExerciseSets.filter((set) => set.reps !== undefined).length ===
+                workoutExercise.sets
 
-                const hasWeight =
-                  currentExerciseSets.some(
-                    (set) =>
-                      set.weightKg !==
-                      undefined,
-                  )
+              const hasWeight = currentExerciseSets.some((set) => set.weightKg !== undefined)
 
-                const canUseWeightProgression =
-                  workoutExercise.target
-                    .type === 'reps' &&
-                  hasWeight
+              const canUseWeightProgression = workoutExercise.target.type === 'reps' && hasWeight
 
-                const progressionDecision =
-                  allSetsCompleted &&
-                  canUseWeightProgression
-                    ? resolveExerciseProgression(
-                        {
-                          currentSets:
-                            currentExerciseSets,
+              const progressionDecision =
+                allSetsCompleted && canUseWeightProgression
+                  ? resolveExerciseProgression({
+                      currentSets: currentExerciseSets,
 
-                          previousSets:
-                            previousExerciseResult
-                              ?.sets,
+                      previousSets: previousExerciseResult?.sets,
 
-                          difficulty:
-                            workoutExerciseDifficulty[
-                              workoutExercise.exerciseId
-                            ],
-                        },
-                      )
-                    : null
+                      difficulty: workoutExerciseDifficulty[workoutExercise.exerciseId],
+                    })
+                  : null
 
-                const previousHistory =
-                  previousExerciseResult
-                    ? formatExerciseHistory(
-                        previousExerciseResult.sets,
-                      )
-                    : null
+              const previousHistory = previousExerciseResult
+                ? formatExerciseHistory(previousExerciseResult.sets)
+                : null
 
-                return (
-                  <article
-                    className="exercise-card"
-                    key={
-                      workoutExercise.slotId
-                    }
-                  >
-                    <div className="exercise-head">
-                      <div className="exercise-title-row">
-                        <span className="exercise-index-inline">
-                          {index + 1}
-                        </span>
+              return (
+                <article
+                  className="exercise-card"
+                  aria-labelledby={`exercise-${workoutExercise.slotId}`}
+                  key={workoutExercise.slotId}
+                >
+                  <div className="exercise-head">
+                    <div className="exercise-title-row">
+                      <span className="exercise-index-inline">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
 
-                        <h2>
-                          {
-                            exercise.name
-                          }
-                        </h2>
-                      </div>
-
-                      <p className="exercise-meta">
-                        <span>
-                          {
-                            workoutExercise.sets
-                          }{' '}
-                          подхода
-                        </span>
-
-                        <span>
-                          {formatExerciseTarget(
-                            workoutExercise.target,
-                          )}
-                        </span>
-
-                        <span>
-                          Отдых{' '}
-                          {formatRestSeconds(
-                            workoutExercise.restSeconds,
-                          )}{' '}
-                          сек.
-                        </span>
-                      </p>
-
-                      {previousHistory && (
-                        <div className="previous-result">
-                          <strong>
-                            В прошлый раз:
-                          </strong>{' '}
-                          {
-                            previousHistory.primary
-                          }
-
-                          {previousHistory.secondary && (
-                            <>
-                              <br />
-
-                              <span>
-                                {
-                                  previousHistory.secondary
-                                }
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      )}
+                      <h2 id={`exercise-${workoutExercise.slotId}`}>{exercise.name}</h2>
                     </div>
 
-                    <div className="sets-block">
-                      <div className="sets-header">
-                        <span>
-                          Подход
-                        </span>
+                    <p className="exercise-meta">
+                      <span>{workoutExercise.sets} подхода</span>
 
-                        <span>
-                          Вес, кг
-                        </span>
+                      <span>{formatExerciseTarget(workoutExercise.target)}</span>
 
-                        <span>
-                          Повторения
-                        </span>
+                      <span>Отдых {formatRestSeconds(workoutExercise.restSeconds)} сек.</span>
+                    </p>
 
-                        <span />
+                    {previousHistory && (
+                      <div className="previous-result">
+                        <strong>В прошлый раз:</strong> {previousHistory.primary}
+                        {previousHistory.secondary && (
+                          <>
+                            <br />
+
+                            <span>{previousHistory.secondary}</span>
+                          </>
+                        )}
                       </div>
+                    )}
+                  </div>
 
-                      {Array.from(
-                        {
-                          length:
-                            workoutExercise.sets,
-                        },
+                  <div className="sets-block">
+                    <div className="sets-header">
+                      <span>№</span>
 
-                        (
-                          _,
-                          setIndex,
-                        ) => {
-                          const setNumber =
-                            setIndex + 1
+                      <span>Вес, кг</span>
 
-                          const setResult =
-                            currentExerciseSets.find(
-                              (set) =>
-                                set.setNumber ===
-                                setNumber,
-                            )
+                      <span>Повторения</span>
 
-                          const isComplete =
-                            setResult?.reps !==
-                            undefined
+                      <span />
+                    </div>
 
-                          return (
-                            <div
-                              className="set-row"
-                              key={
-                                setNumber
-                              }
-                            >
-                              <span className="set-label">
-                                Подход{' '}
-                                {
-                                  setNumber
+                    {Array.from(
+                      {
+                        length: workoutExercise.sets,
+                      },
+
+                      (_, setIndex) => {
+                        const setNumber = setIndex + 1
+
+                        const setResult = currentExerciseSets.find(
+                          (set) => set.setNumber === setNumber,
+                        )
+
+                        const isComplete = setResult?.reps !== undefined
+
+                        return (
+                          <div className="set-row" key={setNumber}>
+                            <span className="set-label">
+                              <span className="sr-only">Подход </span>
+                              {String(setNumber).padStart(2, '0')}
+                            </span>
+
+                            <div className="set-field set-field-weight">
+                              <span className="set-field-label">Вес, кг</span>
+
+                              <input
+                                className="set-input"
+                                type="number"
+                                inputMode="decimal"
+                                enterKeyHint="next"
+                                min="0"
+                                step="0.5"
+                                aria-label={`Вес, подход ${setNumber}`}
+                                placeholder="—"
+                                value={setResult?.weightKg ?? ''}
+                                onChange={(event) =>
+                                  updateWorkoutSetResult(workoutExercise.exerciseId, setNumber, {
+                                    weightKg:
+                                      event.target.value === ''
+                                        ? undefined
+                                        : Number(event.target.value),
+                                  })
                                 }
-                              </span>
-
-                              <div className="set-field set-field-weight">
-                                <span className="set-field-label">
-                                  Вес, кг
-                                </span>
-
-                                <input
-                                  className="set-input"
-                                  type="number"
-                                  inputMode="decimal"
-                                  min="0"
-                                  step="0.5"
-                                  aria-label={`Вес, подход ${setNumber}`}
-                                  placeholder="—"
-                                  value={
-                                    setResult?.weightKg ??
-                                    ''
-                                  }
-                                  onChange={(
-                                    event,
-                                  ) =>
-                                    updateWorkoutSetResult(
-                                      workoutExercise.exerciseId,
-                                      setNumber,
-                                      {
-                                        weightKg:
-                                          event
-                                            .target
-                                            .value ===
-                                          ''
-                                            ? undefined
-                                            : Number(
-                                                event
-                                                  .target
-                                                  .value,
-                                              ),
-                                      },
-                                    )
-                                  }
-                                />
-                              </div>
-
-                              <div className="set-field set-field-reps">
-                                <span className="set-field-label">
-                                  Повторения
-                                </span>
-
-                                <input
-                                  className="set-input"
-                                  type="number"
-                                  inputMode="numeric"
-                                  min="0"
-                                  step="1"
-                                  aria-label={`Повторения, подход ${setNumber}`}
-                                  placeholder="—"
-                                  value={
-                                    setResult?.reps ??
-                                    ''
-                                  }
-                                  onChange={(
-                                    event,
-                                  ) =>
-                                    updateWorkoutSetResult(
-                                      workoutExercise.exerciseId,
-                                      setNumber,
-                                      {
-                                        reps:
-                                          event
-                                            .target
-                                            .value ===
-                                          ''
-                                            ? undefined
-                                            : Number(
-                                                event
-                                                  .target
-                                                  .value,
-                                              ),
-                                      },
-                                    )
-                                  }
-                                />
-                              </div>
-
-                              <span
-                                className={`set-status ${
-                                  isComplete
-                                    ? 'is-complete'
-                                    : ''
-                                }`}
-                                aria-label={
-                                  isComplete
-                                    ? 'Подход завершён'
-                                    : 'Подход не завершён'
-                                }
-                              >
-                                {isComplete
-                                  ? '✓'
-                                  : '○'}
-                              </span>
+                              />
                             </div>
-                          )
-                        },
-                      )}
-                    </div>
 
-                    <div className="exercise-difficulty-block">
-                      <p className="session-question-hint">
-                        Как далось?
-                      </p>
+                            <div className="set-field set-field-reps">
+                              <span className="set-field-label">Повторения</span>
 
-                      <div className="session-feeling-options">
-                        {([
+                              <input
+                                className="set-input"
+                                type="number"
+                                inputMode="numeric"
+                                enterKeyHint="next"
+                                min="0"
+                                step="1"
+                                aria-label={`Повторения, подход ${setNumber}`}
+                                placeholder="—"
+                                value={setResult?.reps ?? ''}
+                                onChange={(event) =>
+                                  updateWorkoutSetResult(workoutExercise.exerciseId, setNumber, {
+                                    reps:
+                                      event.target.value === ''
+                                        ? undefined
+                                        : Number(event.target.value),
+                                  })
+                                }
+                              />
+                            </div>
+
+                            <span
+                              role="img"
+                              className={`set-status ${isComplete ? 'is-complete' : ''}`}
+                              aria-label={isComplete ? 'Подход завершён' : 'Подход не завершён'}
+                            >
+                              {isComplete ? <Icon name="check" /> : '—'}
+                            </span>
+                          </div>
+                        )
+                      },
+                    )}
+                  </div>
+
+                  <div className="exercise-difficulty-block">
+                    <p className="session-question-hint">Как далось?</p>
+
+                    <div className="session-feeling-options">
+                      {(
+                        [
                           ['very_easy', 'Легко'],
                           ['normal', 'Нормально'],
                           ['hard', 'Тяжело'],
                           ['very_hard', 'Очень тяжело'],
                           ['failed', 'Не получилось'],
-                        ] as const).map(
-                          ([difficulty, label]) => (
-                            <button
-                              key={difficulty}
-                              type="button"
-                              className={`session-feeling-button ${
-                                workoutExerciseDifficulty[
-                                  workoutExercise.exerciseId
-                                ] === difficulty
-                                  ? 'is-selected'
-                                  : ''
-                              }`}
-                              onClick={() =>
-                                setWorkoutExerciseDifficulty(
-                                  (current) => ({
-                                    ...current,
-                                    [workoutExercise.exerciseId]:
-                                      difficulty,
-                                  }),
-                                )
-                              }
-                            >
-                              {label}
-                            </button>
-                          ),
-                        )}
-                      </div>
+                        ] as const
+                      ).map(([difficulty, label]) => (
+                        <OptionButton
+                          key={difficulty}
+                          type="button"
+                          selected={
+                            workoutExerciseDifficulty[workoutExercise.exerciseId] === difficulty
+                          }
+                          onClick={() =>
+                            setWorkoutExerciseDifficulty((current) => ({
+                              ...current,
+                              [workoutExercise.exerciseId]: difficulty,
+                            }))
+                          }
+                        >
+                          {label}
+                        </OptionButton>
+                      ))}
                     </div>
+                  </div>
 
-                    {progressionDecision && (
-                      <p className="progression-message">
-                        {
-                          progressionDecision.message
-                        }
-                      </p>
-                    )}
-                  </article>
-                )
-              },
-            )}
+                  {progressionDecision && (
+                    <p className="progression-message">{progressionDecision.message}</p>
+                  )}
+                </article>
+              )
+            })}
           </div>
 
-          <button
-            className="primary-button"
-            type="button"
-            onClick={() =>
-              handleCompleteWorkout(
-                activeWorkout.templateId,
-              )
-            }
-          >
-            Завершить тренировку
-          </button>
+          <footer className="workout-finish">
+            <button
+              className="primary-button"
+              type="button"
+              onClick={() => handleCompleteWorkout(activeWorkout.templateId)}
+            >
+              Завершить тренировку
+            </button>
+            <p>Результаты сохранятся после завершения тренировки.</p>
+          </footer>
         </section>
       </main>
     )
@@ -1189,420 +789,240 @@ function App() {
 
   return (
     <main className="app">
-      <section className="home">
-        <div className="top-bar home-top-bar">
-          <p className="program-label">
-            {currentProgram.title}
-          </p>
-
-          <div className="home-top-actions">
-            <button className="progress-open-button" type="button" onClick={() => setActiveScreen('progress')}>Мой прогресс</button>
-            <button
-              className="profile-button"
-              type="button"
-              onClick={handleEditProfile}
-            >
-              Изменить профиль
-            </button>
+      <section className={`home ${showSessionCheckIn ? 'has-checkin' : ''}`}>
+        <AppHeader>
+          {showSessionCheckIn ? (
+            <ActionButton variant="text" onClick={() => setShowSessionCheckIn(false)}>
+              <Icon name="back" />К плану
+            </ActionButton>
+          ) : (
+            <>
+              <ActionButton
+                variant="secondary"
+                aria-label="Мой прогресс"
+                onClick={() => setActiveScreen('progress')}
+              >
+                <Icon name="progress" />
+                Прогресс
+              </ActionButton>
+              <ActionButton
+                variant="text"
+                aria-label="Изменить профиль"
+                onClick={handleEditProfile}
+              >
+                <Icon name="profile" />
+                Профиль
+              </ActionButton>
+            </>
+          )}
+        </AppHeader>
+        <header className="page-intro">
+          <div>
+            <p className="eyebrow">Твой тренировочный журнал</p>
+            <h1>{showSessionCheckIn ? 'Перед тренировкой' : 'Тренировки'}</h1>
           </div>
-        </div>
-
-        <h1>
-          Твоя тренировка
-        </h1>
-
-        <p className="subtitle">
-          Сегодня всё готово —
-          остаётся начать.
-        </p>
-
-        {equipmentNotice && <p className="workout-meta" role="note">{equipmentNotice}</p>}
-
+        </header>
         <div className="dashboard-grid">
-          <section className="dashboard-main">
-            <article className="workout-card">
-              <p className="workout-status">
-                Сегодня
-              </p>
-
-              <h2>
-                {currentWorkout.title}
-              </h2>
-
-              <p className="workout-meta">
-                {
-                  currentWorkout
-                    .exercises.length
-                }{' '}
-                упражнений · около{' '}
-                {
-                  currentWorkout
-                    .estimatedMinutes
-                }{' '}
-                минут
-              </p>
-
+          <section className="dashboard-main" aria-label="Текущая тренировка">
+            <article className={`workout-card ${showSessionCheckIn ? 'is-checkin' : ''}`}>
+              <div className="workout-card-header">
+                <p className="workout-status">
+                  {showSessionCheckIn ? 'Твой план' : 'Следующая тренировка'}
+                </p>
+                <h2>{currentWorkout.title}</h2>
+                <p className="hero-program">{currentProgram.title}</p>
+                <div className="hero-metrics">
+                  <div className="hero-metric">
+                    <strong>≈{currentWorkout.estimatedMinutes}</strong>
+                    <span>минут</span>
+                  </div>
+                  <div className="hero-metric">
+                    <strong>{String(currentWorkout.exercises.length).padStart(2, '0')}</strong>
+                    <span>упражнений</span>
+                  </div>
+                </div>
+              </div>
               {!showSessionCheckIn ? (
                 <button
                   className="primary-button"
                   type="button"
                   onClick={() => {
                     setSessionFeeling(null)
-                    setSessionSleepQuality(
-                      null,
-                    )
-                    setSessionHasTrainingIssue(
-                      null,
-                    )
+                    setSessionSleepQuality(null)
+                    setSessionHasTrainingIssue(null)
                     setSessionSymptoms([])
-                    setShowSessionTimeOptions(
-                      false,
-                    )
-                    setSessionAvailableMinutes(
-                      null,
-                    )
+                    setShowSessionTimeOptions(false)
+                    setSessionAvailableMinutes(null)
                     setSessionAdaptation(null)
-                    setWorkoutSessionContext(
-                      null,
-                    )
-                    setShowSessionCheckIn(
-                      true,
-                    )
+                    setWorkoutSessionContext(null)
+                    setShowSessionCheckIn(true)
                   }}
                 >
-                  Начать тренировку
+                  Начать тренировку <Icon name="arrow" />
                 </button>
               ) : sessionAdaptation ? (
                 <div className="session-checkin">
-                  <h3>
-                    Предлагаю адаптировать тренировку
-                  </h3>
+                  <h3>Предлагаю адаптировать тренировку</h3>
 
-                  <p className="subtitle">
-                    {sessionAdaptation.reason}
-                  </p>
+                  <p className="subtitle">{sessionAdaptation.reason}</p>
 
-                  <button
-                    className="primary-button"
-                    type="button"
-                    onClick={
-                      handleAcceptSessionAdaptation
-                    }
-                  >
+                  <ActionButton onClick={handleAcceptSessionAdaptation}>
                     Принять адаптацию
-                  </button>
+                  </ActionButton>
 
-                  <button
-                    className="profile-button"
-                    type="button"
-                    onClick={
-                      handleKeepPlannedWorkout
-                    }
-                  >
+                  <ActionButton variant="secondary" onClick={handleKeepPlannedWorkout}>
                     Оставить обычную тренировку
-                  </button>
+                  </ActionButton>
                 </div>
               ) : (
                 <div className="session-checkin">
-                  <h3>
-                    Как себя чувствуешь сегодня?
-                  </h3>
+                  <SelectionGroup number="01" label="Как себя чувствуешь сегодня?">
+                    <div className="session-feeling-options">
+                      <OptionButton
+                        type="button"
+                        selected={sessionFeeling === 'great'}
+                        onClick={() => setSessionFeeling('great')}
+                      >
+                        Отлично
+                      </OptionButton>
 
-                  <div className="session-feeling-options">
-                    <button
-                      type="button"
-                      className={`session-feeling-button ${
-                        sessionFeeling ===
-                        'great'
-                          ? 'is-selected'
-                          : ''
-                      }`}
-                      onClick={() =>
-                        setSessionFeeling(
-                          'great',
-                        )
-                      }
-                    >
-                      Отлично
-                    </button>
+                      <OptionButton
+                        type="button"
+                        selected={sessionFeeling === 'normal'}
+                        onClick={() => setSessionFeeling('normal')}
+                      >
+                        Нормально
+                      </OptionButton>
 
-                    <button
-                      type="button"
-                      className={`session-feeling-button ${
-                        sessionFeeling ===
-                        'normal'
-                          ? 'is-selected'
-                          : ''
-                      }`}
-                      onClick={() =>
-                        setSessionFeeling(
-                          'normal',
-                        )
-                      }
-                    >
-                      Нормально
-                    </button>
+                      <OptionButton
+                        type="button"
+                        selected={sessionFeeling === 'tired'}
+                        onClick={() => setSessionFeeling('tired')}
+                      >
+                        Усталость
+                      </OptionButton>
 
-                    <button
-                      type="button"
-                      className={`session-feeling-button ${
-                        sessionFeeling ===
-                        'tired'
-                          ? 'is-selected'
-                          : ''
-                      }`}
-                      onClick={() =>
-                        setSessionFeeling(
-                          'tired',
-                        )
-                      }
-                    >
-                      Усталость
-                    </button>
+                      <OptionButton
+                        type="button"
+                        selected={sessionFeeling === 'poor'}
+                        onClick={() => setSessionFeeling('poor')}
+                      >
+                        Плохо
+                      </OptionButton>
+                    </div>
+                  </SelectionGroup>
 
-                    <button
-                      type="button"
-                      className={`session-feeling-button ${
-                        sessionFeeling ===
-                        'poor'
-                          ? 'is-selected'
-                          : ''
-                      }`}
-                      onClick={() =>
-                        setSessionFeeling(
-                          'poor',
-                        )
-                      }
-                    >
-                      Плохо
-                    </button>
-                  </div>
+                  <SelectionGroup number="02" label="Как спалось?">
+                    <div className="session-feeling-options">
+                      <OptionButton
+                        type="button"
+                        selected={sessionSleepQuality === 'good'}
+                        onClick={() => setSessionSleepQuality('good')}
+                      >
+                        Хорошо
+                      </OptionButton>
 
-                  <h3>
-                    Как спалось?
-                  </h3>
+                      <OptionButton
+                        type="button"
+                        selected={sessionSleepQuality === 'normal'}
+                        onClick={() => setSessionSleepQuality('normal')}
+                      >
+                        Нормально
+                      </OptionButton>
 
-                  <div className="session-feeling-options">
-                    <button
-                      type="button"
-                      className={`session-feeling-button ${
-                        sessionSleepQuality ===
-                        'good'
-                          ? 'is-selected'
-                          : ''
-                      }`}
-                      onClick={() =>
-                        setSessionSleepQuality(
-                          'good',
-                        )
-                      }
-                    >
-                      Хорошо
-                    </button>
+                      <OptionButton
+                        type="button"
+                        selected={sessionSleepQuality === 'poor'}
+                        onClick={() => setSessionSleepQuality('poor')}
+                      >
+                        Плохо
+                      </OptionButton>
 
-                    <button
-                      type="button"
-                      className={`session-feeling-button ${
-                        sessionSleepQuality ===
-                        'normal'
-                          ? 'is-selected'
-                          : ''
-                      }`}
-                      onClick={() =>
-                        setSessionSleepQuality(
-                          'normal',
-                        )
-                      }
-                    >
-                      Нормально
-                    </button>
+                      <button
+                        type="button"
+                        className="session-skip-button"
+                        onClick={() => setSessionSleepQuality(null)}
+                      >
+                        Не указывать
+                      </button>
+                    </div>
+                  </SelectionGroup>
 
-                    <button
-                      type="button"
-                      className={`session-feeling-button ${
-                        sessionSleepQuality ===
-                        'poor'
-                          ? 'is-selected'
-                          : ''
-                      }`}
-                      onClick={() =>
-                        setSessionSleepQuality(
-                          'poor',
-                        )
-                      }
-                    >
-                      Плохо
-                    </button>
+                  <SelectionGroup number="03" label="Что-то мешает тренировке?">
+                    <div className="session-feeling-options">
+                      <OptionButton
+                        type="button"
+                        selected={sessionHasTrainingIssue === false}
+                        onClick={() => {
+                          setSessionHasTrainingIssue(false)
+                          setSessionSymptoms([])
+                        }}
+                      >
+                        Нет
+                      </OptionButton>
 
-                    <button
-                      type="button"
-                      className="session-skip-button"
-                      onClick={() =>
-                        setSessionSleepQuality(
-                          null,
-                        )
-                      }
-                    >
-                      Не указывать
-                    </button>
-                  </div>
+                      <OptionButton
+                        type="button"
+                        selected={sessionHasTrainingIssue === true}
+                        onClick={() => setSessionHasTrainingIssue(true)}
+                      >
+                        Да
+                      </OptionButton>
+                    </div>
+                  </SelectionGroup>
 
-                  <h3>
-                    Что-то мешает тренировке?
-                  </h3>
-
-                  <div className="session-feeling-options">
-                    <button
-                      type="button"
-                      className={`session-feeling-button ${
-                        sessionHasTrainingIssue ===
-                        false
-                          ? 'is-selected'
-                          : ''
-                      }`}
-                      onClick={() => {
-                        setSessionHasTrainingIssue(
-                          false,
-                        )
-                        setSessionSymptoms([])
-                      }}
-                    >
-                      Нет
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`session-feeling-button ${
-                        sessionHasTrainingIssue ===
-                        true
-                          ? 'is-selected'
-                          : ''
-                      }`}
-                      onClick={() =>
-                        setSessionHasTrainingIssue(
-                          true,
-                        )
-                      }
-                    >
-                      Да
-                    </button>
-                  </div>
-
-                  {sessionHasTrainingIssue ===
-                    true && (
+                  {sessionHasTrainingIssue === true && (
                     <div className="session-symptom-details">
-                      <p className="session-question-hint">
-                        Что именно?
-                      </p>
+                      <p className="session-question-hint">Что именно?</p>
 
                       <div className="session-feeling-options">
-                        <button
+                        <OptionButton
                           type="button"
-                          className={`session-feeling-button ${
-                            sessionSymptoms.includes(
-                              'pain_or_discomfort',
-                            )
-                              ? 'is-selected'
-                              : ''
-                          }`}
-                          onClick={() =>
-                            toggleSessionSymptom(
-                              'pain_or_discomfort',
-                            )
-                          }
+                          selected={sessionSymptoms.includes('pain_or_discomfort')}
+                          onClick={() => toggleSessionSymptom('pain_or_discomfort')}
                         >
                           Боль / дискомфорт
-                        </button>
+                        </OptionButton>
 
-                        <button
+                        <OptionButton
                           type="button"
-                          className={`session-feeling-button ${
-                            sessionSymptoms.includes(
-                              'cramps',
-                            )
-                              ? 'is-selected'
-                              : ''
-                          }`}
-                          onClick={() =>
-                            toggleSessionSymptom(
-                              'cramps',
-                            )
-                          }
+                          selected={sessionSymptoms.includes('cramps')}
+                          onClick={() => toggleSessionSymptom('cramps')}
                         >
                           Спазмы
-                        </button>
+                        </OptionButton>
 
-                        <button
+                        <OptionButton
                           type="button"
-                          className={`session-feeling-button ${
-                            sessionSymptoms.includes(
-                              'low_energy',
-                            )
-                              ? 'is-selected'
-                              : ''
-                          }`}
-                          onClick={() =>
-                            toggleSessionSymptom(
-                              'low_energy',
-                            )
-                          }
+                          selected={sessionSymptoms.includes('low_energy')}
+                          onClick={() => toggleSessionSymptom('low_energy')}
                         >
                           Низкая энергия
-                        </button>
+                        </OptionButton>
 
-                        <button
+                        <OptionButton
                           type="button"
-                          className={`session-feeling-button ${
-                            sessionSymptoms.includes(
-                              'headache',
-                            )
-                              ? 'is-selected'
-                              : ''
-                          }`}
-                          onClick={() =>
-                            toggleSessionSymptom(
-                              'headache',
-                            )
-                          }
+                          selected={sessionSymptoms.includes('headache')}
+                          onClick={() => toggleSessionSymptom('headache')}
                         >
                           Головная боль
-                        </button>
+                        </OptionButton>
 
-                        <button
+                        <OptionButton
                           type="button"
-                          className={`session-feeling-button ${
-                            sessionSymptoms.includes(
-                              'bloating',
-                            )
-                              ? 'is-selected'
-                              : ''
-                          }`}
-                          onClick={() =>
-                            toggleSessionSymptom(
-                              'bloating',
-                            )
-                          }
+                          selected={sessionSymptoms.includes('bloating')}
+                          onClick={() => toggleSessionSymptom('bloating')}
                         >
                           Вздутие
-                        </button>
+                        </OptionButton>
 
-                        <button
+                        <OptionButton
                           type="button"
-                          className={`session-feeling-button ${
-                            sessionSymptoms.includes(
-                              'other',
-                            )
-                              ? 'is-selected'
-                              : ''
-                          }`}
-                          onClick={() =>
-                            toggleSessionSymptom(
-                              'other',
-                            )
-                          }
+                          selected={sessionSymptoms.includes('other')}
+                          onClick={() => toggleSessionSymptom('other')}
                         >
                           Другое
-                        </button>
+                        </OptionButton>
                       </div>
                     </div>
                   )}
@@ -1610,46 +1030,28 @@ function App() {
                   <div className="session-time-block">
                     <div className="session-time-summary">
                       <div>
-                        <h3>
-                          Время на тренировку
-                        </h3>
+                        <h3>Время на тренировку</h3>
 
                         <p className="session-question-hint">
-                          Сегодня ≈{' '}
-                          {
-                            currentWorkout
-                              .estimatedMinutes
-                          }{' '}
-                          минут
+                          Сегодня ≈ {currentWorkout.estimatedMinutes} минут
                         </p>
                       </div>
 
-                      {currentWorkout.estimatedMinutes >
-                        20 && (
+                      {currentWorkout.estimatedMinutes > 20 && (
                         <button
                           type="button"
                           className="session-skip-button"
                           onClick={() => {
-                            if (
-                              showSessionTimeOptions
-                            ) {
-                              setShowSessionTimeOptions(
-                                false,
-                              )
-                              setSessionAvailableMinutes(
-                                null,
-                              )
+                            if (showSessionTimeOptions) {
+                              setShowSessionTimeOptions(false)
+                              setSessionAvailableMinutes(null)
                               return
                             }
 
-                            setShowSessionTimeOptions(
-                              true,
-                            )
+                            setShowSessionTimeOptions(true)
                           }}
                         >
-                          {showSessionTimeOptions
-                            ? 'Полное время'
-                            : 'У меня меньше времени'}
+                          {showSessionTimeOptions ? 'Полное время' : 'У меня меньше времени'}
                         </button>
                       )}
                     </div>
@@ -1657,165 +1059,139 @@ function App() {
                     {showSessionTimeOptions && (
                       <div className="session-time-options">
                         {[20, 30, 45]
-                          .filter(
-                            (minutes) =>
-                              minutes <
-                              currentWorkout.estimatedMinutes,
-                          )
-                          .map(
-                            (minutes) => (
-                              <button
-                                key={minutes}
-                                type="button"
-                                className={`session-feeling-button ${
-                                  sessionAvailableMinutes ===
-                                  minutes
-                                    ? 'is-selected'
-                                    : ''
-                                }`}
-                                onClick={() =>
-                                  setSessionAvailableMinutes(
-                                    minutes,
-                                  )
-                                }
-                              >
-                                {minutes} мин
-                              </button>
-                            ),
-                          )}
+                          .filter((minutes) => minutes < currentWorkout.estimatedMinutes)
+                          .map((minutes) => (
+                            <OptionButton
+                              key={minutes}
+                              type="button"
+                              selected={sessionAvailableMinutes === minutes}
+                              onClick={() => setSessionAvailableMinutes(minutes)}
+                            >
+                              {minutes} мин
+                            </OptionButton>
+                          ))}
                       </div>
                     )}
                   </div>
 
-                  <button
-                    className="profile-button"
-                    type="button"
+                  <ActionButton
                     disabled={
                       sessionFeeling === null ||
-                      sessionHasTrainingIssue ===
-                        null ||
-                      (
-                        sessionHasTrainingIssue &&
-                        sessionSymptoms.length ===
-                          0
-                      )
+                      sessionHasTrainingIssue === null ||
+                      (sessionHasTrainingIssue && sessionSymptoms.length === 0)
                     }
-                    onClick={
-                      handleSessionCheckInContinue
-                    }
+                    onClick={handleSessionCheckInContinue}
                   >
                     Продолжить
-                  </button>
+                  </ActionButton>
                 </div>
               )}
             </article>
+            {!showSessionCheckIn && (
+              <>
+                <EquipmentNote message={equipmentNotice} />
+                <section className="workout-preview" aria-labelledby="workout-plan-title">
+                  <div className="section-heading">
+                    <h2 id="workout-plan-title">В программе</h2>
+                    <span>Порядок упражнений</span>
+                  </div>
+                  <ol className="plan-list">
+                    {currentWorkout.exercises.map((item, index) => (
+                      <li className="plan-row" key={item.slotId}>
+                        <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                        <div>
+                          <strong>
+                            {exercises.find((exercise) => exercise.id === item.exerciseId)?.name ??
+                              item.exerciseId}
+                          </strong>
+                          <p>
+                            {item.sets} подхода · {formatExerciseTarget(item.target)}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+              </>
+            )}
           </section>
-
           <aside className="dashboard-side">
             <article className="history-card">
-              <h2>
-                Последняя тренировка
-              </h2>
+              <h2>Последняя тренировка</h2>
 
+              {lastWorkoutSession &&
+                Number.isFinite(Date.parse(lastWorkoutSession.completedAt)) && (
+                  <time className="history-date" dateTime={lastWorkoutSession.completedAt}>
+                    {new Date(lastWorkoutSession.completedAt).toLocaleDateString('ru-RU', {
+                      day: 'numeric',
+                      month: 'long',
+                    })}
+                  </time>
+                )}
               {!lastWorkoutSession ? (
-                <p className="subtitle">
-                  Пока нет завершённых
-                  тренировок.
-                </p>
+                <p className="subtitle">Пока нет завершённых тренировок.</p>
               ) : (
                 <div className="history-list">
-                  {lastWorkoutSession.exercises.map(
-                    (
-                      exerciseResult,
-                    ) => {
-                      const exercise =
-                        exercises.find(
-                          (item) =>
-                            item.id ===
-                            exerciseResult.exerciseId,
-                        )
+                  {lastWorkoutSession.exercises.map((exerciseResult) => {
+                    const exercise = exercises.find((item) => item.id === exerciseResult.exerciseId)
 
-                      if (!exercise) {
-                        return null
-                      }
+                    if (!exercise) {
+                      return null
+                    }
 
-                      const history =
-                        formatExerciseHistory(
-                          exerciseResult.sets,
-                        )
+                    const history = formatExerciseHistory(exerciseResult.sets)
 
-                      return (
-                        <div
-                          className="history-item"
-                          key={
-                            exerciseResult.exerciseId
-                          }
-                        >
-                          <strong>
-                            {
-                              exercise.name
-                            }
-                          </strong>
+                    return (
+                      <div className="history-item" key={exerciseResult.exerciseId}>
+                        <strong>{exercise.name}</strong>
 
-                          <p>
-                            {
-                              history.primary
-                            }
-                          </p>
+                        <p>{history.primary}</p>
 
-                          {history.secondary && (
-                            <p>
-                              {
-                                history.secondary
-                              }
-                            </p>
-                          )}
-                        </div>
-                      )
-                    },
-                  )}
+                        {history.secondary && <p>{history.secondary}</p>}
+                      </div>
+                    )
+                  })}
                 </div>
               )}
             </article>
 
-            <article className="history-card">
-              <h2>Coach Memory</h2>
+            <article className="history-card coach-note">
+              <p className="eyebrow">Coach Memory</p>
+              <h2>Наблюдения тренера</h2>
 
-              {coachMemory.analyzedSessions <
-              coachMemoryMinimumSessions ? (
-                <p className="subtitle">
-                  Собираю данные: {' '}
-                  {coachMemory.analyzedSessions}
-                  {' '}из{' '}
-                  {coachMemoryMinimumSessions}
-                  {' '}тренировок с check-in.
-                </p>
+              {coachMemory.analyzedSessions < coachMemoryMinimumSessions ? (
+                <>
+                  <p className="subtitle">
+                    Собираю данные: {coachMemory.analyzedSessions} из {coachMemoryMinimumSessions}{' '}
+                    тренировок с check-in.
+                  </p>
+                  <progress
+                    value={coachMemory.analyzedSessions}
+                    max={coachMemoryMinimumSessions}
+                    aria-label="Тренировок с check-in для наблюдений"
+                  />
+                </>
               ) : coachInsights.length > 0 ? (
                 <>
-                  {coachInsights.map(
-                    (insight) => (
-                      <div key={insight.id}>
-                        <strong>
-                          {insight.title}
-                        </strong>
+                  {coachInsights.map((insight) => (
+                    <div className="coach-insight" key={insight.id}>
+                      <strong>{insight.title}</strong>
 
-                        <p className="subtitle">
-                          {insight.message}
-                        </p>
-                      </div>
-                    ),
-                  )}
+                      <p className="subtitle">{insight.message}</p>
+                    </div>
+                  ))}
                 </>
               ) : (
                 <p className="subtitle">
-                  Пока устойчивых паттернов
-                  не обнаружено. Продолжаю
-                  наблюдать за тренировками.
+                  Пока устойчивых паттернов не обнаружено. Продолжаю наблюдать за тренировками.
                 </p>
               )}
             </article>
           </aside>
         </div>
+        {!showSessionCheckIn && (
+          <p className="local-storage-note">Записи хранятся на этом устройстве.</p>
+        )}
       </section>
     </main>
   )
