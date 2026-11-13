@@ -1,0 +1,21 @@
+{
+  "checks": [
+    "feedback configured: 320px layout, 48px controls, WCAG A/AA",
+    "configured contact: real form requests Telegram handoff, no delivery claim",
+    "without Telegram SDK: browser fallback requests opening even when noopener returns null",
+    "native bridge exception: recoverable message, draft preserved",
+    "clipboard success and denial: manual text remains accessible",
+    "feedback leaves all three legacy localStorage values unchanged",
+    "feedback missing config: 320px layout, 48px controls, WCAG A/AA",
+    "missing contact: no broken send action, draft/copy available",
+    "empty video library: honest fallback without a broken play button",
+    "technique player: 320px layout, 48px controls, WCAG A/AA",
+    "on-demand resolver, poster, native play/pause, inline/no-autoplay, cleanup",
+    "media element errors recover through close/retry",
+    "resolver error handled; another exercise revision never inherits media"
+  ],
+  "errors": [],
+  "external": [],
+  "syntheticMediaRequests": 2,
+  "note": "Local Chromium only; no native Telegram or real messages/files."
+}

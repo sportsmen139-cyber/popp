@@ -16,6 +16,8 @@ import {
 } from './components/ui/Primitives'
 import { useScreenFocus, useVisualViewportInset } from './components/ui/useScreenFocus'
 import { ProgressBoundary } from './components/ui/ProgressBoundary'
+import { FeedbackScreen } from './features/feedback/FeedbackScreen'
+import { ExerciseTechniqueVideo } from './features/exerciseVideo/ExerciseTechniqueVideo'
 
 import { exercises } from './data/exercises'
 
@@ -144,7 +146,7 @@ function formatExerciseHistory(sets: WorkoutSetResult[] | undefined): ExerciseHi
 }
 
 function App() {
-  const [activeScreen, setActiveScreen] = useState<'training' | 'progress'>('training')
+  const [activeScreen, setActiveScreen] = useState<'training' | 'progress' | 'feedback'>('training')
   const [workoutStarted, setWorkoutStarted] = useState(false)
 
   const [showSessionCheckIn, setShowSessionCheckIn] = useState(false)
@@ -299,6 +301,10 @@ function App() {
     })
   }
 
+  if (activeScreen === 'feedback') {
+    return <FeedbackScreen onBack={() => setActiveScreen('training')} />
+  }
+
   if (!selectedEnvironment) {
     return <OnboardingEnvironment onSelect={setSelectedEnvironment} />
   }
@@ -396,6 +402,11 @@ function App() {
             <button className="primary-button" type="button" onClick={handleEditProfile}>
               Изменить профиль
             </button>
+            <div className="alpha-feedback-entry">
+              <ActionButton variant="secondary" onClick={() => setActiveScreen('feedback')}>
+                Обратная связь
+              </ActionButton>
+            </div>
           </div>
         </section>
       </main>
@@ -638,6 +649,8 @@ function App() {
                       </div>
                     )}
                   </div>
+
+                  <ExerciseTechniqueVideo exerciseId={exercise.id} />
 
                   <div className="sets-block">
                     <div className="sets-header">
@@ -1190,7 +1203,14 @@ function App() {
           </aside>
         </div>
         {!showSessionCheckIn && (
-          <p className="local-storage-note">Записи хранятся на этом устройстве.</p>
+          <>
+            <div className="alpha-feedback-entry">
+              <ActionButton variant="secondary" onClick={() => setActiveScreen('feedback')}>
+                Обратная связь
+              </ActionButton>
+            </div>
+            <p className="local-storage-note">Записи хранятся на этом устройстве.</p>
+          </>
         )}
       </section>
     </main>

@@ -1,0 +1,46 @@
+legacy_exercise_id,legacy_name_ru,new_exercise_id,new_exercise_version,match_type,confidence,decision,evidence
+lat-pulldown,Вертикальная тяга в блочном тренажёре,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+pull-up,Подтягивания,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+assisted-pull-up,Подтягивания в гравитроне,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+dumbbell-lateral-raise,Отведение рук с гантелями на среднюю дельту,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+seated-cable-row,Горизонтальная тяга в блочном тренажёре,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+t-bar-row,Тяга Т-грифа,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+triceps-pushdown,Разгибание рук в кроссовере на трицепс,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+close-grip-lat-pulldown,Вертикальная тяга с рукоятью на ширине плеч,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+barbell-bench-press,Жим штанги лёжа,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+chest-press-machine,Жим в тренажёре,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+push-up,Отжимания от пола,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+incline-bench-press,Жим на наклонной скамье,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+incline-chest-press-machine,Жим в тренажёре под углом,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+elevated-push-up,Отжимания от возвышенности,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+dumbbell-biceps-curl,Сгибание рук с гантелями на бицепс,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+pec-deck,Приведение рук в тренажёре,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+romanian-deadlift,Румынская тяга,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+bulgarian-split-squat,Болгарские приседания,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+single-leg-press,Жим платформы одной ногой,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+step-up,Зашагивания на платформу,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+hyperextension,Гиперэкстензия,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+hip-abduction-machine,Отведение ног в тренажёре с наклоном туловища,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+hip-extension-machine,Разгибание бедра в тренажёре,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+cable-hip-extension,Разгибание бедра в кроссовере,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+barbell-squat,Присед со штангой,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+leg-press,Жим платформы,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+leg-extension,Разгибание ног в тренажёре,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+forward-knee-lean,Из положения стоя — наклон коленей вперёд,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+standing-calf-raise,Икры стоя,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+goblet-squat,Присед с гирей,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+calf-raise-machine,Подъём на икры в тренажёре,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+hip-adduction-machine,Приведение ног в тренажёре,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+bodyweight-squat,Приседания,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+jump-squat,Выпрыгивания,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+glute-bridge,Ягодичный мост,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+ankle-flexion,Голеностопное сгибание,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+lunge,Выпады,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+dead-hang,Вис на турнике,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+prone-trunk-raise,Подъём туловища лёжа на животе,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+prone-leg-raise,Подъём ног лёжа на животе,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+prone-band-shoulder-extension,Разгибание плеча лёжа на животе с резинкой,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+crunch,Скручивания,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+reverse-crunch,Обратные скручивания,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+side-plank,Боковая планка,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias
+run-in-place,Бег на месте,,,,,PENDING_SOURCE,Source snapshot unavailable; retain legacy ID without alias

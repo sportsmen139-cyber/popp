@@ -116,7 +116,7 @@ button:disabled {
   color: var(--text);
   background: var(--accent-soft);
 }
-:is(button, a, input, select, summary):focus-visible {
+:is(button, a, input, select, textarea, summary):focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 4px;
 }
