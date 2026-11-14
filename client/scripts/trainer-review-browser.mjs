@@ -17,8 +17,10 @@ const bundleBytes = await readFile(bundleFile)
 const bundle = JSON.parse(bundleBytes)
 const temp = await mkdtemp(resolve(tmpdir(), 'popp-trainer-review-'))
 const journal = resolve(temp, 'synthetic-journal.json')
-const server = spawn(
-  'python',
+let output = ''
+function startServer() {
+  const server = spawn(
+  process.env.POPP_PYTHON || 'python3',
   [
     '-u',
     '-m',
@@ -32,37 +34,38 @@ const server = spawn(
     '0',
   ],
   { cwd: root, stdio: ['ignore', 'pipe', 'pipe'] },
-)
-let output = ''
-server.stdout.on('data', (data) => {
-  output += data
-})
-server.stderr.on('data', (data) => {
-  output += data
-})
+  )
+  server.stdout.on('data', (data) => { output += data })
+  server.stderr.on('data', (data) => { output += data })
+  server.on('error', (error) => { output += error.message })
+  return server
+}
+let server = startServer()
 const delay = (ms) => new Promise((done) => setTimeout(done, ms))
 const executablePath =
   process.env.POPP_BROWSER_PATH ||
-  ['/usr/bin/chromium', '/usr/bin/chromium-browser'].find(existsSync)
+  ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser'].find(existsSync)
 assert.ok(executablePath, 'Set POPP_BROWSER_PATH to Chromium')
 const checks = [],
   errors = [],
   external = []
 let browser
+async function waitForOrigin() {
+  for (let n = 0; n < 100; n++) {
+    if (server.exitCode !== null) throw new Error(output)
+    const origin = output.match(/http:\/\/127\.0\.0\.1:\d+/)?.[0]
+    if (origin) return origin
+    await delay(100)
+  }
+  throw new Error(output)
+}
 function pass(name) {
   checks.push(name)
   console.log(`PASS ${name}`)
 }
 
 try {
-  let origin
-  for (let n = 0; n < 100; n++) {
-    if (server.exitCode !== null) throw new Error(output)
-    origin = output.match(/http:\/\/127\.0\.0\.1:\d+/)?.[0]
-    if (origin) break
-    await delay(100)
-  }
-  assert.ok(origin, output)
+  let origin = await waitForOrigin()
   browser = await chromium.launch({ executablePath, headless: true, args: ['--no-sandbox'] })
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } })
   const baseline = JSON.parse(
@@ -79,6 +82,7 @@ try {
   })
   await page.goto(origin)
   await page.locator('#card h2').waitFor()
+  assert.equal(await page.evaluate(() => scrollY), 0)
   const getState = () => page.evaluate(async () => (await (await fetch('/api/state')).json()).state)
   const select = async (filter, key) => {
     await page.locator('#filter').selectOption(filter)
@@ -116,6 +120,19 @@ try {
   assert.equal(denied.data.error, 'dependencies_unreviewed')
   assert.equal((await getState()).events.length, 0)
   pass('UI and server both prevent program approval with unreviewed dependencies')
+
+  assert.equal(await page.locator('#core-checklist button').count(), 10)
+  await page.locator('#start-core').click()
+  await page.getByText('Что подтвердить тренеру', { exact: true }).waitFor()
+  await page.locator('#comment').fill('Synthetic draft kept while checking a dependency')
+  await page.locator('#dependencies').getByRole('button', { name: /^Проверить следующую зависимость:/ }).click()
+  await page.locator('#return-core').click()
+  assert.equal(await page.locator('#comment').inputValue(), 'Synthetic draft kept while checking a dependency')
+  assert.equal(await page.locator('#ack').isChecked(), false)
+  assert.equal((await getState()).events.length, 0)
+  await page.locator('#next-core').click()
+  assert.equal(await page.locator('#entity').inputValue(), 'exercise:EX_000013@1')
+  pass('Mac review route: ten core cards, next dependency, explicit return, draft retained, acknowledgement reset')
 
   await select('core', 'exercise:EX_000135@1')
   assert.equal(await page.locator('#entity option').count(), 10)
@@ -223,6 +240,66 @@ try {
   assert.equal(await page.locator('#entity option').count(), 18)
   pass('Only explicit pilot alternatives and targets are included; C semantics remain visible')
 
+  // Explicit synthetic decisions through UI, dependency first, only in the temporary test journal.
+  const core = bundle.scope.core_exercises.map((id) => Object.values(bundle.units).find((u) => u.kind === 'exercise' && u.role === 'core' && u.id === id).key)
+  const required = new Set()
+  function collect(key) {
+    if (required.has(key)) return
+    for (const dep of bundle.units[key].dependencies) collect(dep)
+    required.add(key)
+  }
+  for (const key of core) collect(key)
+  let current = await getState()
+  for (const key of required) {
+    if (current.units[key].status === 'approved') continue
+    await select('all', key)
+    await page.locator('#reviewer').fill('Synthetic Stage 3B reviewer — temporary test only')
+    await page.locator('#comment').fill('Synthetic core-route test; not a trainer approval')
+    await page.locator('#ack').check()
+    await page.locator('#approve').click()
+    await page.getByRole('status').filter({ hasText: 'Решение записано' }).waitFor()
+    current = await getState()
+  }
+  assert.equal(core.filter((key) => current.units[key].status === 'approved').length, 10)
+  assert.equal(current.program_approved, false)
+  assert.ok(Object.values(bundle.units).filter((u) => u.kind === 'alternative').every((u) => current.units[u.key].status === 'pending'))
+  await page.getByText(/Основные упражнения: утверждено 10 из 10;/).waitFor()
+  await select('program', bundle.program_key)
+  await page.locator('#ack').check()
+  assert.equal(await page.locator('#approve').isDisabled(), true)
+  pass('Ten core approvals require their dependencies; optional alternatives stay pending and full program stays blocked')
+
+  await page.route('**/api/backup', (route) => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ message: 'Synthetic backup disk failure' }) }), { times: 1 })
+  await page.locator('#backup').click()
+  await page.locator('#backup-status').filter({ hasText: 'Резервная копия не подтверждена' }).waitFor()
+  assert.equal((await getState()).events.length, current.events.length)
+  await page.locator('#backup').click()
+  await page.locator('#backup-status').filter({ hasText: 'Резервная копия текущего журнала подтверждена' }).waitFor()
+  assert.equal((await getState()).events.length, current.events.length)
+  const exported = page.waitForEvent('download')
+  await page.locator('#export-journal').click()
+  const download = await exported
+  const exportedPath = resolve(temp, 'synthetic-export.json')
+  await download.saveAs(exportedPath)
+  const exportedJournal = JSON.parse(await readFile(exportedPath, 'utf8'))
+  assert.deepEqual(exportedJournal.events, current.events)
+  const copied = await page.evaluate(async () => (await (await fetch('/api/state')).json()).storage)
+  assert.equal(copied.backup_confirmed, true)
+  assert.deepEqual(JSON.parse(await readFile(copied.backup_file, 'utf8')), exportedJournal)
+  pass('Automatic backup, explicit backup and downloaded JSON contain the exact same journal without new decisions')
+
+  const stopped = new Promise((done) => server.once('exit', done))
+  server.kill('SIGTERM')
+  await stopped
+  output = ''
+  server = startServer()
+  origin = await waitForOrigin()
+  await page.goto(origin)
+  await page.locator('#card h2').waitFor()
+  assert.deepEqual((await getState()).events, current.events)
+  await page.getByText(/Основные упражнения: утверждено 10 из 10;/).waitFor()
+  pass('A real server process restart restores all synthetic decisions and core progress from disk')
+
   for (const width of [320, 390, 1280]) {
     await page.setViewportSize({ width, height: 844 })
     assert.equal(
@@ -237,6 +314,12 @@ try {
     axe.violations.map((v) => ({ id: v.id, nodes: v.nodes.map((node) => node.target) })),
     [],
   )
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await page.screenshot({ path: resolve(temp, 'trainer-route.png') })
+  await select('core', 'exercise:EX_000135@1')
+  await page.screenshot({ path: resolve(temp, 'trainer-core.png') })
+  const coreAxe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze()
+  assert.deepEqual(coreAxe.violations.map((v) => v.id), [])
   pass('320/390/1280px layout and WCAG A/AA audit pass')
 
   const stored = await page.evaluate(() =>
@@ -264,7 +347,6 @@ try {
       2,
     ) + '\n'
   if (process.argv[3]) await writeFile(process.argv[3], report)
-  await page.screenshot({ path: resolve(temp, 'trainer-review.png'), fullPage: true })
   console.log(`${checks.length} browser checks passed. Private artifacts: ${temp}`)
 } finally {
   await browser?.close()

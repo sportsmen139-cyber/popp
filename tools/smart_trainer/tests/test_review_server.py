@@ -90,6 +90,24 @@ class LocalReviewServerTests(unittest.TestCase):
         self.assertEqual(data['error'], 'save_unconfirmed')
         self.assertFalse(self.journal.exists())
 
+    def test_backup_failure_does_not_misreport_a_durable_decision_and_can_be_retried(self):
+        with patch('tools.smart_trainer.review.server.Journal.backup', side_effect=OSError('synthetic backup failure')):
+            status, saved, _ = self.request('POST', '/api/review', json.dumps(self.payload()))
+        self.assertEqual(status, 200)
+        self.assertEqual(saved['state']['approved'], 1)
+        self.assertFalse(saved['storage']['backup_confirmed'])
+        fields = {'expected_head': saved['state']['head'], 'source_sha256': self.bundle['source_sha256'], 'bundle_hash': self.bundle['bundle_hash']}
+        for headers in [{'Origin': 'https://untrusted.example.invalid'}, {'Host': 'untrusted.example.invalid'}, {'X-Review-CSRF': ''}]:
+            self.assertEqual(self.request('POST', '/api/backup', json.dumps(fields), headers)[0], 403)
+        self.assertEqual(self.request('POST', '/api/backup', json.dumps({**fields, 'expected_head': '0' * 64}))[0], 409)
+        self.assertEqual(self.request('POST', '/api/backup', json.dumps({**fields, 'bundle_hash': 'a' * 64}))[0], 409)
+        self.assertEqual(self.request('POST', '/api/backup', json.dumps({**fields, 'destination': '/tmp/untrusted.json'}))[0], 400)
+        status, copied, _ = self.request('POST', '/api/backup', json.dumps(fields))
+        self.assertEqual(status, 200)
+        self.assertTrue(copied['storage']['backup_confirmed'])
+        self.assertEqual(copied['state']['events'], saved['state']['events'])
+        self.assertEqual(Path(copied['storage']['backup_file']).read_bytes(), self.journal.read_bytes())
+
     def test_no_publication_endpoint_and_no_cross_origin_data_access(self):
         status, _, headers = self.request('GET', '/api/state')
         self.assertEqual(status, 200)

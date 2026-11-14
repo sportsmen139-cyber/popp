@@ -1,6 +1,7 @@
 """Explicit, snapshot-bound human decisions. Source review_status is never mutated."""
 
 from datetime import datetime, timezone
+from contextlib import contextmanager
 import fcntl
 import json
 import os
@@ -140,23 +141,94 @@ class Journal:
         validate_events(content['events'])
         return content['events']
 
-    def append(self, bundle, **decision):
+    @contextmanager
+    def locked(self):
         lock_path = self.path.with_suffix(self.path.suffix + '.lock')
         descriptor = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o600)
         with os.fdopen(descriptor, 'a+b') as lock:
             fcntl.flock(lock, fcntl.LOCK_EX)
-            events = self.read()
-            updated = decide(bundle, events, **decision)
-            data = canonical({'format_version': 1, 'events': updated})
-            with tempfile.NamedTemporaryFile(dir=self.path.parent, prefix='.journal-', delete=False) as temporary:
+            yield
+
+    @staticmethod
+    def persist(path, data):
+        temp_path = None
+        try:
+            with tempfile.NamedTemporaryFile(dir=path.parent, prefix='.journal-', delete=False) as temporary:
+                temp_path = temporary.name
                 temporary.write(data)
                 temporary.flush()
                 os.fsync(temporary.fileno())
-                temp_path = temporary.name
-            os.replace(temp_path, self.path)
-            folder = os.open(self.path.parent, os.O_RDONLY)
+            os.replace(temp_path, path)
+            folder = os.open(path.parent, os.O_RDONLY)
             try:
                 os.fsync(folder)
             finally:
                 os.close(folder)
+        finally:
+            if temp_path and os.path.exists(temp_path):
+                os.unlink(temp_path)
+
+    def append(self, bundle, **decision):
+        with self.locked():
+            events = self.read()
+            updated = decide(bundle, events, **decision)
+            data = canonical({'format_version': 1, 'events': updated})
+            self.persist(self.path, data)
             return review_state(bundle, updated)
+
+    def backup_path(self, events):
+        return self.path.parent / 'backups' / f'{self.path.stem}-{validate_events(events)}.json'
+
+    def storage(self, events):
+        backup = self.backup_path(events)
+        try:
+            with backup.open('rb') as saved:
+                confirmed = saved.read() == canonical({'format_version': 1, 'events': events})
+                if confirmed:
+                    os.fsync(saved.fileno())
+            if confirmed:
+                folder = os.open(backup.parent, os.O_RDONLY)
+                try:
+                    os.fsync(folder)
+                finally:
+                    os.close(folder)
+        except OSError:
+            confirmed = False
+        return {'journal_file': str(self.path), 'backup_file': str(backup),
+                'backup_confirmed': confirmed, 'head': validate_events(events)}
+
+    def backup(self, bundle, expected_head=None):
+        """Copy only validated, already persisted decisions; never replace an older backup."""
+        with self.locked():
+            events = self.read()
+            state = review_state(bundle, events)
+            if expected_head is not None and expected_head != state['head']:
+                raise ReviewError('stale_head', 'Журнал изменился в другом окне. Обнови состояние.')
+            if not self.path.is_file():
+                raise ReviewError('journal_missing', 'Решений на диске пока нет. Сначала сохрани решение.')
+            path = self.backup_path(events)
+            path.parent.mkdir(mode=0o700, exist_ok=True)
+            data = canonical({'format_version': 1, 'events': events})
+            if path.exists():
+                if path.read_bytes() != data:
+                    raise ReviewError('backup_conflict', 'Резервная копия отличается. Она не перезаписана.')
+            else:
+                self.persist(path, data)
+            return self.storage(events)
+
+    def restore(self, bundle, backup):
+        """Restore a verified extension of history; refuse rollback, divergence and corruption."""
+        backup = Path(backup)
+        if not backup.is_file():
+            raise ReviewError('backup_missing', 'Не найден файл резервной копии.')
+        recovered = Journal(backup).read()
+        review_state(bundle, recovered)
+        if not recovered or (recovered[-1].get('source_sha256'), recovered[-1].get('bundle_hash')) != (bundle['source_sha256'], bundle['bundle_hash']):
+            raise ReviewError('wrong_snapshot', 'Копия относится к другому snapshot или пакету пилота.')
+        with self.locked():
+            current = self.read()
+            if recovered[:len(current)] != current:
+                raise ReviewError('history_conflict', 'Нельзя откатить или заменить расходящуюся историю журнала.')
+            if recovered != current:
+                self.persist(self.path, canonical({'format_version': 1, 'events': recovered}))
+        return self.backup(bundle)

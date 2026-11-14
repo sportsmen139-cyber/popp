@@ -18,6 +18,8 @@ ROOT = Path(__file__).resolve().parents[3]
 def create_server(bundle, journal_path, port=5188):
     validate_bundle(bundle)
     journal = Journal(journal_path)
+    if journal.path.exists():
+        journal.backup(bundle)
     csrf = secrets.token_urlsafe(32)
     mutex = threading.Lock()
 
@@ -46,7 +48,8 @@ def create_server(bundle, journal_path, port=5188):
             events = journal.read()
             state = review_state(bundle, events)
             candidate = prepare_candidate(bundle, events, release_version='1.0.0')
-            return {'state': state, 'release_readiness': {'blockers': candidate['blockers'], 'runtime_enabled': False}}
+            return {'state': state, 'storage': journal.storage(events),
+                    'release_readiness': {'blockers': candidate['blockers'], 'runtime_enabled': False}}
 
         def do_GET(self):
             if not self.allowed_host():
@@ -80,7 +83,7 @@ def create_server(bundle, journal_path, port=5188):
             if not hmac.compare_digest(token, csrf):
                 self.reply(403, canonical({'error': 'csrf_denied'}))
                 return
-            if self.path != '/api/review' or self.headers.get('Content-Type', '').split(';')[0] != 'application/json':
+            if self.path not in ('/api/review', '/api/backup') or self.headers.get('Content-Type', '').split(';')[0] != 'application/json':
                 self.reply(400, canonical({'error': 'invalid_request'}))
                 return
             try:
@@ -97,11 +100,23 @@ def create_server(bundle, journal_path, port=5188):
                         values[key] = value
                     return values
                 data = json.loads(self.rfile.read(length).decode('utf-8'), object_pairs_hook=unique)
-                fields = {'items', 'action', 'reviewer', 'comment', 'expected_head', 'source_sha256', 'bundle_hash', 'acknowledged'}
+                fields = {'expected_head', 'source_sha256', 'bundle_hash'}
+                if self.path == '/api/review':
+                    fields |= {'items', 'action', 'reviewer', 'comment', 'acknowledged'}
                 if not isinstance(data, dict) or set(data) != fields:
                     raise ValueError('Unexpected decision fields')
                 with mutex:
-                    journal.append(bundle, **data)
+                    if self.path == '/api/review':
+                        journal.append(bundle, **data)
+                        # A failed copy must not turn a confirmed journal write into a failed-save claim.
+                        try:
+                            journal.backup(bundle)
+                        except (OSError, ReviewError):
+                            pass  # storage.backup_confirmed explicitly reports the missing copy to the UI.
+                    else:
+                        if data['source_sha256'] != bundle['source_sha256'] or data['bundle_hash'] != bundle['bundle_hash']:
+                            raise ReviewError('wrong_snapshot', 'Копия относится к другому snapshot или пакету пилота.')
+                        journal.backup(bundle, expected_head=data['expected_head'])
                     response = self.state_payload()
                 self.reply(200, canonical(response))
             except ReviewError as exc:

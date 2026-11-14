@@ -8,6 +8,11 @@ Stage 3: [локальный Trainer Review и запуск](PILOT_REVIEW_UI.md)
 [план Engine](PILOT_ENGINE_PLAN.md), [scope и блокеры](pilot/summary.json).
 Пилот подготовлен к проверке; фактических утверждений тренера пока нет.
 
+Stage 3B: [простой запуск и инструкция владельцу Mac](MAC_TRAINER_REVIEW.md).
+Двойной щелчок по `Trainer Review.command` открывает прежний локальный UI,
+маршрут основных десяти и проверяемые резервные копии журнала. Snapshot при потере
+восстанавливается только из оригинального XLSX с зарегистрированным SHA256.
+
 - [Полный аудит](IMPORT_AUDIT.md) — факты, статусы, версии, конкретные конфликты.
 - [Schema mapping](SCHEMA_MAPPING.md) — все исходные поля и правила сохранения.
 - [Legacy mapping 45 IDs](LEGACY_EXERCISE_MAPPING.csv) — сравнение с evidence, без aliases.

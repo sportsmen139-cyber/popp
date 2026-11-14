@@ -30,11 +30,94 @@ const blockerNames = {
 let bundle,
   state,
   readiness,
+  storage,
   csrf,
   activeKey,
+  coreContext,
   busy = false
 const selected = new Set()
 const drafts = new Map()
+// Review questions already recorded in PILOT_TRAINER_REVIEW.md; no source content is synthesized.
+const coreQuestions = {
+  EX_000006: 'Подтверди хват, амплитуду и настройки для новичка; минимальное сопротивление и новую калибровку при смене устройства.',
+  EX_000013: 'Подтверди контроль корпуса без грудного упора, инструкцию и переносимость поясницей. Не смешивай с машиной с упором грудью.',
+  EX_000022: 'Подтверди посадку, рукояти, стартовое сопротивление и признаки качественного повторения. Как фиксировать конкретный тренажёр?',
+  EX_000044: 'Подтверди технику и амплитуду для новичка, запись веса гантелей и минимальный шаг нагрузки.',
+  EX_000082: 'Требования оборудования неизвестны: нужен явный контракт, отсутствие строк не означает equipment-free. Как прогрессировать, если верх диапазона уже лёгок?',
+  EX_000085: 'Подтверди настройки и индивидуальную амплитуду. Не переноси килограммы между наклонным и горизонтальным жимом.',
+  EX_000106: 'Подтверди обучение, опоры и положение таза; отдели тазобедренный наклон от динамического разгибания позвоночника.',
+  EX_000112: 'Подтверди настройки оси и опор, диапазон и сопротивление. Альтернативы одной ногой и лёжа проверяются отдельно.',
+  EX_000121: 'Подтверди надёжную опору, условия для передней части стопы, диапазон 12–20 и прогрессию. C-замена сидя — отдельное изменение программы.',
+  EX_000135: 'Нужен явный контракт оборудования. Что считать одним повторением и дозой на стороны? RIR отсутствует намеренно или нужен другой критерий?',
+}
+
+function coreKeys() {
+  return bundle.scope.core_exercises.map((id) =>
+    Object.values(bundle.units).find((u) => u.kind === 'exercise' && u.role === 'core' && u.id === id).key,
+  )
+}
+
+function openEntity(key, filter = 'all') {
+  $('filter').value = filter
+  fillEntities(key)
+  selectEntity(key)
+  const heading = $('card').querySelector('h2')
+  heading.tabIndex = -1
+  heading.focus({ preventScroll: true })
+}
+
+function nextDependency(key) {
+  for (const dependency of bundle.units[key].dependencies) {
+    if (state.units[dependency].status !== 'approved')
+      return nextDependency(dependency) || dependency
+  }
+  return null
+}
+
+function renderRoute() {
+  const keys = coreKeys()
+  const approved = keys.filter((key) => state.units[key].status === 'approved').length
+  const corrections = keys.filter((key) => ['needs_correction', 'rejected'].includes(state.units[key].status)).length
+  $('core-progress').textContent = `Основные упражнения: утверждено ${approved} из ${keys.length}; требуют исправления или отклонены: ${corrections}. Решение по программе: ${statusNames[state.units[bundle.program_key].status]}.`
+  $('core-checklist').replaceChildren()
+  for (const key of keys) {
+    const button = element('button', `${bundle.units[key].id} · ${bundle.units[key].title} · ${statusNames[state.units[key].status]}`, $('core-checklist'))
+    button.type = 'button'
+    button.className = 'secondary'
+    button.disabled = busy
+    button.setAttribute('aria-pressed', String(key === coreContext))
+    button.addEventListener('click', () => openEntity(key, 'core'))
+  }
+  $('return-core').hidden = !coreContext || activeKey === coreContext
+  $('return-core-footer').hidden = $('return-core').hidden
+}
+
+function renderStorage() {
+  $('storage-status').textContent = !state.events.length
+    ? 'Сохранённых решений пока нет. Начальных утверждений нет.'
+    : storage.backup_confirmed
+      ? `Журнал на диске: ${state.events.length} записей. Резервная копия текущего журнала подтверждена.`
+      : 'Решения находятся в журнале, но резервная копия текущего состояния не подтверждена. Повтори создание копии или скачай JSON.'
+  $('storage-paths').textContent = `Журнал: ${storage.journal_file}\nРезервная копия: ${storage.backup_file}\nКонтрольная сумма последнего решения: ${state.head}`
+}
+
+function renderCoreGuide(unit, card) {
+  if (unit.role !== 'core') return
+  const guide = element('section', '', card)
+  guide.className = 'notice'
+  element('h3', 'Что подтвердить тренеру', guide)
+  element('p', coreQuestions[unit.id] || 'Проверь технику, ограничения и назначение из источника.', guide)
+  element('p', 'Сначала проверь определения в обязательных зависимостях. Затем вернись и прими отдельное решение по упражнению. Комментарий не заменяет исправление исходных данных.', guide)
+  const details = element('details', '', guide)
+  element('summary', 'Назначения этого упражнения по фазам', details)
+  for (const phase of bundle.units[bundle.program_key].payload.phases) {
+    for (const session of phase.sessions) {
+      for (const slot of session.slots.filter((s) => s.exercise_id === unit.id && s.exercise_version === unit.version)) {
+        element('p', `${session.record.phase_name} · недели ${session.record.phase_week_start}–${session.record.phase_week_end} · день ${session.record.cycle_day}\n${slot.sets} подх. · ${slot.rep_min ?? 'не задано'}–${slot.rep_max ?? 'не задано'} повт. · RIR ${slot.rir_min === null ? 'не задан' : `${slot.rir_min}–${slot.rir_max}`} · отдых ${slot.rest_min_seconds}–${slot.rest_max_seconds} сек. · ${slot.slot_id}`, details)
+      }
+    }
+  }
+}
 
 function element(tag, text = '', parent) {
   const node = document.createElement(tag)
@@ -308,11 +391,20 @@ function renderDependencies(unit) {
     root,
   )
   if (!unit.dependencies.length) return
+  const next = nextDependency(unit.key)
+  if (next) {
+    const button = element('button', `Проверить следующую зависимость: ${bundle.units[next].title}`, root)
+    button.type = 'button'
+    button.className = 'secondary'
+    button.disabled = busy
+    button.addEventListener('click', () => openEntity(next))
+  }
   const box = element('details', '', root)
   element('summary', `Показать зависимости (${unit.dependencies.length})`, box)
   const mark = element('button', 'Отметить доступные зависимости', box)
   mark.type = 'button'
   mark.className = 'secondary'
+  mark.disabled = busy
   mark.addEventListener('click', () => {
     for (const key of unit.dependencies)
       if (depsApproved(key) && state.units[key].status !== 'approved') selected.add(key)
@@ -340,9 +432,7 @@ function renderDependencies(unit) {
     open.type = 'button'
     open.className = 'secondary'
     open.addEventListener('click', () => {
-      $('filter').value = 'all'
-      fillEntities(key)
-      selectEntity(key)
+      openEntity(key)
     })
     disclosure(row, `Полный состав зависимости: ${dep.covers.length} исходных записей`, dep.payload)
   }
@@ -385,6 +475,9 @@ function render() {
   element('span', `Решение: ${statusNames[state.units[activeKey].status]}`, card).className =
     `badge ${state.units[activeKey].status}`
   const first = unit.covers[0]
+  renderCoreGuide(unit, card)
+  if (unit.kind === 'alternative' || unit.role === 'alternative_target')
+    element('p', 'Дополнительная проверка: эта замена не требуется для утверждения основных десяти упражнений. Для утверждения всего текущего пакета она остаётся обязательной. Непроверенная замена не становится разрешённой автоматически.', card).className = 'notice'
   field(
     card,
     'Источник',
@@ -399,6 +492,8 @@ function render() {
   renderDependencies(unit)
   renderHistory()
   renderMetrics()
+  renderRoute()
+  renderStorage()
   updateActions()
 }
 
@@ -441,16 +536,17 @@ function fillEntities(preferred) {
   if (preferred && units.some((u) => u.key === preferred)) $('entity').value = preferred
 }
 
-function selectEntity(key) {
+function selectEntity(key, scroll = true) {
   if (activeKey) drafts.set(activeKey, $('comment').value)
   activeKey = key
+  if (bundle.units[key].role === 'core') coreContext = key
   $('entity').value = key
   $('comment').value = drafts.get(key) || ''
   $('ack').checked = false
   selected.clear()
   $('status').textContent = ''
   render()
-  $('card').scrollIntoView({ block: 'start' })
+  if (scroll) $('card').scrollIntoView({ block: 'start' })
 }
 
 function updateActions() {
@@ -463,6 +559,12 @@ function updateActions() {
   $('refresh').disabled = busy
   $('filter').disabled = busy
   $('entity').disabled = busy
+  for (const id of ['start-core', 'next-core', 'return-core', 'next-core-footer', 'return-core-footer', 'route-top']) $(id).disabled = busy
+  $('backup').disabled = busy || !state.events.length
+  for (const button of $('core-checklist').querySelectorAll('button')) button.disabled = busy
+  for (const button of $('dependencies').querySelectorAll('button')) button.disabled = busy
+  if (busy)
+    for (const checkbox of $('dependencies').querySelectorAll('input')) checkbox.disabled = true
   $('action-hint').textContent = !depsApproved(activeKey)
     ? 'Утверждение карточки заблокировано: сначала нужно проверить её зависимости.'
     : 'Укажи проверяющего и явно подтверди просмотр состава карточки. Предварительных утверждений нет.'
@@ -471,6 +573,7 @@ function updateActions() {
 async function save(action, items = [activeKey]) {
   if (busy) return
   busy = true
+  $('backup-status').textContent = ''
   $('status').textContent = 'Сохраняем решение…'
   updateActions()
   try {
@@ -490,18 +593,20 @@ async function save(action, items = [activeKey]) {
     })
     state = data.state
     readiness = data.release_readiness
+    storage = data.storage
     $('comment').value = ''
     drafts.delete(activeKey)
     $('ack').checked = false
     selected.clear()
     render()
     $('status').textContent =
-      'Решение записано в отдельный локальный журнал. Исходный статус не изменён.'
+      'Решение записано в отдельный локальный журнал. ' + (storage.backup_confirmed ? 'Резервная копия подтверждена.' : 'Резервная копия не подтверждена: повтори её создание или скачай JSON.')
   } catch (error) {
     $('status').textContent =
       error.message || 'Сохранение не подтверждено. Обнови журнал перед повтором.'
   } finally {
     busy = false
+    renderDependencies(bundle.units[activeKey])
     updateActions()
   }
 }
@@ -512,13 +617,56 @@ async function initialize() {
     bundle = data.bundle
     state = data.state
     readiness = data.release_readiness
+    storage = data.storage
     csrf = data.csrf
     $('pilot-title').textContent =
       `${bundle.program_id} v${bundle.program_version} · ${bundle.units[bundle.program_key].title}`
     $('snapshot').textContent =
       `Snapshot SHA256: ${bundle.source_sha256}\nReview bundle: ${bundle.bundle_hash}`
     fillEntities(bundle.program_key)
-    selectEntity(bundle.program_key)
+    selectEntity(bundle.program_key, false)
+    $('start-core').addEventListener('click', () => {
+      const keys = coreKeys()
+      openEntity(keys.find((key) => state.units[key].status !== 'approved') || keys[0], 'core')
+    })
+    const nextCore = () => {
+      const keys = coreKeys()
+      openEntity(keys[(keys.indexOf(coreContext) + 1) % keys.length], 'core')
+    }
+    $('next-core').addEventListener('click', nextCore)
+    $('next-core-footer').addEventListener('click', nextCore)
+    $('return-core').addEventListener('click', () => openEntity(coreContext, 'core'))
+    $('return-core-footer').addEventListener('click', () => openEntity(coreContext, 'core'))
+    $('route-top').addEventListener('click', () => {
+      $('route-title').tabIndex = -1
+      $('route-title').focus()
+    })
+    $('backup').addEventListener('click', async () => {
+      if (busy) return
+      busy = true
+      updateActions()
+      $('backup-status').textContent = 'Проверяем резервную копию…'
+      try {
+        const data = await api('/api/backup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Review-CSRF': csrf },
+          body: JSON.stringify({ expected_head: state.head, source_sha256: bundle.source_sha256, bundle_hash: bundle.bundle_hash }),
+        })
+        state = data.state
+        readiness = data.release_readiness
+        storage = data.storage
+        $('ack').checked = false
+        selected.clear()
+        render()
+        $('backup-status').textContent = storage.backup_confirmed ? 'Резервная копия текущего журнала подтверждена.' : 'Копия текущего состояния не подтверждена. Обнови журнал.'
+      } catch (error) {
+        $('backup-status').textContent = `Резервная копия не подтверждена. ${error.message}`
+      } finally {
+        busy = false
+        renderDependencies(bundle.units[activeKey])
+        updateActions()
+      }
+    })
     $('filter').addEventListener('change', () => {
       fillEntities()
       selectEntity($('entity').value)
@@ -534,16 +682,25 @@ async function initialize() {
       $(id).addEventListener('click', () => void save(action))
     $('approve-selected').addEventListener('click', () => void save('approve', [...selected]))
     $('refresh').addEventListener('click', async () => {
+      if (busy) return
+      busy = true
+      updateActions()
       try {
         const data = await api('/api/state')
         state = data.state
         readiness = data.release_readiness
+        storage = data.storage
         selected.clear()
         $('ack').checked = false
+        $('backup-status').textContent = ''
         render()
         $('status').textContent = 'Состояние журнала обновлено.'
       } catch {
         $('status').textContent = 'Не удалось обновить журнал. Новые решения не подтверждены.'
+      } finally {
+        busy = false
+        renderDependencies(bundle.units[activeKey])
+        updateActions()
       }
     })
   } catch {
