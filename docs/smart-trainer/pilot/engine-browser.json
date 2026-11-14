@@ -1,0 +1,22 @@
+{
+  "checks": [
+    "Real source SHA/counts/exclusions displayed; exact core-only scope; no pre-recorded owner declaration",
+    "One temporary synthetic owner statement creates no card approvals and cannot bypass technical, equipment, Engine or rights gates",
+    "Isolated assignment/session: fresh load after directed A replacement, saved REPS/RIR/technique, unrelated drafts retained",
+    "Today skip gives no phantom sets; reviewed permanent remove/C changes affect future revision while current session retains its snapshot",
+    "Undo restores future author prescription without history reset; rest day enforced; JSON export and reload retain identities and results",
+    "320/390/1280px and WCAG A/AA pass; no external requests, runtime errors, source mutation or owner/legacy storage writes"
+  ],
+  "errors": [],
+  "externalRequests": [],
+  "real_owner_declarations_created": false,
+  "real_owner_assignments_created": false,
+  "synthetic_test_journals_only": true,
+  "live_activation_enabled": false,
+  "viewports": [
+    320,
+    390,
+    1280
+  ],
+  "browser": "Chromium on macOS; not a native Telegram test"
+}

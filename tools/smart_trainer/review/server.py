@@ -11,13 +11,15 @@ from ..xlsx_source import canonical
 from .pilot import validate_bundle
 from .release import prepare_candidate
 from .workflow import Journal, ReviewError, review_state
+from ..engine.service import PilotService
 
 ROOT = Path(__file__).resolve().parents[3]
 
 
-def create_server(bundle, journal_path, port=5188):
+def create_server(bundle, journal_path, port=5188, *, technical_contracts=None, alternative_ids=()):
     validate_bundle(bundle)
     journal = Journal(journal_path)
+    pilot = PilotService(bundle, Path(journal_path).parent, technical_contracts, alternative_ids)
     if journal.path.exists():
         journal.backup(bundle)
     csrf = secrets.token_urlsafe(32)
@@ -37,7 +39,8 @@ def create_server(bundle, journal_path, port=5188):
             self.send_header('Cross-Origin-Resource-Policy', 'same-origin')
             self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
             if attachment:
-                self.send_header('Content-Disposition', 'attachment; filename="trainer-review-journal.json"')
+                name = attachment if isinstance(attachment, str) else 'trainer-review-journal.json'
+                self.send_header('Content-Disposition', f'attachment; filename="{name}"')
             self.end_headers()
             self.wfile.write(content)
 
@@ -56,12 +59,24 @@ def create_server(bundle, journal_path, port=5188):
                 self.reply(403, canonical({'error': 'host_denied'}))
                 return
             try:
-                if self.path == '/':
+                if self.path in ('/', '/review'):
                     self.reply(200, Path(__file__).with_name('review.html').read_bytes(), 'text/html; charset=utf-8')
                 elif self.path == '/review.css':
                     self.reply(200, Path(__file__).with_name('review.css').read_bytes(), 'text/css; charset=utf-8')
                 elif self.path == '/review-ui.mjs':
                     self.reply(200, (ROOT / 'client/scripts/trainer-review-ui.mjs').read_bytes(), 'text/javascript; charset=utf-8')
+                elif self.path == '/pilot':
+                    self.reply(200, (ROOT / 'tools/smart_trainer/engine/pilot.html').read_bytes(), 'text/html; charset=utf-8')
+                elif self.path == '/pilot.css':
+                    self.reply(200, (ROOT / 'tools/smart_trainer/engine/pilot.css').read_bytes(), 'text/css; charset=utf-8')
+                elif self.path == '/pilot-ui.mjs':
+                    self.reply(200, (ROOT / 'client/scripts/pilot-engine-ui.mjs').read_bytes(), 'text/javascript; charset=utf-8')
+                elif self.path == '/api/pilot-engine':
+                    self.reply(200, canonical({'csrf': csrf, **pilot.payload()}))
+                elif self.path == '/api/owner-statement/export':
+                    self.reply(200, canonical(pilot.author_log.export()), attachment='author-statements.json')
+                elif self.path == '/api/pilot-engine/export':
+                    self.reply(200, canonical(pilot.engine_log.export()), attachment='pilot-assignment-events.json')
                 elif self.path == '/api/pilot':
                     self.reply(200, canonical({'bundle': bundle, 'csrf': csrf, **self.state_payload()}))
                 elif self.path == '/api/state':
@@ -83,7 +98,7 @@ def create_server(bundle, journal_path, port=5188):
             if not hmac.compare_digest(token, csrf):
                 self.reply(403, canonical({'error': 'csrf_denied'}))
                 return
-            if self.path not in ('/api/review', '/api/backup') or self.headers.get('Content-Type', '').split(';')[0] != 'application/json':
+            if self.path not in ('/api/review', '/api/backup', '/api/owner-statement', '/api/pilot-engine/command') or self.headers.get('Content-Type', '').split(';')[0] != 'application/json':
                 self.reply(400, canonical({'error': 'invalid_request'}))
                 return
             try:
@@ -100,6 +115,11 @@ def create_server(bundle, journal_path, port=5188):
                         values[key] = value
                     return values
                 data = json.loads(self.rfile.read(length).decode('utf-8'), object_pairs_hook=unique)
+                if self.path in ('/api/owner-statement', '/api/pilot-engine/command'):
+                    with mutex:
+                        response = pilot.handle('declaration' if self.path == '/api/owner-statement' else 'engine', data)
+                    self.reply(200, canonical(response))
+                    return
                 fields = {'expected_head', 'source_sha256', 'bundle_hash'}
                 if self.path == '/api/review':
                     fields |= {'items', 'action', 'reviewer', 'comment', 'acknowledged'}
@@ -120,9 +140,9 @@ def create_server(bundle, journal_path, port=5188):
                     response = self.state_payload()
                 self.reply(200, canonical(response))
             except ReviewError as exc:
-                self.reply(409 if exc.code in ('stale_head', 'wrong_snapshot', 'dependencies_unreviewed') else 422,
+                self.reply(409 if exc.code in ('stale_head', 'wrong_snapshot', 'dependencies_unreviewed', 'technical_readiness_blocked', 'operation_conflict', 'rest_day_required', 'phase_transition_required') else 422,
                            canonical({'error': exc.code, 'message': str(exc)}))
-            except (ValueError, UnicodeDecodeError, TypeError):
+            except (ValueError, UnicodeDecodeError, TypeError, KeyError):
                 self.reply(400, canonical({'error': 'invalid_request', 'message': 'Некорректный запрос решения.'}))
             except OSError:
                 self.reply(503, canonical({'error': 'save_unconfirmed', 'message': 'Не удалось подтвердить сохранение. Обнови состояние журнала перед повтором.'}))

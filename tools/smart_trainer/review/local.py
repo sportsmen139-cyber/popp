@@ -11,6 +11,7 @@ from ..xlsx_source import SourceError, canonical, digest
 from .pilot import load_pilot
 from .server import create_server
 from .workflow import Journal
+from ..engine.service import PilotService
 
 
 def prepare_local(source=None, choose_source=False):
@@ -44,20 +45,30 @@ def prepare_local(source=None, choose_source=False):
     return bundle
 
 
-def launch(source=None, choose_source=False, port=5188, open_browser=True, restore_journal=None):
+def launch(source=None, choose_source=False, port=5188, open_browser=True, restore_journal=None,
+           technical_contracts=None, alternative_ids=(), interface='pilot', restore_author=None, restore_engine=None):
     bundle = prepare_local(source, choose_source)
     journal = ROOT / '.local/smart-trainer/trainer-review/journals/PRG_000002-v1.json'
     if restore_journal:
         Journal(journal).restore(bundle, restore_journal)
         print('Журнал восстановлен из проверенной копии. Прежние события сохранены.', flush=True)
-    server = create_server(bundle, journal, port)
+    contracts = json.loads(Path(technical_contracts).read_text()) if technical_contracts else None
+    if restore_author or restore_engine:
+        PilotService(bundle, journal.parent, contracts, alternative_ids).restore(restore_author, restore_engine)
+        print('Приватные журналы проверены и восстановлены без отката существующей истории.', flush=True)
+    server = create_server(bundle, journal, port, technical_contracts=contracts, alternative_ids=alternative_ids)
     origin = f'http://127.0.0.1:{server.server_port}'
-    print(f'Private local review: {origin}', flush=True)
-    print(f'Журнал: {journal}\nРезервные копии: {journal.parent / "backups"}', flush=True)
+    address = origin + ('/pilot' if interface == 'pilot' else '/review')
+    print(f'Private local review: {address}', flush=True)
+    if interface == 'pilot':
+        pilot = PilotService(bundle, journal.parent, contracts, alternative_ids)
+        print(f'Заявления владельца: {pilot.author_log.path}\nНазначения и факты: {pilot.engine_log.path}', flush=True)
+    else:
+        print(f'Журнал: {journal}\nРезервные копии: {journal.parent / "backups"}', flush=True)
     print('Оставьте это окно открытым. Для остановки нажмите Control+C. Публикация отключена.', flush=True)
     try:
         if open_browser:
-            webbrowser.open(origin)
+            webbrowser.open(address)
         server.serve_forever()
     except KeyboardInterrupt:
         print('\nПроверка остановлена. Сохранённые решения остаются в журнале.', flush=True)

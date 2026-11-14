@@ -15,7 +15,7 @@ if [ -z "$REVIEW_PYTHON" ]; then
   read -r -p 'Нажмите Enter, чтобы закрыть окно. ' _
   exit 1
 fi
-"$REVIEW_PYTHON" -m tools.smart_trainer.review local --choose-source "$@"
+"$REVIEW_PYTHON" -m tools.smart_trainer.review local --choose-source --interface review "$@"
 REVIEW_RESULT=$?
 if [ "$REVIEW_RESULT" -ne 0 ]; then
   printf '%s\n' 'Запуск остановлен. Если порт 5188 занят, закройте предыдущее окно сервера или запустите с --port 0.' 'Инструкция: docs/smart-trainer/MAC_TRAINER_REVIEW.md'

@@ -1,0 +1,22 @@
+{
+  "checks": [
+    "Real PRG_000002: eight nominal weeks, three phases, no pre-approved decisions",
+    "UI and server both prevent program approval with unreviewed dependencies",
+    "Mac review route: ten core cards, next dependency, explicit return, draft retained, acknowledgement reset",
+    "All ten core exercises available; correction records separately, source status unchanged",
+    "Explicit approval and comment actions persist without automatic status promotion",
+    "Approve/correct/reject/comment survive reload through the filesystem journal",
+    "Failed save never claims success or discards the comment draft",
+    "Concurrent reviewer window is detected; stale writes require refresh",
+    "Only explicit pilot alternatives and targets are included; C semantics remain visible",
+    "Ten core approvals require their dependencies; optional alternatives stay pending and full program stays blocked",
+    "Automatic backup, explicit backup and downloaded JSON contain the exact same journal without new decisions",
+    "A real server process restart restores all synthetic decisions and core progress from disk",
+    "320/390/1280px layout and WCAG A/AA audit pass",
+    "All legacy localStorage values and source bundle unchanged; no external requests or runtime errors"
+  ],
+  "errors": [],
+  "externalRequests": [],
+  "journal": "isolated temporary synthetic decisions only",
+  "real_owner_decisions_created": false
+}

@@ -19,12 +19,19 @@ serve = sub.add_parser('serve')
 serve.add_argument('--bundle', required=True)
 serve.add_argument('--journal', help='Separate private journal; defaults under ignored .local/smart-trainer')
 serve.add_argument('--port', type=int, default=5188)
+serve.add_argument('--technical-contracts', help='Private source/scope-bound technical policy JSON; never an automatic approval')
+serve.add_argument('--alternative', action='append', default=[], help='Explicit source ALT ID to prepare; default core-only')
 local = sub.add_parser('local', help='Simple Mac launch; recover the registered snapshot only if missing')
 local.add_argument('--source', help='Original local XLSX, checked against the registered SHA256')
 local.add_argument('--choose-source', action='store_true', help='Mac file picker if the snapshot is missing')
 local.add_argument('--no-browser', action='store_true')
 local.add_argument('--port', type=int, default=5188)
 local.add_argument('--restore-journal', help='Restore a verified JSON copy, without replacing divergent or newer history')
+local.add_argument('--technical-contracts')
+local.add_argument('--alternative', action='append', default=[])
+local.add_argument('--interface', choices=('pilot', 'review'), default='pilot')
+local.add_argument('--restore-author-statements')
+local.add_argument('--restore-pilot-events')
 for command in ('backup', 'restore'):
     recovery = sub.add_parser(command)
     recovery.add_argument('--bundle', required=True)
@@ -43,7 +50,8 @@ try:
                           'review_units': len(bundle['units']), 'structural_validation': bundle['structural_validation'],
                           'runtime_enabled': False}, ensure_ascii=False, indent=2))
     elif args.command == 'local':
-        launch(args.source, args.choose_source, args.port, not args.no_browser, args.restore_journal)
+        launch(args.source, args.choose_source, args.port, not args.no_browser, args.restore_journal,
+               args.technical_contracts, args.alternative, args.interface, args.restore_author_statements, args.restore_pilot_events)
     else:
         bundle = json.loads(Path(args.bundle).read_text())
         validate_bundle(bundle)
@@ -58,7 +66,8 @@ try:
         for protected in (ROOT / 'client', ROOT / 'supabase', ROOT / '.git', ROOT / 'docs', ROOT / 'tools'):
             if journal == protected or protected in journal.parents:
                 raise SourceError('Journal must be stored in a private writable directory')
-        server = create_server(bundle, journal, args.port)
+        contracts = json.loads(Path(args.technical_contracts).read_text()) if args.technical_contracts else None
+        server = create_server(bundle, journal, args.port, technical_contracts=contracts, alternative_ids=args.alternative)
         print(f'Private local review: http://127.0.0.1:{server.server_port}', flush=True)
         print('Loopback only; no publication. Reviewer is entered explicitly in the UI.', flush=True)
         try:

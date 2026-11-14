@@ -6,7 +6,7 @@
 
 | ID | Что блокирует следующий этап | Нужное решение |
 | --- | --- | --- |
-| CONTENT-01 | Все 200 неисключённых EX и 108 программ NEEDS_REVIEW | Отдельное trainer approval точных revisions и зависимостей; REJECTED остаются архивом |
+| CONTENT-01 | Исходные статусы 200 неисключённых EX и 108 программ остаются NEEDS_REVIEW | По решению владельца — одно source-bound заявление о ранее выполненной содержательной проверке, отдельно от technical readiness; индивидуальные 177 approvals не требуются, REJECTED остаются исключёнными |
 | UNIT-01 | 312 slots в 90 программах: seconds против REPS карточки | Согласовать modality/новую revision/исправление slots; source пока сохраняется дословно |
 | EQUIPMENT-01 | У 34 EX нет явного required kit | Подтвердить equipment-free или указать комплект; unknown не превращать в [] |
 | COVERAGE-01 | Home overview 98 против 104 membership IDs | Уточнить шесть IDs/условия Home и согласовать обзор с нормализованными связями |
@@ -26,5 +26,6 @@ reviewer и reviewed_at пустые. Это ограниченная техни
 comments/metadata и полные тексты остаются в private ignored output.
 
 Ни Supabase, ни production deploy, ни merge main не являются частью этого этапа.
-Следующий допустимый шаг — trainer review preview и решение по конфликтам;
-активация циклов потребует отдельного engine review и реализации.
+Текущая изолированная реализация и оставшиеся блокеры PRG_000002:
+[PILOT_ENGINE.md](PILOT_ENGINE.md). Авторское заявление не устраняет технические
+расхождения; активация требует отдельного решения. Старый Trainer Review вспомогательный.
