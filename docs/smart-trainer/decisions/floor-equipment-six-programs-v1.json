@@ -1,0 +1,173 @@
+{
+  "format_version": 1,
+  "decision_id": "floor-equipment-six-programs-v1",
+  "decision_date": "2026-11-20",
+  "status": "OWNER_APPROVED_DOCUMENTED_NOT_APPLIED",
+  "source_sha256": "1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a",
+  "evidence_ru": "Да, коврик оставляем по желанию. Для скручиваний, Dead Bug и боковой планки обязательна устойчивая нескользкая поверхность.",
+  "scope_programs": [
+    "PRG_000022",
+    "PRG_000030",
+    "PRG_000032",
+    "PRG_000038",
+    "PRG_000063",
+    "PRG_000060"
+  ],
+  "scope_exercises": [
+    {
+      "exercise_id": "EX_000131",
+      "exercise_version": 1,
+      "name_ru": "Скручивания лёжа на полу",
+      "program_positions": [
+        {
+          "program_id": "PRG_000022",
+          "program_version": 1,
+          "slot_ids": [
+            "SLOT_000960",
+            "SLOT_000978",
+            "SLOT_000996"
+          ]
+        },
+        {
+          "program_id": "PRG_000030",
+          "program_version": 1,
+          "slot_ids": [
+            "SLOT_001411",
+            "SLOT_001427",
+            "SLOT_001443"
+          ]
+        },
+        {
+          "program_id": "PRG_000032",
+          "program_version": 1,
+          "slot_ids": [
+            "SLOT_001519",
+            "SLOT_001535",
+            "SLOT_001551"
+          ]
+        },
+        {
+          "program_id": "PRG_000063",
+          "program_version": 1,
+          "slot_ids": [
+            "SLOT_002995",
+            "SLOT_003015",
+            "SLOT_003035"
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "EX_000135",
+      "exercise_version": 1,
+      "name_ru": "Попеременное опускание противоположных руки и ноги лёжа",
+      "program_positions": [
+        {
+          "program_id": "PRG_000022",
+          "program_version": 1,
+          "slot_ids": [
+            "SLOT_000954",
+            "SLOT_000972",
+            "SLOT_000990"
+          ]
+        },
+        {
+          "program_id": "PRG_000030",
+          "program_version": 1,
+          "slot_ids": [
+            "SLOT_001405",
+            "SLOT_001421",
+            "SLOT_001437"
+          ]
+        },
+        {
+          "program_id": "PRG_000032",
+          "program_version": 1,
+          "slot_ids": [
+            "SLOT_001513",
+            "SLOT_001529",
+            "SLOT_001545"
+          ]
+        },
+        {
+          "program_id": "PRG_000038",
+          "program_version": 1,
+          "slot_ids": [
+            "SLOT_001795",
+            "SLOT_001811",
+            "SLOT_001827"
+          ]
+        },
+        {
+          "program_id": "PRG_000060",
+          "program_version": 1,
+          "slot_ids": [
+            "SLOT_002810",
+            "SLOT_002832",
+            "SLOT_002854"
+          ]
+        },
+        {
+          "program_id": "PRG_000063",
+          "program_version": 1,
+          "slot_ids": [
+            "SLOT_002990",
+            "SLOT_003010",
+            "SLOT_003030"
+          ]
+        }
+      ]
+    },
+    {
+      "exercise_id": "EX_000142",
+      "exercise_version": 1,
+      "name_ru": "Боковая планка на предплечье с прямыми ногами",
+      "program_positions": [
+        {
+          "program_id": "PRG_000060",
+          "program_version": 1,
+          "slot_ids": [
+            "SLOT_002821",
+            "SLOT_002843",
+            "SLOT_002865"
+          ]
+        },
+        {
+          "program_id": "PRG_000063",
+          "program_version": 1,
+          "slot_ids": [
+            "SLOT_003000",
+            "SLOT_003020",
+            "SLOT_003040"
+          ]
+        }
+      ]
+    }
+  ],
+  "required_inventory": [],
+  "optional_inventory_ru": [
+    "Коврик"
+  ],
+  "mandatory_environment_conditions": {
+    "stable_surface": true,
+    "non_slip_surface": true
+  },
+  "mandatory_environment_condition_ru": "Устойчивая нескользкая поверхность обязательна для выполнения упражнения.",
+  "surface_requirement_waived": false,
+  "other_programs_in_scope": false,
+  "applied": false,
+  "runtime_contract_created": false,
+  "source_edited": false,
+  "code_edited": false,
+  "published_alpha_edited": false,
+  "does_not_confirm": [
+    "other exercise equipment",
+    "technical_policy",
+    "phase transition",
+    "engine compatibility",
+    "publication rights",
+    "assignment",
+    "activation",
+    "publication"
+  ]
+}
