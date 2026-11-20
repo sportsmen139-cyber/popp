@@ -1,0 +1,37 @@
+{
+  "format_version": 1,
+  "record_id": "program-authorship-content-rights-v1",
+  "recorded_date": "2026-11-20",
+  "source_sha256": "1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a",
+  "evidence_ru": "Тренировочные программы и методика «Умный тренер» разработаны мной как тренером. Однако часть текстовых описаний упражнений была взята из сторонних источников. Я проверял их техническую правильность, биомеханику и соответствие упражнениям, но не могу подтвердить, что обладаю авторскими правами на все исходные формулировки.",
+  "programs_and_methodology": {
+    "status": "OWNER_AUTHORSHIP_ASSERTED",
+    "scope": "Programs and methodology in the registered Smart Trainer source",
+    "confirmed_by": "owner-trainer in this chat",
+    "not_independent_legal_title_verification": true
+  },
+  "exercise_wording": {
+    "status": "MIXED_ORIGIN_RIGHTS_UNVERIFIED_PER_ENTRY",
+    "confirmed_third_party_material_present_somewhere_in_source": true,
+    "exact_borrowed_passages_identified": false,
+    "technical_review_implies_publication_rights": false,
+    "automatic_publication_allowed": false
+  },
+  "media": {
+    "status": "SEPARATE_ASSET_BY_ASSET_REVIEW_REQUIRED",
+    "program_authorship_covers_media": false,
+    "previously_reported_video_files": 103,
+    "registered_video_manifest_rows": 0,
+    "rights_confirmed_assets": [],
+    "scope": "Exercise photographs, video and illustrations; UI asset observations are recorded separately in the assessment"
+  },
+  "prior_methodology_declaration_preserved": true,
+  "prior_author_statement_journal_sha256": "cd32e45d848179f9542d48f078dc45c1b17037274f052595b582ef389b2876b4",
+  "blanket_mixed_bundle_rights_receipt_created": false,
+  "program_rights_reused_for_exercise_wording": false,
+  "commercial_content_clearance_issued": false,
+  "new_library_route": "Proposed independent POPP wording from checked facts and owner requirements, with provenance and trainer review; not a paraphrase of source paragraphs",
+  "source_edited": false,
+  "code_edited": false,
+  "published_alpha_edited": false
+}

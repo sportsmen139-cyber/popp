@@ -1,0 +1,98 @@
+{
+  "checked_at": "2026-11-20T18:26:12.404928+00:00",
+  "source_sha256": "1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a",
+  "source_and_catalog_hashes_verified": true,
+  "published_alpha": {
+    "url": "https://popp-fitness-alpha.pages.dev/",
+    "application_commit": "8f248a93373e056350f7f439ec6c6ed552d4993d",
+    "ten_published_files_match_receipt": true,
+    "legacy_catalog_exercise_count": 45,
+    "template_candidate_count": 29,
+    "template_slot_count": 15,
+    "nonempty_technique_objects": 0,
+    "exercise_video_bindings": 0,
+    "runtime_video_library_count": 0,
+    "imported_smart_trainer_descriptions_connected": false,
+    "ui_renders_exercise_descriptions": false,
+    "short_ui_labels_names_and_program_copy_not_individually_rights_cleared": true
+  },
+  "six_programs": {
+    "program_ids": [
+      "PRG_000022",
+      "PRG_000030",
+      "PRG_000032",
+      "PRG_000038",
+      "PRG_000063",
+      "PRG_000060"
+    ],
+    "unique_core_exercise_versions": 37,
+    "template_slots": 324,
+    "source_text_fields_per_card_checked": [
+      "setup",
+      "execution_standard",
+      "common_errors",
+      "limitations",
+      "technical_prerequisites",
+      "strength_prerequisites",
+      "balance_requirements",
+      "progression_options",
+      "regression_options",
+      "evidence_notes"
+    ],
+    "populated_card_field_instances": 370,
+    "wording_provenance": "UNVERIFIED_PER_ENTRY, not an assertion that every passage is copied",
+    "public_activation": false,
+    "all_source_exercise_records": 203,
+    "disabled_optional_targets_outside_core": 12,
+    "disabled_optional_rules": 19,
+    "optional_content_in_first_batch": false,
+    "text_inspection_scope": "Field presence and scope counts; not a clinical verification or determination of wording authorship"
+  },
+  "mapping": {
+    "legacy_ids_remain_separate": true,
+    "existing_mapping_policy": "KEEP_LEGACY_NO_HISTORY_MERGE for all 45 legacy rows",
+    "automatic_name_based_merge": false
+  },
+  "media": {
+    "exercise_photos_in_published_files": 0,
+    "exercise_videos_in_published_files": 0,
+    "exercise_illustrations_connected": 0,
+    "xlsx_embedded_media": 0,
+    "video_manifest_data_rows": 0,
+    "owner_reported_103_videos_actual_files_not_provided_to_review": true,
+    "published_ui_assets": [
+      {
+        "asset": "icons.svg",
+        "status": "PUBLIC_BUT_UI_UNUSED_ORIGIN_LICENSE_UNVERIFIED",
+        "symbol_count": 6,
+        "proposed_action": "Exclude from a future approved build; do not alter current site"
+      },
+      {
+        "asset": "app-icon.svg, favicon.svg, apple-touch-icon.png and inline POPP wordmark",
+        "status": "GEOMETRIC_BRAND_ASSETS_IN_REPO_HISTORY",
+        "note": "Separate provenance record; no conclusion about trademark clearance"
+      },
+      {
+        "asset": "Onest font",
+        "status": "OFL_LICENSE_PRESENT_IN_REPOSITORY",
+        "note": "Package delivery of required notices and embedded metadata not independently verified"
+      },
+      {
+        "asset": "hero.png, react.svg, vite.svg",
+        "status": "LOCAL_UNUSED_NOT_IN_VERIFIED_PUBLISHED_PACKAGE",
+        "note": "No automatic rights approval"
+      }
+    ]
+  },
+  "proposed_batches": {
+    "1": 10,
+    "2": 10,
+    "3": 10,
+    "4": 7
+  },
+  "new_descriptions_created": 0,
+  "current_programs_and_history_changed": false,
+  "google_sheet_changed": false,
+  "production_changed": false,
+  "legal_clearance_of_all_materials_claimed": false
+}
