@@ -1,0 +1,132 @@
+{
+  "status": "passed",
+  "verified_at": "2026-11-20T13:11:08.019Z",
+  "url": "https://popp-fitness-alpha.pages.dev/",
+  "tls_certificate_verification": true,
+  "application_commit": "8f248a93373e056350f7f439ec6c6ed552d4993d",
+  "archive_sha256": "6eaa5db6dd585e986d862eba92a757c23cbb1241db0085455cb2d6b55c2ee4b4",
+  "files": [
+    {
+      "file": "app-icon.svg",
+      "url": "https://popp-fitness-alpha.pages.dev/app-icon.svg",
+      "status": 200,
+      "content_type": "image/svg+xml",
+      "cache_control": "public, max-age=0, must-revalidate",
+      "sha256": "c18d72e455a2bcc013fe1497eb7413d7cf1018207a32eb64795eb9f0d4ef54bb",
+      "expected_sha256": "c18d72e455a2bcc013fe1497eb7413d7cf1018207a32eb64795eb9f0d4ef54bb",
+      "byte_identical": true,
+      "frame_options": null,
+      "csp": null
+    },
+    {
+      "file": "apple-touch-icon.png",
+      "url": "https://popp-fitness-alpha.pages.dev/apple-touch-icon.png",
+      "status": 200,
+      "content_type": "image/png",
+      "cache_control": "public, max-age=0, must-revalidate",
+      "sha256": "7bbdce969a3a0ebc9329899cedaa74b1837d514df56eb19148ab224382206430",
+      "expected_sha256": "7bbdce969a3a0ebc9329899cedaa74b1837d514df56eb19148ab224382206430",
+      "byte_identical": true,
+      "frame_options": null,
+      "csp": null
+    },
+    {
+      "file": "assets/ProgressScreen-BJTyeB2w.css",
+      "url": "https://popp-fitness-alpha.pages.dev/assets/ProgressScreen-BJTyeB2w.css",
+      "status": 200,
+      "content_type": "text/css; charset=utf-8",
+      "cache_control": "public, max-age=31536000, immutable",
+      "sha256": "3650aa9dfa47434ba12b79d246b1d3d5e6f5707329a86fe115d965bb5e731e77",
+      "expected_sha256": "3650aa9dfa47434ba12b79d246b1d3d5e6f5707329a86fe115d965bb5e731e77",
+      "byte_identical": true,
+      "frame_options": null,
+      "csp": null
+    },
+    {
+      "file": "assets/ProgressScreen-Ui4sB7TU.js",
+      "url": "https://popp-fitness-alpha.pages.dev/assets/ProgressScreen-Ui4sB7TU.js",
+      "status": 200,
+      "content_type": "application/javascript",
+      "cache_control": "public, max-age=31536000, immutable",
+      "sha256": "6cd47228ac2fcb9e3660e8daa967cf6173545dcc3cb65c8f1adef353eeb45e2d",
+      "expected_sha256": "6cd47228ac2fcb9e3660e8daa967cf6173545dcc3cb65c8f1adef353eeb45e2d",
+      "byte_identical": true,
+      "frame_options": null,
+      "csp": null
+    },
+    {
+      "file": "assets/index-ClrDP5N4.css",
+      "url": "https://popp-fitness-alpha.pages.dev/assets/index-ClrDP5N4.css",
+      "status": 200,
+      "content_type": "text/css; charset=utf-8",
+      "cache_control": "public, max-age=31536000, immutable",
+      "sha256": "b7f8b6332a798845eea13c9891052dc8608cd4d34807c194061ed26d2fb08125",
+      "expected_sha256": "b7f8b6332a798845eea13c9891052dc8608cd4d34807c194061ed26d2fb08125",
+      "byte_identical": true,
+      "frame_options": null,
+      "csp": null
+    },
+    {
+      "file": "assets/index-c22I5q4y.js",
+      "url": "https://popp-fitness-alpha.pages.dev/assets/index-c22I5q4y.js",
+      "status": 200,
+      "content_type": "application/javascript",
+      "cache_control": "public, max-age=31536000, immutable",
+      "sha256": "1bebb286ae1ac0d2c867558a637c668dcf5812c9ccaf5c3aaa0bc98f5f21f60e",
+      "expected_sha256": "1bebb286ae1ac0d2c867558a637c668dcf5812c9ccaf5c3aaa0bc98f5f21f60e",
+      "byte_identical": true,
+      "frame_options": null,
+      "csp": null
+    },
+    {
+      "file": "assets/onest-variable-DxZ7AgKS.woff2",
+      "url": "https://popp-fitness-alpha.pages.dev/assets/onest-variable-DxZ7AgKS.woff2",
+      "status": 200,
+      "content_type": "font/woff2",
+      "cache_control": "public, max-age=31536000, immutable",
+      "sha256": "fb7f115784857562685a850e83dc3f9b385b9757b15d05e337f18b6fcc021a03",
+      "expected_sha256": "fb7f115784857562685a850e83dc3f9b385b9757b15d05e337f18b6fcc021a03",
+      "byte_identical": true,
+      "frame_options": null,
+      "csp": null
+    },
+    {
+      "file": "favicon.svg",
+      "url": "https://popp-fitness-alpha.pages.dev/favicon.svg",
+      "status": 200,
+      "content_type": "image/svg+xml",
+      "cache_control": "public, max-age=0, must-revalidate",
+      "sha256": "bdeaa0121b31e2dc3df5324efa9e20975f552d3899c8cf925e4fac9cec264152",
+      "expected_sha256": "bdeaa0121b31e2dc3df5324efa9e20975f552d3899c8cf925e4fac9cec264152",
+      "byte_identical": true,
+      "frame_options": null,
+      "csp": null
+    },
+    {
+      "file": "icons.svg",
+      "url": "https://popp-fitness-alpha.pages.dev/icons.svg",
+      "status": 200,
+      "content_type": "image/svg+xml",
+      "cache_control": "public, max-age=0, must-revalidate",
+      "sha256": "b45fa506195cfcdef406ba9f0c77b36ddc1a7c224040926ec70abc2fdea7b93a",
+      "expected_sha256": "b45fa506195cfcdef406ba9f0c77b36ddc1a7c224040926ec70abc2fdea7b93a",
+      "byte_identical": true,
+      "frame_options": null,
+      "csp": null
+    },
+    {
+      "file": "index.html",
+      "url": "https://popp-fitness-alpha.pages.dev/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-cache",
+      "sha256": "6a935e224a6b44daa9f2d92ee43e8bbff13aaaf3b3db9ec8e91d9c6f90c7a992",
+      "expected_sha256": "6a935e224a6b44daa9f2d92ee43e8bbff13aaaf3b3db9ec8e91d9c6f90c7a992",
+      "byte_identical": true,
+      "frame_options": null,
+      "csp": null
+    }
+  ],
+  "failures": [],
+  "native_telegram_tested": false
+}

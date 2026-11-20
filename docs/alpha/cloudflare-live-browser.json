@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "checked_at": "2026-11-20T13:14:58.189Z",
+  "url": "https://popp-fitness-alpha.pages.dev/",
+  "browser": "141.0.7390.37",
+  "synthetic_disposable_profiles_only": true,
+  "native_telegram_tested": false,
+  "checks": [
+    "Published HTTPS app opens and onboarding exposes all five goal directions",
+    "Goal layout, logo and controls fit 320/390/430 px mobile viewports",
+    "Unavailable strength and back goals never save or silently assign a program",
+    "General-fitness selection assigns the existing gym three-day program and saves the compatible profile",
+    "Workout starts and accepts actual per-set repetitions and decimal weight",
+    "Cold browser restart restores the exact unfinished published workout",
+    "Completion stores one workout with all entered sets and displays its detailed history",
+    "A second cold restart preserves saved history and does not duplicate completion",
+    "Existing supported goal still works: Ягодицы",
+    "Existing supported goal still works: Подтягивания",
+    "No uncaught application errors during live mobile browser checks"
+  ],
+  "errors": [],
+  "networkFailures": [],
+  "external_hosts": [
+    "telegram.org"
+  ],
+  "screenshots": [
+    "cloudflare-screenshots/goals.png",
+    "cloudflare-screenshots/home.png",
+    "cloudflare-screenshots/workout.png",
+    "cloudflare-screenshots/history.png"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "archive_sha256": "6eaa5db6dd585e986d862eba92a757c23cbb1241db0085455cb2d6b55c2ee4b4",
+  "reviewed_application_commit": "8f248a93373e056350f7f439ec6c6ed552d4993d",
+  "files": 11,
+  "contents_match_reviewed_build": true,
+  "credential_or_email_matches": [],
+  "user_data_files": false,
+  "private_source_workbooks_or_logs": false,
+  "source_runtime_diff": false
+}

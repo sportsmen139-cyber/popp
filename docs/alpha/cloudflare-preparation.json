@@ -1,5 +1,5 @@
 {
-  "status": "project_created_assets_uploaded_awaiting_publication_permission",
+  "status": "published_https_and_live_browser_verified",
   "verified_on": "2026-11-20",
   "application_commit": "8f248a93373e056350f7f439ec6c6ed552d4993d",
   "branch": "feature/smart-trainer-catalog-alpha",
@@ -18,7 +18,11 @@
     "bot_token_pattern_scan": "passed",
     "old_host_reference_scan": "passed",
     "no_source_env_workbooks_journals_or_user_data_in_archive": true,
-    "git_runtime_diff_from_reviewed_commit_empty": true
+    "git_runtime_diff_from_reviewed_commit_empty": true,
+    "prepublication_safety": "passed; see cloudflare-prepublish-safety.json",
+    "live_https_and_all_ten_application_hashes": "passed; see cloudflare-live-https.json",
+    "live_mobile_browser_checks": 11,
+    "live_browser_report": "cloudflare-live-browser.json"
   },
   "previous_application_validation": {
     "unit_tests": 369,
@@ -31,17 +35,21 @@
     "project_created": true,
     "proposed_name": "popp-fitness-alpha",
     "name_availability_confirmed": true,
-    "deployed": false,
-    "actual_url": null,
-    "live_https_verified": false,
+    "deployed": true,
+    "actual_url": "https://popp-fitness-alpha.pages.dev/",
+    "live_https_verified": true,
     "telegram_native_verified": false,
     "reserved_project_url": "https://popp-fitness-alpha.pages.dev/",
     "assets_uploaded": 11,
-    "ready_for_deploy": true
+    "ready_for_deploy": false,
+    "deployment_id": "93affafc-f549-4949-a50b-8457e8905038",
+    "deployment_url": "https://93affafc.popp-fitness-alpha.pages.dev/",
+    "owner_publication_permission_received": true,
+    "git_connection": false
   },
   "required_next_steps": [
-    "Obtain separate owner permission for public deployment of the verified Alpha.",
-    "Click Deploy site in the prepared Pages project, then verify live HTTPS and Mini App behavior."
+    "Separately configure the new Mini App URL for @PocketCoachFitBot after owner instruction.",
+    "Run native Telegram iPhone and Android checks; browser tests do not replace them."
   ],
   "history_migration_performed": false,
   "unchanged": [
@@ -98,5 +106,5 @@
       "sha256": "6a935e224a6b44daa9f2d92ee43e8bbff13aaaf3b3db9ec8e91d9c6f90c7a992"
     }
   },
-  "dashboard_observation": "Pages Direct Upload: project popp-fitness-alpha; 11/11 files uploaded; All files were successfully uploaded; Deploy site remains unclicked."
+  "dashboard_observation": "Cloudflare confirmed Success: site was built and deployed to https://popp-fitness-alpha.pages.dev/; deployment 93affafc-f549-4949-a50b-8457e8905038. Production/main is a Pages Direct Upload label, no GitHub main change."
 }
