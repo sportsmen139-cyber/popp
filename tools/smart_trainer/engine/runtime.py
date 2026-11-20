@@ -56,7 +56,7 @@ def rest_allowed(assignment, stamp):
         zone = ZoneInfo(assignment['timezone'])
         elapsed = (date(stamp).astimezone(zone).date() - date(assignment['last_training_at']).astimezone(zone).date()).days
         if elapsed < assignment['next_rest_days']:
-            fail('rest_day_required', 'Между занятиями нужен день без силовой тренировки; на границе цикла сохраняется интервал дней 1/3/5 из семидневного плана. Подходы не удваиваются.')
+            fail('rest_day_required', 'Между занятиями нужен день без силовой тренировки; сохраняется интервал исходного расписания, в том числе на границе цикла. Подходы не удваиваются.')
 
 
 def active_slot(assignment, slot_id):

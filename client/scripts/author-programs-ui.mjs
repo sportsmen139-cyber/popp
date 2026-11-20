@@ -1,8 +1,9 @@
-// Private, same-origin preview only. No assignments or browser-storage writes.
+// Private same-origin selection/preview. Execution uses the admitted existing Engine page.
+// No legacy browser-storage writes or automatic assignments.
 const $ = (id) => document.getElementById(id)
 let catalog
 let requestVersion = 0
-const levels = { intermediate: 'Средний', advanced: 'Продвинутый' }
+const levels = { beginner: 'Новичок', intermediate: 'Средний', advanced: 'Продвинутый' }
 const targets = { legs: 'Ноги', shoulders: 'Плечи', arms: 'Руки', quads: 'Квадрицепсы', hamstrings: 'Задняя поверхность бедра', shoulders_arms: 'Плечи и руки' }
 function node(tag, text, parent, className) {
   const item = document.createElement(tag)
@@ -13,7 +14,7 @@ function node(tag, text, parent, className) {
 }
 function profile(program) {
   return { environment: 'gym', daysPerWeek: $('days').value, level: $('level').value,
-    goalType: 'hypertrophy', targetType: 'muscle_group', targetId: program.targetId }
+    goalType: program.goalType, targetType: program.targetType, targetId: program.targetId }
 }
 async function api(path, data) {
   const response = await fetch(path, data ? { method: 'POST', headers: {
@@ -33,14 +34,14 @@ function renderPrograms() {
     if (matchesProfile) matches++
     const card = node('section', undefined, $('programs'), 'exercise')
     card.dataset.program = program.programId
-    node('h3', targets[program.targetId], card)
+    node('h3', targets[program.targetId] || (program.goalType === 'general_fitness' ? 'Общая физическая подготовка' : 'Набор массы · всё тело'), card)
     node('p', `${program.programId} · версия ${program.programVersion} · ${levels[program.level]} · ${program.daysPerWeek} дня · ${program.weeks} недель`, card, 'meta')
-    node('p', 'Назначение заблокировано до технического допуска.', card)
+    node('p', program.executionAvailable ? 'Изолированное выполнение допущено.' : 'Назначение заблокировано до технического допуска.', card)
     const button = node('button', 'Посмотреть программу', card)
     button.disabled = !matchesProfile
     button.addEventListener('click', () => loadPreview(program))
   }
-  $('selection-note').textContent = matches ? `Подходящих программ в этой группе: ${matches}. Доступен только просмотр.` : 'В этой группе нет программ для выбранного сочетания. Другая программа автоматически не назначается.'
+  $('selection-note').textContent = matches ? `Подходящих программ в этой группе: ${matches}. Возможность выполнения указана в карточке.` : 'В этой группе нет программ для выбранного сочетания. Другая программа автоматически не назначается.'
   $('message').textContent = ''
 }
 function range(low, high) {
@@ -53,11 +54,21 @@ function renderPreview(data) {
   node('h2', data.title, root)
   node('p', `${data.programId}@${data.programVersion} · исходные ID и версии сохранены`, root, 'meta')
   const notice = node('section', undefined, root, 'notice')
-  node('strong', 'Смотреть можно. Начать тренировку пока нельзя.', notice)
+  node('strong', data.executionAvailable ? 'Доступен локальный сценарий выполнения.' : 'Смотреть можно. Начать тренировку пока нельзя.', notice)
   const list = node('ul', undefined, notice)
   data.blockers.forEach((b) => node('li', b.message, list))
-  const start = node('button', 'Тренировка недоступна', notice)
-  start.disabled = true
+  const start = node('button', data.executionAvailable ? 'Открыть локальную тренировку' : 'Тренировка недоступна', notice)
+  start.disabled = !data.executionAvailable
+  start.addEventListener('click', async () => {
+    start.disabled = true
+    try {
+      const result = await api('/api/author-programs/open', { programId: data.programId, profile: profile(data) })
+      window.location.assign(result.url)
+    } catch (error) {
+      $('message').textContent = error.message
+      start.disabled = false
+    }
+  })
   const correction = data.corrections[0]
   if (correction) {
     const info = node('section', undefined, root, 'panel')

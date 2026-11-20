@@ -1,0 +1,113 @@
+{
+  "packet_id": "popp-exercises-batch-01",
+  "content_revision": "0.2",
+  "packet_sha256": "d1c74d6936a59986d429d9806f12372ea1d18cb30fd4a2c3b6883009841da275",
+  "source_sha256": "1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a",
+  "cards": [
+    {
+      "exercise_id": "EX_000131",
+      "exercise_version": 1,
+      "word_count": 74,
+      "required_fields_present": true,
+      "source_revision_hash_matches": true,
+      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
+      "longest_shared_source_word_sequence": 2,
+      "card_sha256": "6d81777668a43194c0a96ef414fa307f757748cd3576eddb1719e4461ba61255"
+    },
+    {
+      "exercise_id": "EX_000135",
+      "exercise_version": 1,
+      "word_count": 84,
+      "required_fields_present": true,
+      "source_revision_hash_matches": true,
+      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
+      "longest_shared_source_word_sequence": 3,
+      "card_sha256": "49483af8a7c8d5f23eb7e967b6261033724f31e1aaab6ae0cb86397534c95045"
+    },
+    {
+      "exercise_id": "EX_000139",
+      "exercise_version": 1,
+      "word_count": 79,
+      "required_fields_present": true,
+      "source_revision_hash_matches": true,
+      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
+      "longest_shared_source_word_sequence": 4,
+      "card_sha256": "b6ad391be230bb149e2d8947756226307833948aea4aaae4ee0f32418191fdb3"
+    },
+    {
+      "exercise_id": "EX_000142",
+      "exercise_version": 1,
+      "word_count": 81,
+      "required_fields_present": true,
+      "source_revision_hash_matches": true,
+      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
+      "longest_shared_source_word_sequence": 1,
+      "card_sha256": "023d47f5d03afe5693f0d7db3a491bb8d239f67efcf29f0117d304a10ba3f61b"
+    },
+    {
+      "exercise_id": "EX_000194",
+      "exercise_version": 1,
+      "word_count": 90,
+      "required_fields_present": true,
+      "source_revision_hash_matches": true,
+      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
+      "longest_shared_source_word_sequence": 3,
+      "card_sha256": "d86817f1c2ecc8e9ee9e445d799e03a3720506907210220f02f481f676d2edff"
+    },
+    {
+      "exercise_id": "EX_000079",
+      "exercise_version": 1,
+      "word_count": 82,
+      "required_fields_present": true,
+      "source_revision_hash_matches": true,
+      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
+      "longest_shared_source_word_sequence": 2,
+      "card_sha256": "08f362d89ad105a32dca8c899ffd7511761a3508fc4445999c8bdf57e56c4163"
+    },
+    {
+      "exercise_id": "EX_000101",
+      "exercise_version": 1,
+      "word_count": 84,
+      "required_fields_present": true,
+      "source_revision_hash_matches": true,
+      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
+      "longest_shared_source_word_sequence": 7,
+      "card_sha256": "79058b3ad358e7025fbefa9af5bb55364b9977392d395e51e079262d8c27a5b0"
+    },
+    {
+      "exercise_id": "EX_000108",
+      "exercise_version": 1,
+      "word_count": 83,
+      "required_fields_present": true,
+      "source_revision_hash_matches": true,
+      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
+      "longest_shared_source_word_sequence": 6,
+      "card_sha256": "879a4be19b64b1334f9fc4f6524bb765cefb65233c5c6d2837640ccbf5467f2e"
+    },
+    {
+      "exercise_id": "EX_000019",
+      "exercise_version": 1,
+      "word_count": 80,
+      "required_fields_present": true,
+      "source_revision_hash_matches": true,
+      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
+      "longest_shared_source_word_sequence": 6,
+      "card_sha256": "2dbafea7840bd0e85f5267129ac58071a89c2a332a4f794d95d6f70c8b42a793"
+    },
+    {
+      "exercise_id": "EX_000006",
+      "exercise_version": 1,
+      "word_count": 83,
+      "required_fields_present": true,
+      "source_revision_hash_matches": true,
+      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
+      "longest_shared_source_word_sequence": 5,
+      "card_sha256": "150633ac0f6721a1bd4432e310717e26fe0005f663d522e35fcfb208fed236ff"
+    }
+  ],
+  "trainer_approval": false,
+  "publication_performed": false,
+  "media_included": false,
+  "source_changed": false,
+  "similarity_scope": "Local source setup/technique/errors/limitations only. Screening is not a proof of originality, rights or clinical validation."
+}

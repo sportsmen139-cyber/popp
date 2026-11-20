@@ -129,10 +129,10 @@ async function accessibility(page, name) {
   passed(`axe ${name}`)
 }
 
-async function openGoals(page, environment = 'В зале', days = '3 раза в неделю') {
+async function openGoals(page, environment = 'В зале', days = '3 раза в неделю', level = 'Новичок') {
   await page.getByRole('button', { name: environment, exact: true }).click()
   await page.getByRole('button', { name: days, exact: true }).click()
-  await page.getByRole('button', { name: 'Новичок', exact: true }).click()
+  await page.getByRole('button', { name: level, exact: true }).click()
 }
 
 async function onboard(page) {
@@ -598,12 +598,28 @@ try {
     const { page, context } = await setup(320)
     await openGoals(page, environment, days)
     await page.getByRole('button', { name: 'Общая физическая подготовка', exact: true }).click()
-    await page.getByRole('heading', { name: 'Для этой цели пока нет программы', exact: true }).waitFor()
+    const sourceTwoDay = environment === 'В зале' && days === '2 раза в неделю'
+    await page.getByRole('heading', { name: sourceTwoDay ? 'Программа готовится к подключению' : 'Для этой цели пока нет программы', exact: true }).waitFor()
     assert.equal((await storage(page))['fitness-onboarding-profile'], null)
     await page.getByRole('button', { name: 'Выбрать другую цель', exact: true }).click()
     await page.getByRole('heading', { name: 'Какая у тебя главная цель?', exact: true }).waitFor()
     await context.close()
     passed(`Goal availability respects settings: ${environment}, ${days}`)
+  }
+
+  for (const target of ['Всё тело без специализации', 'Ноги']) {
+    const { page, context } = await setup(320)
+    await openGoals(page, 'В зале', '2 раза в неделю', 'Средний')
+    await page.getByRole('button', { name: 'Набор мышечной массы', exact: true }).click()
+    await page.getByRole('button', { name: target, exact: true }).click()
+    await page.getByRole('heading', { name: 'Программа готовится к подключению', exact: true }).waitFor()
+    await page.getByText('Программа на три дня вместо неё не назначается.', { exact: false }).waitFor()
+    assert.equal((await storage(page))['fitness-onboarding-profile'], null)
+    assert.equal(await page.locator('.workout-card,.exercise-card').count(), 0)
+    await layout(page, `two-day source candidate ${target}`)
+    await accessibility(page, `two-day source candidate ${target}`)
+    await context.close()
+    passed(`Two-day author candidate explained without assignment: ${target}`)
   }
 
   for (const goal of [baseline.normal['fitness-onboarding-profile'].goal,

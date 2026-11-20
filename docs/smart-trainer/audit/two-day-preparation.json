@@ -1,0 +1,319 @@
+{
+  "source_sha256": "1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a",
+  "source_live_verification": {
+    "absent_formula_results_kept_unknown": 243,
+    "bounded_live_values_checked": 7404,
+    "differences": 0,
+    "formulas_checked": 975,
+    "full_workbook_audit_repeated": false,
+    "source_sha256": "1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a",
+    "source_writes": false,
+    "two_day_program_counts": {
+      "GYM": 16,
+      "HOME": 9,
+      "OUTDOOR": 6
+    },
+    "verified_at": "2026-11-20T19:11:58.827175+00:00"
+  },
+  "programs": [
+    {
+      "programId": "PRG_000001",
+      "programVersion": 1,
+      "title": "Всё тело на тренажёрах — 2 раза в неделю",
+      "sourceSha256": "1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a",
+      "reviewBundleHash": "16dbe5047c1f6ddb916cfdc0e1dc7fb7218b3aac03b969e3d9fb73ddd05db5e8",
+      "originalBundleHash": "16dbe5047c1f6ddb916cfdc0e1dc7fb7218b3aac03b969e3d9fb73ddd05db5e8",
+      "correctionPrepared": false,
+      "executionScopeHash": "48a753cb85db9f8eaefa659814645b42245d28025f833dbdc1e007168a2e81cd",
+      "environment": "gym",
+      "level": "beginner",
+      "daysPerWeek": 2,
+      "targetId": null,
+      "goalType": "general_fitness",
+      "targetType": "whole_body",
+      "cycleDays": [
+        1,
+        4
+      ],
+      "sidedExercises": [
+        "EX_000135"
+      ],
+      "weeks": 8,
+      "phaseCount": 3,
+      "sessionCount": 6,
+      "slotCount": 36,
+      "exerciseCount": 10,
+      "authorDeclarationFound": true,
+      "previewOnly": true,
+      "executionAvailable": false,
+      "structuralErrors": [],
+      "unitConflicts": [],
+      "blockers": [
+        {
+          "code": "cycle_policy_unresolved",
+          "message": "Условия перехода фаз, недель и обработки пропусков ещё не оформлены для этой программы."
+        },
+        {
+          "code": "engine_support_not_verified",
+          "message": "Нет подтверждения совместимости точной версии Engine с этой программой."
+        },
+        {
+          "code": "equipment_contract_unresolved:EX_000110",
+          "message": "EX_000110: оборудование неизвестно; пустой комплект не подразумевается."
+        },
+        {
+          "code": "equipment_contract_unresolved:EX_000135",
+          "message": "EX_000135: оборудование неизвестно; пустой комплект не подразумевается."
+        },
+        {
+          "code": "per_side_logger_not_supported",
+          "message": "Нужен подтверждённый раздельный учёт сторон. Суммарный ввод не подменяет его."
+        },
+        {
+          "code": "progression_policy_unresolved",
+          "message": "Техническая политика прогрессии рабочих весов ещё не оформлена."
+        },
+        {
+          "code": "publication_rights_not_confirmed",
+          "message": "Нет допуска к распространению полного пакета: отдельно проверяются тексты и медиа."
+        },
+        {
+          "code": "technical_policy_unconfirmed",
+          "message": "Техническая политика этого назначения не подтверждена."
+        }
+      ]
+    },
+    {
+      "programId": "PRG_000013",
+      "programVersion": 1,
+      "title": "Всё тело: без узкого акцента — 2 раза в неделю",
+      "sourceSha256": "1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a",
+      "reviewBundleHash": "2bd397d0e821d8086e1a31bb6598ae89dedb510b53dd7f304fb5371313148338",
+      "originalBundleHash": "2bd397d0e821d8086e1a31bb6598ae89dedb510b53dd7f304fb5371313148338",
+      "correctionPrepared": false,
+      "executionScopeHash": null,
+      "environment": "gym",
+      "level": "intermediate",
+      "daysPerWeek": 2,
+      "targetId": null,
+      "goalType": "hypertrophy",
+      "targetType": "whole_body",
+      "cycleDays": [
+        1,
+        4
+      ],
+      "sidedExercises": [
+        "EX_000090",
+        "EX_000135"
+      ],
+      "weeks": 8,
+      "phaseCount": 3,
+      "sessionCount": 6,
+      "slotCount": 36,
+      "exerciseCount": 12,
+      "authorDeclarationFound": true,
+      "previewOnly": true,
+      "executionAvailable": false,
+      "structuralErrors": [
+        "slot_dose_or_unit"
+      ],
+      "unitConflicts": [
+        {
+          "slot_id": "SLOT_000558",
+          "exercise_id": "EX_000135",
+          "exercise_version": 1,
+          "exercise_unit": "REPS",
+          "prescribed_units": [
+            "SECONDS"
+          ],
+          "source": {
+            "row": 562,
+            "sheet": "18_Состав_сессий"
+          }
+        },
+        {
+          "slot_id": "SLOT_000570",
+          "exercise_id": "EX_000135",
+          "exercise_version": 1,
+          "exercise_unit": "REPS",
+          "prescribed_units": [
+            "SECONDS"
+          ],
+          "source": {
+            "row": 574,
+            "sheet": "18_Состав_сессий"
+          }
+        },
+        {
+          "slot_id": "SLOT_000582",
+          "exercise_id": "EX_000135",
+          "exercise_version": 1,
+          "exercise_unit": "REPS",
+          "prescribed_units": [
+            "SECONDS"
+          ],
+          "source": {
+            "row": 586,
+            "sheet": "18_Состав_сессий"
+          }
+        }
+      ],
+      "blockers": [
+        {
+          "code": "engine_support_not_verified",
+          "message": "Нет подтверждения совместимости точной версии Engine с этой программой."
+        },
+        {
+          "code": "equipment_contract_unresolved:EX_000131",
+          "message": "EX_000131: оборудование неизвестно; пустой комплект не подразумевается."
+        },
+        {
+          "code": "equipment_contract_unresolved:EX_000135",
+          "message": "EX_000135: оборудование неизвестно; пустой комплект не подразумевается."
+        },
+        {
+          "code": "per_side_logger_not_supported",
+          "message": "Нужен подтверждённый раздельный учёт сторон. Суммарный ввод не подменяет его."
+        },
+        {
+          "code": "publication_rights_not_confirmed",
+          "message": "Нет допуска к распространению полного пакета: отдельно проверяются тексты и медиа."
+        },
+        {
+          "code": "seconds_logger_not_supported",
+          "message": "Изолированный Engine пока не исполняет позиции в секундах."
+        },
+        {
+          "code": "source_dose_unit_conflict",
+          "message": "В программе и карточке упражнения разные единицы назначения."
+        },
+        {
+          "code": "source_structure_invalid",
+          "message": "Структурная проверка исходного назначения не пройдена."
+        },
+        {
+          "code": "technical_policy_unconfirmed",
+          "message": "Техническая политика этого назначения не подтверждена."
+        }
+      ]
+    },
+    {
+      "programId": "PRG_000021",
+      "programVersion": 1,
+      "title": "Всё тело: акцент на ноги — 2 раза в неделю",
+      "sourceSha256": "1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a",
+      "reviewBundleHash": "babbc539138c1c27bb8d834cd005cd42860d4a004c81cc8ba23cbbbb85685be3",
+      "originalBundleHash": "babbc539138c1c27bb8d834cd005cd42860d4a004c81cc8ba23cbbbb85685be3",
+      "correctionPrepared": false,
+      "executionScopeHash": null,
+      "environment": "gym",
+      "level": "intermediate",
+      "daysPerWeek": 2,
+      "targetId": "legs",
+      "goalType": "hypertrophy",
+      "targetType": "muscle_group",
+      "cycleDays": [
+        1,
+        4
+      ],
+      "sidedExercises": [
+        "EX_000090",
+        "EX_000135"
+      ],
+      "weeks": 8,
+      "phaseCount": 3,
+      "sessionCount": 6,
+      "slotCount": 36,
+      "exerciseCount": 12,
+      "authorDeclarationFound": true,
+      "previewOnly": true,
+      "executionAvailable": false,
+      "structuralErrors": [
+        "slot_dose_or_unit"
+      ],
+      "unitConflicts": [
+        {
+          "slot_id": "SLOT_000918",
+          "exercise_id": "EX_000135",
+          "exercise_version": 1,
+          "exercise_unit": "REPS",
+          "prescribed_units": [
+            "SECONDS"
+          ],
+          "source": {
+            "row": 922,
+            "sheet": "18_Состав_сессий"
+          }
+        },
+        {
+          "slot_id": "SLOT_000930",
+          "exercise_id": "EX_000135",
+          "exercise_version": 1,
+          "exercise_unit": "REPS",
+          "prescribed_units": [
+            "SECONDS"
+          ],
+          "source": {
+            "row": 934,
+            "sheet": "18_Состав_сессий"
+          }
+        },
+        {
+          "slot_id": "SLOT_000942",
+          "exercise_id": "EX_000135",
+          "exercise_version": 1,
+          "exercise_unit": "REPS",
+          "prescribed_units": [
+            "SECONDS"
+          ],
+          "source": {
+            "row": 946,
+            "sheet": "18_Состав_сессий"
+          }
+        }
+      ],
+      "blockers": [
+        {
+          "code": "engine_support_not_verified",
+          "message": "Нет подтверждения совместимости точной версии Engine с этой программой."
+        },
+        {
+          "code": "equipment_contract_unresolved:EX_000131",
+          "message": "EX_000131: оборудование неизвестно; пустой комплект не подразумевается."
+        },
+        {
+          "code": "equipment_contract_unresolved:EX_000135",
+          "message": "EX_000135: оборудование неизвестно; пустой комплект не подразумевается."
+        },
+        {
+          "code": "per_side_logger_not_supported",
+          "message": "Нужен подтверждённый раздельный учёт сторон. Суммарный ввод не подменяет его."
+        },
+        {
+          "code": "publication_rights_not_confirmed",
+          "message": "Нет допуска к распространению полного пакета: отдельно проверяются тексты и медиа."
+        },
+        {
+          "code": "seconds_logger_not_supported",
+          "message": "Изолированный Engine пока не исполняет позиции в секундах."
+        },
+        {
+          "code": "source_dose_unit_conflict",
+          "message": "В программе и карточке упражнения разные единицы назначения."
+        },
+        {
+          "code": "source_structure_invalid",
+          "message": "Структурная проверка исходного назначения не пройдена."
+        },
+        {
+          "code": "technical_policy_unconfirmed",
+          "message": "Техническая политика этого назначения не подтверждена."
+        }
+      ]
+    }
+  ],
+  "source_changed": false,
+  "actual_program_assignments_created": 0,
+  "execution_tests_use_explicit_synthetic_fixture": true,
+  "deployment_performed": false
+}

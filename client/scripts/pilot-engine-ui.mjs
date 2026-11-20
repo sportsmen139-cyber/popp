@@ -1,5 +1,14 @@
 // Private local service only. No imports from the working Mini App or its storage.
 const $ = (id) => document.getElementById(id)
+const apiRoot = document.body.dataset.pilotApiRoot || '/api/pilot-engine'
+if (apiRoot !== '/api/pilot-engine' && !/^\/api\/author-pilot\/[a-f0-9]{32}$/.test(apiRoot)) throw new Error('Invalid local program context')
+function apiPath(path) {
+  if (apiRoot === '/api/pilot-engine') return path
+  if (path === '/api/owner-statement') return apiRoot + '/owner-statement'
+  if (path.startsWith('/api/pilot-engine')) return apiRoot + path.slice('/api/pilot-engine'.length)
+  return path
+}
+for (const link of document.querySelectorAll('a[href="/api/pilot-engine/export"]')) link.href = apiPath('/api/pilot-engine/export')
 let model, csrf, busy = false
 const drafts = new Map()
 const blockerLabels = {
@@ -58,7 +67,7 @@ function current() { return model.state.assignments[model.state.active_assignmen
 function unit(id, version) { return model.scope.units[`exercise:${id}@${version}`] }
 function doseText(dose) { return `${dose.sets} подх. × ${dose.rep_min}–${dose.rep_max} повт. · RIR ${dose.rir_min === null ? 'не задан' : `${dose.rir_min}–${dose.rir_max}`} · отдых ${dose.rest_min_seconds}–${dose.rest_max_seconds} сек.` }
 async function api(path, body) {
-  const response = await fetch(path, body ? { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Review-CSRF': csrf }, body: JSON.stringify(body) } : undefined)
+  const response = await fetch(apiPath(path), body ? { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Review-CSRF': csrf }, body: JSON.stringify(body) } : undefined)
   const data = await response.json()
   if (!response.ok) throw new Error(data.message || 'Действие не подтверждено. Обнови состояние перед повтором.')
   return data

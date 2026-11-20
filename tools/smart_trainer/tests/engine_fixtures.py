@@ -16,7 +16,7 @@ from .test_review import synthetic_pilot
 NOW = datetime(2026, 11, 14, 9, tzinfo=timezone.utc)
 
 
-def engine_fixture(alternatives=False, upper=12):
+def engine_fixture(alternatives=False, upper=12, days=(1, 3, 5)):
     _, tables, support = synthetic_pilot()
     base_ex, base_bio = deepcopy(tables['exercises'][0]), deepcopy(tables['biomechanics'][0])
     tables['exercises'], tables['biomechanics'] = [], []
@@ -35,11 +35,11 @@ def engine_fixture(alternatives=False, upper=12):
                     row = deepcopy(original)
                     row.update(link_id=f'LNK_{len(tables["relations"]) + 1:06}', source_id=identity)
                     tables['relations'].append(row)
-    tables['programs'][0].update(duration_weeks=8, days_per_week=3, name_ru='Synthetic isolated eight-week cycle')
+    tables['programs'][0].update(duration_weeks=8, days_per_week=len(days), name_ru='Synthetic isolated eight-week cycle')
     base_session, base_slot = deepcopy(tables['sessions'][0]), deepcopy(tables['slots'][0])
     tables['sessions'], tables['slots'], tables['alternatives'] = [], [], []
     for phase, start, end in [(1, 1, 2), (2, 3, 5), (3, 6, 8)]:
-        for day in (1, 3, 5):
+        for day in days:
             sid = f'SES_{len(tables["sessions"]) + 1:06}'
             session = deepcopy(base_session)
             session.update(session_id=sid, phase_id=f'PHASE_0{phase}', phase_name=f'Synthetic phase {phase}',

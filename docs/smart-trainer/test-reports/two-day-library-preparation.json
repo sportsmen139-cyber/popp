@@ -1,0 +1,201 @@
+{
+  "executed_date": "2026-11-20",
+  "branch": "feature/smart-trainer-catalog-alpha",
+  "python_tests": {
+    "passed": 112
+  },
+  "client_tests": {
+    "passed": 371,
+    "files": 31
+  },
+  "build": "passed",
+  "eslint": "passed",
+  "browser_suites": [
+    {
+      "suite": "ui",
+      "status": "passed",
+      "check_count": 67,
+      "artifact_report_sha256": "ac5a802d7766f0c4d106eaa69aaaef6a02eef85bfa5b8f1ba24764d2582b2f24",
+      "checks": [
+        "320/360/390/430/desktop: 320px layout, validation and controls",
+        "320/360/390/430/desktop: 360px layout, validation and controls",
+        "axe onboarding",
+        "axe home",
+        "axe empty progress",
+        "axe check-in",
+        "axe workout",
+        "320/360/390/430/desktop: 390px layout, validation and controls",
+        "320/360/390/430/desktop: 430px layout, validation and controls",
+        "320/360/390/430/desktop: 1280px layout, validation and controls",
+        "axe recorded progress",
+        "Five normal completions, previous results, progression, reload, period/exercise controls and profile history retention",
+        "axe coach observations",
+        "Coach observations are derived from five actual synthetic UI completions",
+        "Accepted adaptation exactly matches pre-redesign storage",
+        "Declined adaptation exactly matches pre-redesign storage",
+        "Explicit zero and partial records remain intact",
+        "unsupported home",
+        "unsupported outdoor",
+        "unsupported two-day program",
+        "unsupported four-day program",
+        "known empty inventory",
+        "axe unavailable state",
+        "invalid inventory",
+        "Known inventory stays verified and unmodified",
+        "Onboarding back navigation and goal: Увеличить ягодицы",
+        "Onboarding back navigation and goal: Лучше подтягиваться",
+        "Goal hierarchy, logo and controls at 320px",
+        "Goal hierarchy, logo and controls at 360px",
+        "axe goals",
+        "axe muscle goals",
+        "axe exercise goals",
+        "Goal hierarchy, logo and controls at 390px",
+        "Goal hierarchy, logo and controls at 430px",
+        "Goal hierarchy, logo and controls at 1280px",
+        "axe unavailable goal",
+        "Unavailable goal does not assign or mutate records: Развитие силы",
+        "Unavailable goal does not assign or mutate records: Мышечная выносливость",
+        "Unavailable goal does not assign or mutate records: Всё тело без специализации",
+        "Unavailable goal does not assign or mutate records: Спина",
+        "Unavailable goal does not assign or mutate records: Грудь",
+        "Unavailable goal does not assign or mutate records: Плечи",
+        "Unavailable goal does not assign or mutate records: Руки",
+        "Unavailable goal does not assign or mutate records: Ноги",
+        "Unavailable goal does not assign or mutate records: Передняя поверхность бедра",
+        "Unavailable goal does not assign or mutate records: Задняя поверхность бедра",
+        "Unavailable goal does not assign or mutate records: Плечи и руки",
+        "Unavailable goal does not assign or mutate records: Отжимания на брусьях",
+        "Goal availability respects settings: Дома, 3 раза в неделю",
+        "Goal availability respects settings: На улице, 3 раза в неделю",
+        "Goal availability respects settings: В зале, 2 раза в неделю",
+        "Goal availability respects settings: В зале, 4 раза в неделю",
+        "axe two-day source candidate Всё тело без специализации",
+        "Two-day author candidate explained without assignment: Всё тело без специализации",
+        "axe two-day source candidate Ноги",
+        "Two-day author candidate explained without assignment: Ноги",
+        "Legacy general_fitness: reopen, unfinished edit and supported replacement preserve records",
+        "Legacy hypertrophy: reopen, unfinished edit and supported replacement preserve records",
+        "Legacy exercise_performance: reopen, unfinished edit and supported replacement preserve records",
+        "Goal choice also respects actual equipment availability and preserves the saved inventory",
+        "Stored unsupported whole-body strength cannot fall back to general fitness",
+        "Stored unsupported whole-body hypertrophy cannot fall back to general fitness",
+        "Stored unsupported whole-body endurance cannot fall back to general fitness",
+        "Branded metadata, Russian document and original icons",
+        "Branded loading state while the real lazy module is pending",
+        "axe lazy module recovery",
+        "Failed lazy module recovers through actual back/reload actions without data loss"
+      ]
+    },
+    {
+      "suite": "alpha",
+      "status": "passed",
+      "check_count": 13,
+      "artifact_report_sha256": "0fff5a79acc845e39029bbcee54fb033bfbcb425e88a3fec00bb8cc0c61dd466",
+      "checks": [
+        "feedback configured: 320px layout, 48px controls, WCAG A/AA",
+        "configured contact: real form requests Telegram handoff, no delivery claim",
+        "without Telegram SDK: browser fallback requests opening even when noopener returns null",
+        "native bridge exception: recoverable message, draft preserved",
+        "clipboard success and denial: manual text remains accessible",
+        "feedback leaves all three legacy localStorage values unchanged",
+        "feedback missing config: 320px layout, 48px controls, WCAG A/AA",
+        "missing contact: no broken send action, draft/copy available",
+        "empty video library: honest fallback without a broken play button",
+        "technique player: 320px layout, 48px controls, WCAG A/AA",
+        "on-demand resolver, poster, native play/pause, inline/no-autoplay, cleanup",
+        "media element errors recover through close/retry",
+        "resolver error handled; another exercise revision never inherits media"
+      ]
+    },
+    {
+      "suite": "release",
+      "status": "passed",
+      "check_count": 10,
+      "artifact_report_sha256": "2045e2002d76f418043b603ffaf7e5909d8f3e8446f2a0e15a303748e1f57b6a",
+      "checks": [
+        "Cold browser restart restores exact workout, partial inputs, decimal weight and difficulty without advancing history",
+        "Finish, view actual progress and cold reopen preserve one completion and disable native closing confirmation",
+        "Full workout history exposes older sessions, exact values and missing data; pagination preserves every record",
+        "Interrupted history/progress save recovers on reopen exactly once",
+        "Draft save failure is retryable and profile editing cannot erase an active workout",
+        "Incomplete data require confirmation; negative input is rejected; explicit zero and missing fields remain distinct",
+        "Pain check-in does not offer an automatic lighter workout or start a session",
+        "Unreadable or disabled storage shows a recovery screen without resetting user records",
+        "SDK loading failure preserves browser-mode startup and draft recovery",
+        "Built Alpha opens owner-confirmed @forever_139 with only the entered feedback; link intercepted, no message sent; mobile layout and storage preserved"
+      ]
+    },
+    {
+      "suite": "six_source",
+      "status": "passed",
+      "check_count": 10,
+      "artifact_report_sha256": "2c8dc098faa6876588677e2e1757d28f1cddbafe3e357a66db60c34fcaeed2e0",
+      "checks": [
+        "Six exact source programs reuse the existing owner declaration; none activated",
+        "Beginner and mismatched 3/4-day combinations receive no selectable program or legacy fallback",
+        "PRG_000022: real phases, 54 slots, exact per-side doses and preserved originals; execution blocked",
+        "PRG_000030: real phases, 48 slots, exact per-side doses and preserved originals; execution blocked",
+        "PRG_000032: real phases, 48 slots, exact per-side doses and preserved originals; execution blocked",
+        "PRG_000038: real phases, 48 slots, exact per-side doses and preserved originals; execution blocked",
+        "PRG_000063: real phases, 60 slots, exact per-side doses and preserved originals; execution blocked",
+        "PRG_000060: real phases, 66 slots, exact per-side doses and preserved originals; execution blocked",
+        "320/390/1280px layouts and accessibility checks passed",
+        "No source/journal/history changes, runtime errors, external calls or publication"
+      ]
+    },
+    {
+      "suite": "two_day",
+      "status": "passed",
+      "check_count": 7,
+      "artifact_report_sha256": "1ae4334ff1066f473b6695d856820d007e09ef3970b64c32b3cdf3b6ee9cad04",
+      "checks": [
+        "Three real 2-day programs remain gated; library preserves 200 revisions and excludes 3",
+        "PRG_000001: source phases/36 slots visible; no false assignment",
+        "PRG_000013: source phases/36 slots visible; no false assignment",
+        "PRG_000021: source phases/36 slots visible; no false assignment",
+        "Wrong levels/frequency rejected; mobile/desktop selection, accessibility and legacy storage preserved",
+        "Synthetic fixture: selection → existing Engine → equipment acknowledgement → results → reload restores active session",
+        "Synthetic fixture: completion advances to source day 4, preserves full history/export and legacy storage"
+      ]
+    },
+    {
+      "suite": "content",
+      "status": "passed",
+      "check_count": 3,
+      "artifact_report_sha256": "989b1b732695924b15423fd90273ea4a66910aa199be8b1457430d5fef73d211",
+      "checks": [
+        "All ten private cards contain the required short sections, steps and 2–4 errors",
+        "320/390/1280px: readable layout, no horizontal overflow or accessibility violations",
+        "No media, scripts, external requests or publication; trainer decisions collected at the end"
+      ]
+    },
+    {
+      "suite": "existing_isolated_pilot",
+      "status": "passed",
+      "check_count": 6,
+      "evidence": "Successful pilot-engine-browser.mjs process and six PASS results; default pilot API and actual private bundle tested without mutation",
+      "checks": [
+        "real source identity/exclusions",
+        "synthetic owner declaration cannot bypass real gates",
+        "existing assignment and replacement flow",
+        "skip and personal revisions retain session snapshot",
+        "undo, rest interval, export and reload retain history",
+        "320/390/1280px accessibility and unchanged source/owner/legacy data"
+      ]
+    }
+  ],
+  "native_telegram_tested": false,
+  "real_two_day_programs_activated": 0,
+  "full_synthetic_two_day_cycle_completions": 16,
+  "eligible_library_revisions": 200,
+  "excluded_revisions": 3,
+  "private_content_drafts": 10,
+  "trainer_approved_new_texts": 0,
+  "deployment_performed": false,
+  "source_writes": false,
+  "protected_storage_keys_unchanged": true,
+  "browser_checks_total": 116,
+  "final_focused_python_recheck": {
+    "passed": 19
+  }
+}

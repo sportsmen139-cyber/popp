@@ -5,6 +5,7 @@ import { alphaGoalDirections } from '../data/alphaGoalChoices'
 import type { GoalChoice } from '../data/alphaGoalChoices'
 import { resolveTrainingPlan } from '../domain/program/resolveTrainingPlan'
 import { resolveCurrentWorkout } from '../domain/program/resolveCurrentWorkout'
+import { sourceTwoDayCandidate } from '../domain/program/sourceTwoDayCandidate'
 import { ActionButton, OnboardingShell } from './ui/Primitives'
 import { useScreenFocus } from './ui/useScreenFocus'
 import './OnboardingGoal.css'
@@ -39,7 +40,8 @@ export function OnboardingGoal({
     else onBack()
   }
 
-  const title = unavailable ? 'Для этой цели пока нет программы'
+  const sourceCandidate = unavailable ? sourceTwoDayCandidate({ ...selection, goal: unavailable.goal }) : null
+  const title = unavailable ? sourceCandidate ? 'Программа готовится к подключению' : 'Для этой цели пока нет программы'
     : direction?.id === 'hypertrophy' ? 'На каких мышцах сделать акцент?'
     : direction ? 'Какое упражнение хочешь улучшить?' : 'Какая у тебя главная цель?'
   const description = unavailable ? unavailable.label
@@ -57,7 +59,8 @@ export function OnboardingGoal({
       onBack={back}
     >
       {unavailable ? <div className="goal-unavailable" role="status">
-        <p>{!hasBaseProgram ? 'Для выбранных условий программа не подключена. В Alpha доступен зал — 3 раза в неделю.'
+        <p>{sourceCandidate ? 'Для выбранной цели и уровня есть авторская программа на два занятия. Она ещё готовится к подключению: проверка оборудования и условий старта не завершена. Программа на три дня вместо неё не назначается.'
+          : !hasBaseProgram ? 'Для выбранных условий программа не подключена. В Alpha доступен зал — 3 раза в неделю.'
           : unavailableReason === 'invalid_equipment_inventory' ? 'Сохранённый список оборудования не распознан. Проверь настройки оборудования перед подбором.'
           : unavailableReason === 'workout_unavailable' ? 'Не удалось собрать тренировку с указанным оборудованием. Программа не будет назначена без подходящего инвентаря.'
           : unavailable.hint}</p>

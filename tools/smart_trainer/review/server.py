@@ -24,6 +24,7 @@ def create_server(bundle, journal_path, port=5188, *, technical_contracts=None, 
         journal.backup(bundle)
     csrf = secrets.token_urlsafe(32)
     mutex = threading.Lock()
+    author_sessions = {}
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *_args):
@@ -54,6 +55,16 @@ def create_server(bundle, journal_path, port=5188, *, technical_contracts=None, 
             return {'state': state, 'storage': journal.storage(events),
                     'release_readiness': {'blockers': candidate['blockers'], 'runtime_enabled': False}}
 
+        def author_api(self):
+            parts = self.path.split('/')
+            if (author_programs is None or len(parts) not in (4, 5) or parts[1:3] != ['api', 'author-pilot'] or
+                    parts[3] not in author_sessions or (len(parts) == 5 and parts[4] not in ('command', 'owner-statement', 'export'))):
+                raise ReviewError('author_context_unavailable', 'Открой программу заново из локального каталога. История сохранена.')
+            context = author_sessions[parts[3]]
+            # Recheck scope/profile/admission for every request, including stale tabs.
+            service = author_programs.service(context['programId'], context['profile'])
+            return service, parts[4] if len(parts) == 5 else ''
+
         def do_GET(self):
             if not self.allowed_host():
                 self.reply(403, canonical({'error': 'host_denied'}))
@@ -73,12 +84,32 @@ def create_server(bundle, journal_path, port=5188, *, technical_contracts=None, 
                     self.reply(200, (ROOT / 'client/scripts/pilot-engine-ui.mjs').read_bytes(), 'text/javascript; charset=utf-8')
                 elif self.path == '/api/pilot-engine':
                     self.reply(200, canonical({'csrf': csrf, **pilot.payload()}))
+                elif author_programs is not None and self.path.startswith('/author-pilot/'):
+                    token = self.path.removeprefix('/author-pilot/')
+                    if token not in author_sessions:
+                        self.reply(404, canonical({'error': 'author_context_unavailable', 'message': 'Открой программу из локального каталога. История сохранена.'}))
+                        return
+                    context = author_sessions[token]
+                    author_programs.service(context['programId'], context['profile'])
+                    page = (ROOT / 'tools/smart_trainer/engine/pilot.html').read_text()
+                    page = page.replace('<body>', f'<body data-pilot-api-root="/api/author-pilot/{token}">')
+                    self.reply(200, page.encode(), 'text/html; charset=utf-8')
+                elif author_programs is not None and self.path.startswith('/api/author-pilot/'):
+                    service, action = self.author_api()
+                    if action == '':
+                        self.reply(200, canonical({'csrf': csrf, **service.payload()}))
+                    elif action == 'export':
+                        self.reply(200, canonical(service.engine_log.export()), attachment='author-program-events.json')
+                    else:
+                        self.reply(404, canonical({'error': 'not_found'}))
                 elif author_programs is not None and self.path == '/author-programs':
                     self.reply(200, (ROOT / 'tools/smart_trainer/author-programs.html').read_bytes(), 'text/html; charset=utf-8')
                 elif author_programs is not None and self.path == '/author-programs-ui.mjs':
                     self.reply(200, (ROOT / 'client/scripts/author-programs-ui.mjs').read_bytes(), 'text/javascript; charset=utf-8')
                 elif author_programs is not None and self.path == '/api/author-programs':
                     self.reply(200, canonical({'csrf': csrf, **author_programs.listing()}))
+                elif author_programs is not None and self.path == '/api/exercise-library' and hasattr(author_programs, 'library'):
+                    self.reply(200, canonical(author_programs.library.manifest()))
                 elif self.path == '/api/owner-statement/export':
                     self.reply(200, canonical(pilot.author_log.export()), attachment='author-statements.json')
                 elif self.path == '/api/pilot-engine/export':
@@ -108,7 +139,9 @@ def create_server(bundle, journal_path, port=5188, *, technical_contracts=None, 
                 return
             paths = {'/api/review', '/api/backup', '/api/owner-statement', '/api/pilot-engine/command'}
             if author_programs is not None:
-                paths.add('/api/author-programs/preview')
+                paths.update(('/api/author-programs/preview', '/api/author-programs/open'))
+                if self.path.startswith('/api/author-pilot/'):
+                    paths.add(self.path)  # author_api validates the complete route before any command.
             if self.path not in paths or self.headers.get('Content-Type', '').split(';')[0] != 'application/json':
                 self.reply(400, canonical({'error': 'invalid_request'}))
                 return
@@ -126,10 +159,28 @@ def create_server(bundle, journal_path, port=5188, *, technical_contracts=None, 
                         values[key] = value
                     return values
                 data = json.loads(self.rfile.read(length).decode('utf-8'), object_pairs_hook=unique)
-                if self.path == '/api/author-programs/preview':
+                if self.path in ('/api/author-programs/preview', '/api/author-programs/open'):
                     if not isinstance(data, dict) or set(data) != {'programId', 'profile'}:
                         raise ValueError('Unexpected preview fields')
-                    self.reply(200, canonical(author_programs.preview(data['programId'], data['profile'])))
+                    if self.path.endswith('/preview'):
+                        response = author_programs.preview(data['programId'], data['profile'])
+                    else:
+                        with mutex:
+                            author_programs.service(data['programId'], data['profile'])
+                            token = next((key for key, context in author_sessions.items() if context == data), None)
+                            if token is None:
+                                token = secrets.token_hex(16)
+                                author_sessions[token] = data
+                        response = {'url': '/author-pilot/' + token, 'assignmentCreated': False}
+                    self.reply(200, canonical(response))
+                    return
+                if self.path.startswith('/api/author-pilot/'):
+                    with mutex:
+                        service, action = self.author_api()
+                        if action not in ('command', 'owner-statement'):
+                            raise ValueError('Unexpected author command route')
+                        response = service.handle('engine' if action == 'command' else 'declaration', data)
+                    self.reply(200, canonical(response))
                     return
                 if self.path in ('/api/owner-statement', '/api/pilot-engine/command'):
                     with mutex:
