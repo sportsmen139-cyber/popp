@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="{{CSP}}">
+  <title>POPP · приватная библиотека 200 упражнений</title>
+  <style>{{STYLE}}</style>
+</head>
+<body><main>
+<header><p class="brand">POPP FITNESS</p><h1>Библиотека упражнений</h1><p>200 карточек · локальная проверка</p></header>
+<aside class="notice"><strong>Проверка текста не открывает тренировку.</strong><p>Тексты не опубликованы, медиа отключены. Первые десять карточек сохранены без изменений; автоматическое утверждение не создано.</p></aside>
+<p id="summary"></p><p id="message" role="status"></p>
+<section aria-label="Поиск и фильтры">
+  <div class="filters">
+    <label>Поиск<input id="search" type="search" placeholder="Название или EX ID"></label>
+    <label>Статус<select id="status">
+      <option value="all">Все статусы</option><option value="draft">Ожидают проверки</option>
+      <option value="decision">Нужны данные или решение</option><option value="approved">Текст утверждён локально</option>
+      <option value="changes">Нужны правки</option><option value="protected">Первые 10: тексты 0.3 сохранены</option>
+    </select></label>
+  </div>
+  <details id="filter-details"><summary>Мышцы, оборудование и приоритет</summary><div class="filters">
+    <label>Мышцы по источнику<select id="muscle"></select></label>
+    <label>Содержит оборудование<select id="equipment"></select></label>
+    <label>Приоритет<select id="priority"><option value="all">Все упражнения</option><option value="0">Первые программы на 2 дня</option><option value="1">Первые программы на 3 дня</option><option value="2">Остальная библиотека</option></select></label>
+    <label>Группа проверки<select id="group"></select></label>
+  </div></details>
+</section>
+<details id="review-details" class="review-panel"><summary id="review-summary">Решения тренера и резервная копия</summary>
+<section class="review-controls" aria-label="Решение по выбранным карточкам">
+  <h2>Проверяй небольшими группами</h2>
+  <p>Выбери до десяти карточек. Решение подтверждает только содержание, технику и понятность точных текстов, без допуска программ, прав на сторонние материалы или публикации.</p>
+  <label>Имя проверяющего<input id="reviewer" maxlength="120" autocomplete="off"></label>
+  <label>Комментарий<textarea id="comment" maxlength="2000"></textarea></label>
+  <label class="check"><input id="ack" type="checkbox">Подтверждаю проверку содержания, техники и понятности выбранных точных редакций</label>
+  <div class="actions"><button id="select-page">Выбрать страницу</button><button id="approve">Утвердить выбранные тексты</button><button id="request-changes">Нужны правки</button><button id="clear-selection">Снять выбор</button></div>
+  <p id="selected"></p>
+  <div class="actions"><button id="export">Скачать решения JSON</button><label class="file-button">Восстановить решения<input id="import" type="file" accept="application/json,.json"></label></div>
+  <p id="storage-status"></p>
+</section></details>
+<nav class="pagination" aria-label="Страницы каталога"><button id="previous">Назад</button><span id="page-label"></span><button id="next">Далее</button></nav>
+<div id="cards"></div>
+<section id="questions"><h2>Вопросы и недостающие данные</h2></section>
+<footer><p>При боли прекрати упражнение и обсуди дальнейшее выполнение с тренером. Не продолжай через боль.</p><p>Автоматическая проверка совпадений не подтверждает юридические права. Здесь нет медицинских назначений или автоматической адаптации объёма.</p></footer>
+</main><script type="application/json" id="library-data">{{DATA}}</script><script>{{SCRIPT}}</script></body>
+</html>

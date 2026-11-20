@@ -1,113 +1,73 @@
 {
   "packet_id": "popp-exercises-batch-01",
-  "content_revision": "0.2",
-  "packet_sha256": "d1c74d6936a59986d429d9806f12372ea1d18cb30fd4a2c3b6883009841da275",
+  "content_revision": "0.3",
+  "packet_sha256": "2b950eb4e36784f7ea971b6d9e54098fd50ad3f2609786e1040fdf09fc7035cd",
   "source_sha256": "1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a",
+  "status": "PRESERVED_NO_AUTOMATIC_APPROVAL_RECORDED",
   "cards": [
     {
-      "exercise_id": "EX_000131",
-      "exercise_version": 1,
-      "word_count": 74,
-      "required_fields_present": true,
-      "source_revision_hash_matches": true,
-      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
-      "longest_shared_source_word_sequence": 2,
+      "key": "EX_000131@1",
+      "actual_text_revision": "popp-text-0.2",
+      "text_sha256": "44ecdaa2a90e78210457082a85bbfe5e0a4a9f73c14871944ca537733f722b7e",
       "card_sha256": "6d81777668a43194c0a96ef414fa307f757748cd3576eddb1719e4461ba61255"
     },
     {
-      "exercise_id": "EX_000135",
-      "exercise_version": 1,
-      "word_count": 84,
-      "required_fields_present": true,
-      "source_revision_hash_matches": true,
-      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
-      "longest_shared_source_word_sequence": 3,
-      "card_sha256": "49483af8a7c8d5f23eb7e967b6261033724f31e1aaab6ae0cb86397534c95045"
+      "key": "EX_000135@1",
+      "actual_text_revision": "popp-text-0.3",
+      "text_sha256": "46efe34906a0487e064622a846202c25329c6abf14046d9fb668b91c49e96276",
+      "card_sha256": "b3cc9c1760bc21b6b7d425b67b5180f46dbf94cf1bfc394d205cb0a155ae1abd"
     },
     {
-      "exercise_id": "EX_000139",
-      "exercise_version": 1,
-      "word_count": 79,
-      "required_fields_present": true,
-      "source_revision_hash_matches": true,
-      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
-      "longest_shared_source_word_sequence": 4,
-      "card_sha256": "b6ad391be230bb149e2d8947756226307833948aea4aaae4ee0f32418191fdb3"
+      "key": "EX_000079@1",
+      "actual_text_revision": "popp-text-0.3",
+      "text_sha256": "0287b62780fcea8a7333c0167c967189629a1e4f84c903bdbdf7942a75e693ab",
+      "card_sha256": "2bdd92e511370295ef428ef1d233b8c3b1f1b885a39afb55542e2cb78c0b01fd"
     },
     {
-      "exercise_id": "EX_000142",
-      "exercise_version": 1,
-      "word_count": 81,
-      "required_fields_present": true,
-      "source_revision_hash_matches": true,
-      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
-      "longest_shared_source_word_sequence": 1,
-      "card_sha256": "023d47f5d03afe5693f0d7db3a491bb8d239f67efcf29f0117d304a10ba3f61b"
+      "key": "EX_000101@1",
+      "actual_text_revision": "popp-text-0.3",
+      "text_sha256": "4e27d82232a706b800c14e5446143b447b9df82bad9ce761b0cda323d0954998",
+      "card_sha256": "a481fa4a7b4bfb4eeb04885cba26e1b05611e624c8b677f7146e69235bebede4"
     },
     {
-      "exercise_id": "EX_000194",
-      "exercise_version": 1,
-      "word_count": 90,
-      "required_fields_present": true,
-      "source_revision_hash_matches": true,
-      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
-      "longest_shared_source_word_sequence": 3,
-      "card_sha256": "d86817f1c2ecc8e9ee9e445d799e03a3720506907210220f02f481f676d2edff"
+      "key": "EX_000006@1",
+      "actual_text_revision": "popp-text-0.2",
+      "text_sha256": "c8882caf1c8b59b155d4b49b101677f7dae07580589b8235044369634a425fd7",
+      "card_sha256": "150633ac0f6721a1bd4432e310717e26fe0005f663d522e35fcfb208fed236ff"
     },
     {
-      "exercise_id": "EX_000079",
-      "exercise_version": 1,
-      "word_count": 82,
-      "required_fields_present": true,
-      "source_revision_hash_matches": true,
-      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
-      "longest_shared_source_word_sequence": 2,
-      "card_sha256": "08f362d89ad105a32dca8c899ffd7511761a3508fc4445999c8bdf57e56c4163"
-    },
-    {
-      "exercise_id": "EX_000101",
-      "exercise_version": 1,
-      "word_count": 84,
-      "required_fields_present": true,
-      "source_revision_hash_matches": true,
-      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
-      "longest_shared_source_word_sequence": 7,
-      "card_sha256": "79058b3ad358e7025fbefa9af5bb55364b9977392d395e51e079262d8c27a5b0"
-    },
-    {
-      "exercise_id": "EX_000108",
-      "exercise_version": 1,
-      "word_count": 83,
-      "required_fields_present": true,
-      "source_revision_hash_matches": true,
-      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
-      "longest_shared_source_word_sequence": 6,
+      "key": "EX_000108@1",
+      "actual_text_revision": "popp-text-0.2",
+      "text_sha256": "c543578fc3008f32e8e0d4d9672440915a9fb30ce07076fc4af1d88f7ba03e00",
       "card_sha256": "879a4be19b64b1334f9fc4f6524bb765cefb65233c5c6d2837640ccbf5467f2e"
     },
     {
-      "exercise_id": "EX_000019",
-      "exercise_version": 1,
-      "word_count": 80,
-      "required_fields_present": true,
-      "source_revision_hash_matches": true,
-      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
-      "longest_shared_source_word_sequence": 6,
-      "card_sha256": "2dbafea7840bd0e85f5267129ac58071a89c2a332a4f794d95d6f70c8b42a793"
+      "key": "EX_000019@1",
+      "actual_text_revision": "popp-text-0.3",
+      "text_sha256": "1c8fd0cdea072da486ba939e93d64acb156f80cd83e31a4864671c7017b8eee9",
+      "card_sha256": "b95dcc678762d8087b1a96515da528130c172904f076256a0bc7cce66abec2fa"
     },
     {
-      "exercise_id": "EX_000006",
-      "exercise_version": 1,
-      "word_count": 83,
-      "required_fields_present": true,
-      "source_revision_hash_matches": true,
-      "equipment_biomechanics_counting_review": "MANUAL_SOURCE_COMPARISON_TRAINER_PENDING",
-      "longest_shared_source_word_sequence": 5,
-      "card_sha256": "150633ac0f6721a1bd4432e310717e26fe0005f663d522e35fcfb208fed236ff"
+      "key": "EX_000139@1",
+      "actual_text_revision": "popp-text-0.2",
+      "text_sha256": "87ee4783f5978045472d71781903c2f15fced32683e08125872506ed8fb41c22",
+      "card_sha256": "b6ad391be230bb149e2d8947756226307833948aea4aaae4ee0f32418191fdb3"
+    },
+    {
+      "key": "EX_000142@1",
+      "actual_text_revision": "popp-text-0.3",
+      "text_sha256": "ecf5b4c66016cedc060b30c95dffe52f03c314560dc1013037529d492dbadb8f",
+      "card_sha256": "7d8a58a23c930d57d8eabd1a7e389782f09bda27616b8543051477549c8569fe"
+    },
+    {
+      "key": "EX_000194@1",
+      "actual_text_revision": "popp-text-0.3",
+      "text_sha256": "343dad52d3d1990447b10b151c063451a848b5ef17bdc1698946ae9b34fa1da5",
+      "card_sha256": "b0bc356f4a97a50cd9b5f872719ae198323c44f162e19c5e4d8821dc086f649d"
     }
   ],
-  "trainer_approval": false,
+  "previous_revision_preserved": "0.2",
   "publication_performed": false,
   "media_included": false,
-  "source_changed": false,
-  "similarity_scope": "Local source setup/technique/errors/limitations only. Screening is not a proof of originality, rights or clinical validation."
+  "trainer_approval": false
 }

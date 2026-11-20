@@ -1,0 +1,60 @@
+{
+  "date": "2026-11-20",
+  "python_tests": {
+    "passed": 118,
+    "final_content_focus_passed": 6
+  },
+  "client_tests": {
+    "passed": 371,
+    "files": 31
+  },
+  "build": "passed",
+  "eslint": "passed",
+  "library_browser": {
+    "status": "passed",
+    "checks": [
+      "200 exact revisions, 190 new drafts, 10 preserved texts and 3 exclusions; zero inferred approvals",
+      "All 200 cards render their actual complete instructions and counting without substituting variants",
+      "Muscle, equipment, review status, first-ten and two-day priority filters use real metadata",
+      "Explicit single/group approvals bind exact text hashes; reload and hash-linked JSON backup retain history",
+      "New change requests append events; an older backup cannot erase newer approvals or comments",
+      "Incomplete equipment cards cannot receive a final text approval through the interface",
+      "320/390/1280px layouts, keyboard/accessibility checks and all legacy storage sentinels preserved",
+      "Fresh-context restore accepts exact revisions and rejects altered text hashes without overwriting saved decisions",
+      "Corrupted local history is reported and preserved; no silent reset or fabricated approval",
+      "Storage write failure creates no phantom approval and preserves legacy records",
+      "Changing an embedded text hash prevents review startup and approval",
+      "A changed revision cannot reuse the old manifest even when the body text is identical",
+      "No source text mutation, network requests, media, owner approval, assignment or publication"
+    ],
+    "errors": [],
+    "external": [],
+    "native_telegram_tested": false,
+    "actual_owner_approvals_created": false,
+    "reviews": "synthetic disposable browser profiles only",
+    "executed_at": "2026-11-20T20:37:51.719Z"
+  },
+  "two_day_browser": {
+    "status": "passed",
+    "checks": [
+      "Three real 2-day programs remain gated; library preserves 200 revisions and excludes 3",
+      "PRG_000001: source phases/36 slots visible; no false assignment",
+      "PRG_000013: source phases/36 slots visible; no false assignment",
+      "PRG_000021: source phases/36 slots visible; no false assignment",
+      "Wrong levels/frequency rejected; mobile/desktop selection, accessibility and legacy storage preserved",
+      "Synthetic fixture: selection → existing Engine → equipment acknowledgement → results → reload restores active session",
+      "Synthetic fixture: completion advances to source day 4, preserves full history/export and legacy storage"
+    ],
+    "errors": [],
+    "external": [],
+    "execution_fixture": "explicit synthetic, not author source admission",
+    "native_telegram_tested": false,
+    "executed_at": "2026-11-20T20:31:41.225Z"
+  },
+  "native_telegram_tested": false,
+  "published_alpha_changed": false,
+  "source_or_program_writes": false,
+  "new_real_assignments": 0,
+  "owner_approvals_generated": 0,
+  "private_content_not_in_react_build": true
+}
