@@ -1,0 +1,90 @@
+{
+  "all_source_ex139_slots": 36,
+  "catalog_matches_registered_sha": true,
+  "correction_applied": false,
+  "differences": 0,
+  "first_six": [
+    {
+      "matching_slots": [],
+      "program_id": "PRG_000022",
+      "session_templates": 9
+    },
+    {
+      "matching_slots": [],
+      "program_id": "PRG_000030",
+      "session_templates": 9
+    },
+    {
+      "matching_slots": [],
+      "program_id": "PRG_000032",
+      "session_templates": 9
+    },
+    {
+      "matching_slots": [],
+      "program_id": "PRG_000038",
+      "session_templates": 9
+    },
+    {
+      "matching_slots": [
+        {
+          "row": 3009,
+          "session_id": "SES_000565",
+          "slot_id": "SLOT_003005"
+        },
+        {
+          "row": 3029,
+          "session_id": "SES_000569",
+          "slot_id": "SLOT_003025"
+        },
+        {
+          "row": 3049,
+          "session_id": "SES_000573",
+          "slot_id": "SLOT_003045"
+        }
+      ],
+      "program_id": "PRG_000063",
+      "session_templates": 12
+    },
+    {
+      "matching_slots": [],
+      "program_id": "PRG_000060",
+      "session_templates": 12
+    }
+  ],
+  "formula_checks": 6,
+  "no_truncation": true,
+  "sheet_writes": false,
+  "source_sha256": "1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a",
+  "source_xlsx_matches_registered_sha": true,
+  "value_checks": 675,
+  "verified_at": "2026-11-20T14:44:45.644448+00:00",
+  "source_spreadsheet_url": "https://docs.google.com/spreadsheets/d/1RbkoiW_6cq4UbojCPBrYmNRmt_sOEA8VMHGpDxoas-0/edit",
+  "source_sheets": {
+    "17_Сессии": 702321507,
+    "18_Состав_сессий": 1699670091
+  },
+  "verification_mode": "Read-only bounded EX_000139 search, full matching-session ID checks for six programs, precise dose cells; no full workbook audit",
+  "original_seconds": [
+    15,
+    20,
+    25
+  ],
+  "owner_proposed_repetition_ranges": [
+    [
+      4,
+      6
+    ],
+    [
+      6,
+      8
+    ],
+    [
+      8,
+      10
+    ]
+  ],
+  "proposal_status": "OWNER_PROPOSED_SCOPE_VERIFIED_NOT_APPLIED",
+  "code_changed": false,
+  "published_alpha_changed": false,
+  "other_exercises_changed": false
+}

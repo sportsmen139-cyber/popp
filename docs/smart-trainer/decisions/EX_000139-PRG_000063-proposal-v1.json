@@ -1,0 +1,136 @@
+{
+  "format_version": 1,
+  "proposal_id": "EX_000139-PRG_000063-v1",
+  "recorded_date": "2026-11-20",
+  "status": "OWNER_PROPOSED_SCOPE_VERIFIED_NOT_APPLIED",
+  "evidence": "Owner supplied the ranges and conditions in this chat and explicitly instructed not to apply the change yet.",
+  "source_sha256": "1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a",
+  "program_id": "PRG_000063",
+  "program_version": 1,
+  "exercise_id": "EX_000139",
+  "exercise_version": 1,
+  "session_name": "День 4. Верх тела",
+  "cycle_day": 5,
+  "positions": [
+    {
+      "phase_id": "PHASE_01",
+      "slot_id": "SLOT_003005",
+      "session_id": "SES_000565",
+      "source_sheet": "18_Состав_сессий",
+      "source_row": 3009,
+      "order_index": 5,
+      "original": {
+        "sets": 2,
+        "rep_min": null,
+        "rep_max": null,
+        "time_seconds": 15,
+        "rest_min_seconds": 60,
+        "rest_max_seconds": 120
+      },
+      "owner_proposed": {
+        "sets": 2,
+        "rep_min": 4,
+        "rep_max": 6,
+        "time_seconds": null,
+        "rest_min_seconds": 60,
+        "rest_max_seconds": 120
+      }
+    },
+    {
+      "phase_id": "PHASE_02",
+      "slot_id": "SLOT_003025",
+      "session_id": "SES_000569",
+      "source_sheet": "18_Состав_сессий",
+      "source_row": 3029,
+      "order_index": 5,
+      "original": {
+        "sets": 2,
+        "rep_min": null,
+        "rep_max": null,
+        "time_seconds": 20,
+        "rest_min_seconds": 60,
+        "rest_max_seconds": 120
+      },
+      "owner_proposed": {
+        "sets": 2,
+        "rep_min": 6,
+        "rep_max": 8,
+        "time_seconds": null,
+        "rest_min_seconds": 60,
+        "rest_max_seconds": 120
+      }
+    },
+    {
+      "phase_id": "PHASE_03",
+      "slot_id": "SLOT_003045",
+      "session_id": "SES_000573",
+      "source_sheet": "18_Состав_сессий",
+      "source_row": 3049,
+      "order_index": 5,
+      "original": {
+        "sets": 2,
+        "rep_min": null,
+        "rep_max": null,
+        "time_seconds": 25,
+        "rest_min_seconds": 60,
+        "rest_max_seconds": 120
+      },
+      "owner_proposed": {
+        "sets": 2,
+        "rep_min": 8,
+        "rep_max": 10,
+        "time_seconds": null,
+        "rest_min_seconds": 60,
+        "rest_max_seconds": 120
+      }
+    }
+  ],
+  "scope_check": {
+    "first_six_programs": [
+      "PRG_000022",
+      "PRG_000030",
+      "PRG_000032",
+      "PRG_000038",
+      "PRG_000063",
+      "PRG_000060"
+    ],
+    "matching_counts": {
+      "PRG_000022": 0,
+      "PRG_000030": 0,
+      "PRG_000032": 0,
+      "PRG_000038": 0,
+      "PRG_000063": 3,
+      "PRG_000060": 0
+    },
+    "live_google_matches_registered_import": true
+  },
+  "rep_definition_ru": "Один повтор — контролируемое выкатывание и возвращение в исходное положение.",
+  "conditions_ru": [
+    "Выполнение с коленей, в контролируемой амплитуде.",
+    "Не допускать провала поясницы и потери контроля таза.",
+    "Переход к следующей фазе — только при выполнении уже согласованных условий.",
+    "Если необходимая техника не сохраняется, уменьшать амплитуду или пересматривать назначение, а не форсировать повторения."
+  ],
+  "preserve": [
+    "source Google Sheet",
+    "published Alpha",
+    "other exercises and programs",
+    "rest 60–120 sec",
+    "minimum_sets",
+    "source RIR",
+    "original 15/20/25 seconds and full correction history"
+  ],
+  "not_time_equivalence": true,
+  "applied": false,
+  "runtime_overlay_created": false,
+  "source_edited": false,
+  "published_alpha_edited": false,
+  "does_not_confirm": [
+    "technical_policy",
+    "equipment",
+    "engine_support",
+    "publication_rights",
+    "assignment",
+    "activation"
+  ]
+}
