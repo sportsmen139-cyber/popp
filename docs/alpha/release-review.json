@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "executed_at": "2026-11-20T11:18:38.437Z",
+  "browser": "141.0.7390.37",
+  "native_telegram_tested": false,
+  "storage": "synthetic disposable profiles only",
+  "checks": [
+    "Cold browser restart restores exact workout, partial inputs, decimal weight and difficulty without advancing history",
+    "Finish, view actual progress and cold reopen preserve one completion and disable native closing confirmation",
+    "Full workout history exposes older sessions, exact values and missing data; pagination preserves every record",
+    "Interrupted history/progress save recovers on reopen exactly once",
+    "Draft save failure is retryable and profile editing cannot erase an active workout",
+    "Incomplete data require confirmation; negative input is rejected; explicit zero and missing fields remain distinct",
+    "Pain check-in does not offer an automatic lighter workout or start a session",
+    "Unreadable or disabled storage shows a recovery screen without resetting user records",
+    "SDK loading failure preserves browser-mode startup and draft recovery"
+  ],
+  "screenshots": [
+    "resumed-workout",
+    "recorded-progress",
+    "home-after-restart",
+    "interrupted-save",
+    "incomplete-confirmation",
+    "storage-recovery"
+  ],
+  "external": []
+}

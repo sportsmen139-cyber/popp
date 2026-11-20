@@ -1,0 +1,61 @@
+{
+  "status": "passed_automated_checks_native_telegram_pending",
+  "verified_on": "2026-11-20",
+  "base_commit": "75d9e34818790a82ae602a02e20ff4a49cb6c424",
+  "branch": "feature/smart-trainer-catalog-alpha",
+  "node": "24.21.0",
+  "browser": {
+    "name": "Chromium Headless Shell",
+    "version": "141.0.7390.37",
+    "native_telegram_tested": false
+  },
+  "checks": {
+    "unit": {
+      "command": "npm test",
+      "test_files": 29,
+      "tests": 341,
+      "status": "passed"
+    },
+    "build": {
+      "command": "npm run build",
+      "status": "passed"
+    },
+    "eslint": {
+      "command": "npm run lint",
+      "status": "passed"
+    },
+    "ui": {
+      "command": "npm run test:ui",
+      "checks": 31,
+      "report": "ui-review.json"
+    },
+    "alpha": {
+      "command": "npm run test:alpha",
+      "checks": 13,
+      "report": "alpha-review.json"
+    },
+    "release": {
+      "command": "npm run test:release",
+      "checks": 9,
+      "report": "release-review.json"
+    }
+  },
+  "browser_data": "Only disposable synthetic profiles; native bridge and media fixtures are intercepted locally. No real messages are sent.",
+  "screenshots": "screenshots/; synthetic entries only",
+  "unchanged": [
+    "main",
+    "production publication",
+    "Supabase and existing user data",
+    "client Training Engine domain logic and 45 legacy exercise IDs",
+    "Smart Trainer importer, source programs and isolated Python Engine"
+  ],
+  "limitations": [
+    "Local storage only, scoped to device/browser/origin; one workout window recommended.",
+    "Existing gym program for 3 days per week only.",
+    "PRG_000002 remains isolated; existing safety/content gates remain required.",
+    "Native iPhone and Android Telegram checks must be completed after owner-authorized test publication.",
+    "Existing test Site has public link access, no tester allowlist."
+  ],
+  "publication_performed": false,
+  "source_snapshot": "Existing ignored local XLSX found; no import or source-wide audit performed."
+}

@@ -1,24 +1,12 @@
 import type { WorkoutSessionResult } from '../types/workoutSession'
+import { readStored, writeRaw } from './localStorage'
+import { isHistory } from './validators'
 
-const WORKOUT_HISTORY_KEY = 'fitness-workout-history'
+export const WORKOUT_HISTORY_KEY = 'fitness-workout-history'
 
 export function loadWorkoutHistory():
   WorkoutSessionResult[] {
-  const savedHistory = localStorage.getItem(
-    WORKOUT_HISTORY_KEY,
-  )
-
-  if (!savedHistory) {
-    return []
-  }
-
-  try {
-    return JSON.parse(
-      savedHistory,
-    ) as WorkoutSessionResult[]
-  } catch {
-    return []
-  }
+  return readStored(WORKOUT_HISTORY_KEY, isHistory, [])
 }
 
 export function saveWorkoutSession(
@@ -26,7 +14,7 @@ export function saveWorkoutSession(
 ) {
   const history = loadWorkoutHistory()
 
-  localStorage.setItem(
+  writeRaw(
     WORKOUT_HISTORY_KEY,
     JSON.stringify([
       ...history,

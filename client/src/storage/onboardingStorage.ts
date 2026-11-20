@@ -1,11 +1,13 @@
 import type { OnboardingProfile } from '../types/onboarding'
+import { readStored, removeStored, writeRaw } from './localStorage'
+import { isProfile } from './validators'
 
-const ONBOARDING_PROFILE_KEY = 'fitness-onboarding-profile'
+export const ONBOARDING_PROFILE_KEY = 'fitness-onboarding-profile'
 
 export function saveOnboardingProfile(
   profile: OnboardingProfile,
 ) {
-  localStorage.setItem(
+  writeRaw(
     ONBOARDING_PROFILE_KEY,
     JSON.stringify(profile),
   )
@@ -14,21 +16,10 @@ export function saveOnboardingProfile(
 export function loadOnboardingProfile():
   | OnboardingProfile
   | null {
-  const savedProfile = localStorage.getItem(
-    ONBOARDING_PROFILE_KEY,
-  )
-
-  if (!savedProfile) {
-    return null
-  }
-
-  try {
-    return JSON.parse(savedProfile) as OnboardingProfile
-  } catch {
-    return null
-  }
+  return readStored<OnboardingProfile | null>(ONBOARDING_PROFILE_KEY,
+    (value): value is OnboardingProfile | null => value === null || isProfile(value), null)
 }
 
 export function clearOnboardingProfile() {
-  localStorage.removeItem(ONBOARDING_PROFILE_KEY)
+  removeStored(ONBOARDING_PROFILE_KEY)
 }

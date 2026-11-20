@@ -1,4 +1,12 @@
-# React + TypeScript + Vite
+# POPP Fitness
+
+Telegram Fitness Mini App. Подготовка закрытой alpha использует существующую
+программу «Зал — Full Body 3 раза в неделю». Результаты и черновик тренировки
+хранятся на устройстве.
+
+Запуск на Mac: `POPP Alpha.command` в корне репозитория после `npm ci` и
+`npm run build` из папки `client`. [Инструкция и проверки alpha](../docs/ALPHA_RELEASE.md).
+Публикация и изменение настроек бота требуют отдельного разрешения владельца.
 
 ## Supabase preparation (Stage 1)
 

@@ -1,4 +1,5 @@
 import { lazy, Suspense, useState } from 'react'
+import type { ReactNode } from 'react'
 
 import './App.css'
 
@@ -15,6 +16,7 @@ import {
   SelectionGroup,
 } from './components/ui/Primitives'
 import { useScreenFocus, useVisualViewportInset } from './components/ui/useScreenFocus'
+import { useTelegramLifecycle } from './components/ui/useTelegramLifecycle'
 import { ProgressBoundary } from './components/ui/ProgressBoundary'
 import { FeedbackScreen } from './features/feedback/FeedbackScreen'
 import { ExerciseTechniqueVideo } from './features/exerciseVideo/ExerciseTechniqueVideo'
@@ -30,13 +32,11 @@ import { resolveSessionAdaptation } from './domain/session/resolveSessionAdaptat
 
 import {
   clearOnboardingProfile,
-  loadOnboardingProfile,
   saveOnboardingProfile,
 } from './storage/onboardingStorage'
 
-import { loadUserProgress, saveUserProgress } from './storage/progressStorage'
-
-import { loadWorkoutHistory, saveWorkoutSession } from './storage/workoutHistoryStorage'
+import { commitCompletion, loadApplicationState, prepareCompletion, saveWorkoutDraft } from './storage/workoutPersistence'
+import type { PendingCompletion, WorkoutDraft } from './storage/workoutPersistence'
 
 import type { TrainingGoal } from './types/goal'
 
@@ -47,7 +47,6 @@ import type { SessionAdaptation } from './types/sessionAdaptation'
 import type { ExerciseTarget } from './types/training'
 
 import type {
-  ExerciseDifficulty,
   WorkoutSessionContext,
   WorkoutSetResult,
 } from './types/workoutSession'
@@ -146,6 +145,11 @@ function formatExerciseHistory(sets: WorkoutSetResult[] | undefined): ExerciseHi
 }
 
 function App() {
+  const [initialState] = useState(loadApplicationState)
+  const [workoutDraft, setWorkoutDraft] = useState<WorkoutDraft | null>(initialState.draft)
+  const [pendingCompletion, setPendingCompletion] = useState<PendingCompletion | null>(null)
+  const [storageNotice, setStorageNotice] = useState<string | null>(null)
+  const [confirmIncomplete, setConfirmIncomplete] = useState(false)
   const [activeScreen, setActiveScreen] = useState<'training' | 'progress' | 'feedback'>('training')
   const [workoutStarted, setWorkoutStarted] = useState(false)
 
@@ -165,23 +169,20 @@ function App() {
 
   const [sessionAdaptation, setSessionAdaptation] = useState<SessionAdaptation | null>(null)
 
-  const [sessionWorkout, setSessionWorkout] = useState<ResolvedWorkout | null>(null)
+  const sessionWorkout = workoutDraft?.workout ?? null
 
   const [workoutSessionContext, setWorkoutSessionContext] = useState<WorkoutSessionContext | null>(
-    null,
+    initialState.draft?.sessionContext ?? null,
   )
 
-  const [workoutSetResults, setWorkoutSetResults] = useState<Record<string, WorkoutSetResult[]>>({})
+  const workoutSetResults = workoutDraft?.results ?? {}
+  const workoutExerciseDifficulty = workoutDraft?.difficulty ?? {}
 
-  const [workoutExerciseDifficulty, setWorkoutExerciseDifficulty] = useState<
-    Record<string, ExerciseDifficulty>
-  >({})
+  const [userProgress, setUserProgress] = useState(initialState.progress)
 
-  const [userProgress, setUserProgress] = useState(loadUserProgress)
+  const [workoutHistory, setWorkoutHistory] = useState(initialState.history)
 
-  const [workoutHistory, setWorkoutHistory] = useState(loadWorkoutHistory)
-
-  const [savedOnboardingProfile, setSavedOnboardingProfile] = useState(loadOnboardingProfile)
+  const [savedOnboardingProfile, setSavedOnboardingProfile] = useState(initialState.profile)
 
   const [selectedEnvironment, setSelectedEnvironment] = useState<TrainingEnvironment | null>(
     savedOnboardingProfile?.environment ?? null,
@@ -212,10 +213,49 @@ function App() {
     ].join(':'),
   )
   useVisualViewportInset()
+  useTelegramLifecycle(workoutDraft !== null)
+
+  function reportStorageError(error: unknown) {
+    setStorageNotice(error instanceof Error ? error.message : 'Не удалось сохранить данные. Повтори действие.')
+  }
+
+  function updateDraft(next: WorkoutDraft) {
+    if (pendingCompletion) return
+    setWorkoutDraft(next)
+    setConfirmIncomplete(false)
+    try {
+      saveWorkoutDraft(next)
+      setStorageNotice(null)
+    } catch (error) {
+      reportStorageError(error)
+    }
+  }
+
+  function renderScreen(screen: ReactNode) {
+    return <>
+      {storageNotice && <aside className="storage-notice" role="alert">
+        <p>{storageNotice}</p>
+        {workoutDraft && <button type="button" className="secondary-button" onClick={() => {
+          if (pendingCompletion) handleCompleteWorkout(true)
+          else {
+            try { saveWorkoutDraft(workoutDraft); setStorageNotice(null) }
+            catch (error) { reportStorageError(error) }
+          }
+        }}>Повторить сохранение</button>}
+        <button type="button" className="secondary-button" onClick={() => setStorageNotice(null)}>Понятно</button>
+      </aside>}
+      {screen}
+    </>
+  }
 
   function handleEditProfile() {
+    if (workoutDraft) {
+      setStorageNotice('Сначала заверши незавершённую тренировку. Её результаты и настройки сохранены для продолжения.')
+      return
+    }
+    try { clearOnboardingProfile() }
+    catch (error) { reportStorageError(error); return }
     setActiveScreen('training')
-    clearOnboardingProfile()
     setSavedOnboardingProfile(null)
 
     setWorkoutStarted(false)
@@ -227,7 +267,6 @@ function App() {
     setShowSessionTimeOptions(false)
     setSessionAvailableMinutes(null)
     setSessionAdaptation(null)
-    setSessionWorkout(null)
     setWorkoutSessionContext(null)
     setSelectedEnvironment(null)
     setSelectedDaysPerWeek(null)
@@ -235,9 +274,23 @@ function App() {
     setSelectedGoal(null)
   }
 
-  function handleCompleteWorkout(workoutTemplateId: string) {
+  function handleCompleteWorkout(allowIncomplete = false) {
+    if (!workoutDraft) return
+    const invalidInput = document.querySelector<HTMLInputElement>('.set-input:invalid')
+    if (!pendingCompletion && invalidInput) {
+      invalidInput.reportValidity()
+      invalidInput.focus()
+      setStorageNotice('Проверь числа: вес должен быть неотрицательным, повторения — целыми.')
+      return
+    }
+    const hasMissingReps = workoutDraft.workout.exercises.some((exercise) =>
+      (workoutSetResults[exercise.exerciseId] ?? []).filter((set) => set.reps !== undefined).length !== exercise.sets)
+    if (!pendingCompletion && hasMissingReps && !allowIncomplete) {
+      setConfirmIncomplete(true)
+      return
+    }
     const completedSession = {
-      workoutTemplateId,
+      workoutTemplateId: workoutDraft.workout.templateId,
       completedAt: new Date().toISOString(),
 
       exercises: Object.entries(workoutSetResults).map(([exerciseId, sets]) => ({
@@ -246,22 +299,23 @@ function App() {
         difficulty: workoutExerciseDifficulty[exerciseId],
       })),
 
-      sessionContext: workoutSessionContext ?? undefined,
+      sessionContext: workoutDraft.sessionContext,
     }
 
-    saveWorkoutSession(completedSession)
-
-    setWorkoutHistory((currentHistory) => [...currentHistory, completedSession])
-
-    const nextProgress = {
-      completedWorkoutsCount: userProgress.completedWorkoutsCount + 1,
+    try {
+      const pending = pendingCompletion ?? prepareCompletion(workoutDraft, completedSession)
+      setPendingCompletion(pending)
+      const saved = commitCompletion(pending)
+      setWorkoutHistory(saved.history)
+      setUserProgress(saved.progress)
+    } catch (error) {
+      reportStorageError(error)
+      return
     }
-
-    saveUserProgress(nextProgress)
-    setUserProgress(nextProgress)
-
-    setWorkoutSetResults({})
-    setWorkoutExerciseDifficulty({})
+    setWorkoutDraft(null)
+    setPendingCompletion(null)
+    setStorageNotice(null)
+    setConfirmIncomplete(false)
     setWorkoutStarted(false)
     setShowSessionCheckIn(false)
     setSessionFeeling(null)
@@ -271,7 +325,6 @@ function App() {
     setShowSessionTimeOptions(false)
     setSessionAvailableMinutes(null)
     setSessionAdaptation(null)
-    setSessionWorkout(null)
     setWorkoutSessionContext(null)
   }
 
@@ -280,37 +333,35 @@ function App() {
     setNumber: number,
     patch: Partial<WorkoutSetResult>,
   ) {
-    setWorkoutSetResults((currentResults) => {
-      const exerciseSets = currentResults[exerciseId] ?? []
+    if (!workoutDraft || pendingCompletion) return
+    const currentResults = workoutDraft.results
+    const exerciseSets = currentResults[exerciseId] ?? []
 
-      const existingSet = exerciseSets.find((set) => set.setNumber === setNumber)
+    const existingSet = exerciseSets.find((set) => set.setNumber === setNumber)
 
-      const nextSet: WorkoutSetResult = {
-        setNumber,
-        ...existingSet,
-        ...patch,
-      }
+    const nextSet: WorkoutSetResult = {
+      setNumber,
+      ...existingSet,
+      ...patch,
+    }
 
-      return {
-        ...currentResults,
-
-        [exerciseId]: [...exerciseSets.filter((set) => set.setNumber !== setNumber), nextSet].sort(
-          (a, b) => a.setNumber - b.setNumber,
-        ),
-      }
-    })
+    updateDraft({ ...workoutDraft, results: {
+      ...currentResults,
+      [exerciseId]: [...exerciseSets.filter((set) => set.setNumber !== setNumber), nextSet].sort(
+        (a, b) => a.setNumber - b.setNumber),
+    } })
   }
 
   if (activeScreen === 'feedback') {
-    return <FeedbackScreen onBack={() => setActiveScreen('training')} />
+    return renderScreen(<FeedbackScreen onBack={() => setActiveScreen('training')} />)
   }
 
   if (!selectedEnvironment) {
-    return <OnboardingEnvironment onSelect={setSelectedEnvironment} />
+    return renderScreen(<OnboardingEnvironment onSelect={setSelectedEnvironment} />)
   }
 
   if (!selectedDaysPerWeek) {
-    return (
+    return renderScreen(
       <OnboardingDaysPerWeek
         onSelect={setSelectedDaysPerWeek}
         onBack={() => setSelectedEnvironment(null)}
@@ -319,16 +370,16 @@ function App() {
   }
 
   if (!selectedLevel) {
-    return (
+    return renderScreen(
       <OnboardingLevel onSelect={setSelectedLevel} onBack={() => setSelectedDaysPerWeek(null)} />
     )
   }
 
   if (!selectedGoal) {
-    return (
+    return renderScreen(
       <OnboardingGoal
         onSelect={(goal) => {
-          saveOnboardingProfile({
+          const profile = {
             environment: selectedEnvironment,
 
             daysPerWeek: selectedDaysPerWeek,
@@ -336,9 +387,13 @@ function App() {
             level: selectedLevel,
 
             goal,
-          })
-
-          setSelectedGoal(goal)
+          }
+          try {
+            saveOnboardingProfile(profile)
+            setSavedOnboardingProfile(profile)
+            setSelectedGoal(goal)
+            setStorageNotice(null)
+          } catch (error) { reportStorageError(error) }
         }}
         onBack={() => setSelectedLevel(null)}
       />
@@ -346,7 +401,7 @@ function App() {
   }
 
   if (activeScreen === 'progress') {
-    return (
+    return renderScreen(
       <ProgressBoundary onBack={() => setActiveScreen('training')}>
         <Suspense
           fallback={
@@ -385,7 +440,7 @@ function App() {
   })
 
   if (!currentWorkoutResult.ok) {
-    return (
+    return renderScreen(
       <main className="app">
         <section className="home">
           <AppHeader />
@@ -396,7 +451,7 @@ function App() {
             <p className="subtitle">
               {currentWorkoutResult.reason === 'invalid_equipment_inventory'
                 ? 'Сохранённый список оборудования не распознан. Обнови профиль перед подбором тренировки.'
-                : 'Не удалось подобрать тренировку для текущих настроек.'}
+                : 'В этой alpha доступна программа для зала — 3 раза в неделю. Выбери эти настройки, чтобы проверить тренировку.'}
             </p>
 
             <button className="primary-button" type="button" onClick={handleEditProfile}>
@@ -432,15 +487,13 @@ function App() {
 
   const coachInsights = resolveCoachInsights(coachMemory)
 
-  function handleStartWorkout(workout: ResolvedWorkout) {
+  function handleStartWorkout(workout: ResolvedWorkout, context = workoutSessionContext) {
     setShowSessionCheckIn(false)
 
-    if (Object.keys(workoutSetResults).length > 0) {
+    if (workoutDraft) {
       setWorkoutStarted(true)
       return
     }
-
-    setSessionWorkout(workout)
 
     const initialResults: Record<string, WorkoutSetResult[]> = {}
 
@@ -473,9 +526,20 @@ function App() {
       )
     }
 
-    setWorkoutSetResults(initialResults)
-
-    setWorkoutStarted(true)
+    if (!selectedEnvironment || !selectedDaysPerWeek || !selectedLevel || !selectedGoal) return
+    const draft: WorkoutDraft = {
+      formatVersion: 1, stage: 'active', id: crypto.randomUUID(), startedAt: new Date().toISOString(),
+      profile: { ...savedOnboardingProfile, environment: selectedEnvironment, daysPerWeek: selectedDaysPerWeek,
+        level: selectedLevel, goal: selectedGoal },
+      progress: userProgress, workout, results: initialResults, difficulty: {},
+      ...(context ? { sessionContext: context } : {}),
+    }
+    try {
+      saveWorkoutDraft(draft)
+      setWorkoutDraft(draft)
+      setWorkoutStarted(true)
+      setStorageNotice(null)
+    } catch (error) { reportStorageError(error) }
   }
 
   function toggleSessionSymptom(symptom: SessionSymptom) {
@@ -494,6 +558,10 @@ function App() {
     if (sessionHasTrainingIssue === null) {
       return
     }
+    if (sessionHasTrainingIssue && sessionSymptoms.includes('pain_or_discomfort')) {
+      setStorageNotice('При боли не продолжай вызывающее её упражнение. В alpha мы не подбираем нагрузку для продолжения через боль. Обсуди ситуацию с тренером, а причину боли — с медицинским специалистом.')
+      return
+    }
 
     const checkIn = {
       feeling: sessionFeeling,
@@ -505,7 +573,7 @@ function App() {
 
     const adaptation = resolveSessionAdaptation(checkIn, currentWorkout.estimatedMinutes)
 
-    setWorkoutSessionContext({
+    const context: WorkoutSessionContext = {
       checkIn,
       adaptation: {
         offered: adaptation.requiresConfirmation,
@@ -514,11 +582,12 @@ function App() {
         reason: adaptation.reason,
         targetMinutes: adaptation.targetMinutes,
       },
-    })
+    }
+    setWorkoutSessionContext(context)
 
     if (!adaptation.requiresConfirmation) {
       setSessionAdaptation(null)
-      handleStartWorkout(currentWorkout)
+      handleStartWorkout(currentWorkout, context)
       return
     }
 
@@ -530,21 +599,20 @@ function App() {
       return
     }
 
-    setWorkoutSessionContext((currentContext) =>
-      currentContext === null
+    const context = workoutSessionContext === null
         ? null
         : {
-            ...currentContext,
+            ...workoutSessionContext,
             adaptation: {
-              ...currentContext.adaptation,
+              ...workoutSessionContext.adaptation,
               accepted: true,
             },
-          },
-    )
+          }
+    setWorkoutSessionContext(context)
 
     const adaptedWorkout = applySessionAdaptation(currentWorkout, sessionAdaptation)
 
-    handleStartWorkout(adaptedWorkout)
+    handleStartWorkout(adaptedWorkout, context)
   }
 
   function handleKeepPlannedWorkout() {
@@ -553,7 +621,7 @@ function App() {
   }
 
   if (workoutStarted) {
-    return (
+    return renderScreen(
       <main className="app">
         <section className="workout-screen">
           <AppHeader>
@@ -693,7 +761,8 @@ function App() {
                                 inputMode="decimal"
                                 enterKeyHint="next"
                                 min="0"
-                                step="0.5"
+                                step="any"
+                                disabled={pendingCompletion !== null}
                                 aria-label={`Вес, подход ${setNumber}`}
                                 placeholder="—"
                                 value={setResult?.weightKg ?? ''}
@@ -718,6 +787,7 @@ function App() {
                                 enterKeyHint="next"
                                 min="0"
                                 step="1"
+                                disabled={pendingCompletion !== null}
                                 aria-label={`Повторения, подход ${setNumber}`}
                                 placeholder="—"
                                 value={setResult?.reps ?? ''}
@@ -764,12 +834,10 @@ function App() {
                           selected={
                             workoutExerciseDifficulty[workoutExercise.exerciseId] === difficulty
                           }
-                          onClick={() =>
-                            setWorkoutExerciseDifficulty((current) => ({
-                              ...current,
-                              [workoutExercise.exerciseId]: difficulty,
-                            }))
-                          }
+                          disabled={pendingCompletion !== null}
+                          onClick={() => workoutDraft && updateDraft({ ...workoutDraft,
+                            difficulty: { ...workoutDraft.difficulty, [workoutExercise.exerciseId]: difficulty },
+                          })}
                         >
                           {label}
                         </OptionButton>
@@ -786,21 +854,26 @@ function App() {
           </div>
 
           <footer className="workout-finish">
-            <button
+            {confirmIncomplete ? <div className="incomplete-confirmation" role="group" aria-label="Подтвердить завершение"
+              tabIndex={-1} ref={(element) => element?.focus()}>
+              <p>Не все подходы записаны. Если тренировка закончена, можно сохранить введённое. Пустые поля останутся пустыми.</p>
+              <ActionButton onClick={() => handleCompleteWorkout(true)}>Сохранить как есть</ActionButton>
+              <ActionButton variant="secondary" onClick={() => setConfirmIncomplete(false)}>Вернуться к вводу</ActionButton>
+            </div> : <button
               className="primary-button"
               type="button"
-              onClick={() => handleCompleteWorkout(activeWorkout.templateId)}
+              onClick={() => handleCompleteWorkout()}
             >
-              Завершить тренировку
-            </button>
-            <p>Результаты сохранятся после завершения тренировки.</p>
+              {pendingCompletion ? 'Повторить сохранение' : 'Завершить тренировку'}
+            </button>}
+            <p>{pendingCompletion ? 'Сохранение в историю ещё не завершено.' : 'Черновик сохраняется на этом устройстве. Заверши тренировку, чтобы добавить её в историю.'}</p>
           </footer>
         </section>
       </main>
     )
   }
 
-  return (
+  return renderScreen(
     <main className="app">
       <section className={`home ${showSessionCheckIn ? 'has-checkin' : ''}`}>
         <AppHeader>
@@ -840,17 +913,17 @@ function App() {
             <article className={`workout-card ${showSessionCheckIn ? 'is-checkin' : ''}`}>
               <div className="workout-card-header">
                 <p className="workout-status">
-                  {showSessionCheckIn ? 'Твой план' : 'Следующая тренировка'}
+                  {showSessionCheckIn ? 'Твой план' : workoutDraft ? 'Незавершённая тренировка' : 'Следующая тренировка'}
                 </p>
-                <h2>{currentWorkout.title}</h2>
+                <h2>{activeWorkout.title}</h2>
                 <p className="hero-program">{currentProgram.title}</p>
                 <div className="hero-metrics">
                   <div className="hero-metric">
-                    <strong>≈{currentWorkout.estimatedMinutes}</strong>
+                    <strong>≈{activeWorkout.estimatedMinutes}</strong>
                     <span>минут</span>
                   </div>
                   <div className="hero-metric">
-                    <strong>{String(currentWorkout.exercises.length).padStart(2, '0')}</strong>
+                    <strong>{String(activeWorkout.exercises.length).padStart(2, '0')}</strong>
                     <span>упражнений</span>
                   </div>
                 </div>
@@ -860,6 +933,7 @@ function App() {
                   className="primary-button"
                   type="button"
                   onClick={() => {
+                    if (workoutDraft) { setWorkoutStarted(true); return }
                     setSessionFeeling(null)
                     setSessionSleepQuality(null)
                     setSessionHasTrainingIssue(null)
@@ -871,7 +945,7 @@ function App() {
                     setShowSessionCheckIn(true)
                   }}
                 >
-                  Начать тренировку <Icon name="arrow" />
+                  {workoutDraft ? 'Продолжить тренировку' : 'Начать тренировку'} <Icon name="arrow" />
                 </button>
               ) : sessionAdaptation ? (
                 <div className="session-checkin">
@@ -1109,7 +1183,7 @@ function App() {
                     <span>Порядок упражнений</span>
                   </div>
                   <ol className="plan-list">
-                    {currentWorkout.exercises.map((item, index) => (
+                    {activeWorkout.exercises.map((item, index) => (
                       <li className="plan-row" key={item.slotId}>
                         <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
                         <div>

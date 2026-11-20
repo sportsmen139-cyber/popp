@@ -10,7 +10,7 @@ export function OnboardingEnvironment({
     <OnboardingShell
       step={1}
       title="Где ты тренируешься?"
-      description="Выбери условия для подбора программы и упражнений."
+      description="В alpha доступна программа для зала на 3 тренировки в неделю."
     >
       <div className="choice-list">
         <OnboardingChoice

@@ -22,6 +22,7 @@ import type {
 import type { WorkoutSessionResult } from '../types/workoutSession'
 import { ActionButton, AppHeader, Icon } from './ui/Primitives'
 import { useScreenFocus } from './ui/useScreenFocus'
+import { WorkoutHistory } from './WorkoutHistory'
 import './ProgressScreen.css'
 
 const number = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 })
@@ -182,6 +183,8 @@ export function ProgressScreen({
             </p>
           </article>
         </div>
+
+        <WorkoutHistory history={history} />
 
         <div className="progress-charts">
           <section className="progress-card" aria-labelledby="load-title">

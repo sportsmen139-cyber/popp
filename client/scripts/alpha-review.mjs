@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { spawn, spawnSync } from 'node:child_process'
+import { spawn } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -13,30 +13,15 @@ const client = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const artifacts = await mkdtemp(resolve(tmpdir(), 'popp-alpha-review-'))
 const executablePath =
   process.env.POPP_BROWSER_PATH ||
-  ['/usr/bin/chromium', '/usr/bin/chromium-browser'].find(existsSync)
-assert.ok(executablePath, 'Set POPP_BROWSER_PATH to Chromium')
+  ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser'].find(existsSync)
+if (process.env.POPP_BROWSER_PATH) assert.ok(existsSync(executablePath), 'POPP_BROWSER_PATH must point to Chromium')
 const port = process.env.POPP_ALPHA_PORT || '5186'
 const origin = `http://127.0.0.1:${port}`
+const telegramSdk = 'https://telegram.org/js/telegram-web-app.js?65'
 const fixture = JSON.parse(
   await readFile(resolve(client, 'scripts/fixtures/ui-before-b9c38f4.json'), 'utf8'),
 ).normal
-const clipPath = resolve(artifacts, 'synthetic.webm')
-const ffmpeg = spawnSync('ffmpeg', [
-  '-v',
-  'error',
-  '-f',
-  'lavfi',
-  '-i',
-  'color=c=black:s=160x240:r=10',
-  '-t',
-  '2',
-  '-c:v',
-  'libvpx',
-  '-an',
-  clipPath,
-])
-assert.equal(ffmpeg.status, 0, 'ffmpeg with libvpx required for local synthetic playback test')
-const clip = await readFile(clipPath)
+let clip
 const server = spawn(
   process.execPath,
   ['node_modules/vite/bin/vite.js', '--host', '127.0.0.1', '--port', port, '--strictPort'],
@@ -108,11 +93,22 @@ try {
   }
   assert.ok(ready, serverOutput)
   browser = await chromium.launch({ executablePath, headless: true, args: ['--no-sandbox'] })
+  // Create a local synthetic clip with Playwright's own video recorder; no system ffmpeg needed.
+  const mediaContext = await browser.newContext({ viewport: { width: 160, height: 240 },
+    recordVideo: { dir: resolve(artifacts, 'synthetic-media'), size: { width: 160, height: 240 } } })
+  const mediaPage = await mediaContext.newPage()
+  await mediaPage.setContent('<html><body style="margin:0;background:#000"></body></html>')
+  const video = mediaPage.video()
+  assert.ok(video)
+  await delay(1200)
+  await mediaContext.close()
+  clip = await readFile(await video.path())
   const context = await browser.newContext({
     viewport: { width: 320, height: 720 },
     hasTouch: true,
     isMobile: true,
   })
+  await context.route(telegramSdk, (route) => route.fulfill({ contentType: 'text/javascript', body: '// Native SDK is intercepted in this isolated test.' }))
   await context.addInitScript((snapshot) => {
     for (const [key, value] of Object.entries(snapshot))
       localStorage.setItem(key, JSON.stringify(value))
@@ -124,6 +120,7 @@ try {
     if (
       !url.startsWith(origin) &&
       !url.startsWith('data:') &&
+      url !== telegramSdk &&
       !url.startsWith('https://media.example.invalid/')
     )
       external.push(url)

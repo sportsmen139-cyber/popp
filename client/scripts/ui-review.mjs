@@ -20,10 +20,11 @@ await mkdir(artifacts, { recursive: true })
 assert.ok(existsSync(resolve(client, 'dist/index.html')), 'Run npm run build first')
 const executablePath =
   process.env.POPP_BROWSER_PATH ||
-  ['/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/google-chrome'].find(existsSync)
-assert.ok(executablePath, 'Set POPP_BROWSER_PATH to an installed Chromium executable')
+  ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/google-chrome'].find(existsSync)
+if (process.env.POPP_BROWSER_PATH) assert.ok(existsSync(executablePath), 'POPP_BROWSER_PATH must point to an installed Chromium executable')
 const port = process.env.POPP_UI_PORT || '5185'
 const origin = `http://127.0.0.1:${port}`
+const telegramSdk = 'https://telegram.org/js/telegram-web-app.js?65'
 const server = spawn(
   process.execPath,
   [
@@ -64,6 +65,7 @@ async function setup(width = 390, height = 844, profile) {
     hasTouch: width < 600,
     timezoneId: 'Europe/Moscow',
   })
+  await context.route(telegramSdk, (route) => route.fulfill({ contentType: 'text/javascript', body: '// SDK unavailable in this isolated browser regression.' }))
   if (profile)
     await context.addInitScript(
       (value) => localStorage.setItem('fitness-onboarding-profile', JSON.stringify(value)),
@@ -72,7 +74,7 @@ async function setup(width = 390, height = 844, profile) {
   const page = await context.newPage()
   page.on('pageerror', (error) => pageErrors.push(error.message))
   page.on('request', (request) => {
-    if (!request.url().startsWith(origin) && !request.url().startsWith('data:'))
+    if (!request.url().startsWith(origin) && !request.url().startsWith('data:') && request.url() !== telegramSdk)
       externalRequests.push(request.url())
   })
   await page.clock.setFixedTime(new Date('2026-11-13T09:00:00Z'))
@@ -449,6 +451,7 @@ try {
     .getByRole('spinbutton', { name: 'Повторения, подход 1', exact: true })
     .fill('0')
   await partial.page.getByRole('button', { name: 'Завершить тренировку', exact: true }).click()
+  await partial.page.getByRole('button', { name: 'Сохранить как есть', exact: true }).click()
   const saved = (await storage(partial.page))['fitness-workout-history'][0]
   assert.deepEqual(saved.exercises[0].sets[0], { setNumber: 1, weightKg: 0, reps: 0 })
   assert.deepEqual(saved.exercises[0].sets[1], { setNumber: 2 }, 'Missing values remain missing')

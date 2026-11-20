@@ -360,3 +360,15 @@
     height: 248px;
   }
 }
+.workout-history { margin-bottom: 24px; }
+.workout-history-list { display: grid; gap: 12px; margin-top: 16px; }
+.workout-history-record { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.workout-history-record > summary { min-height: 64px; padding: 16px; cursor: pointer; overflow-wrap: anywhere; }
+.workout-history-record > summary:focus-visible { outline: 3px solid var(--accent-editorial); outline-offset: -3px; }
+.workout-history-record time,
+.workout-history-date { display: block; margin-top: 6px; font-size: 14px; color: var(--text-secondary); }
+.workout-history-exercises { padding: 0 16px 16px; }
+.workout-history-exercise + .workout-history-exercise { margin-top: 20px; }
+.workout-history-exercise h3 { font-size: 16px; margin: 12px 0; }
+.workout-history-exercise ul { list-style: none; padding: 0; margin: 0; }
+.workout-history-exercise li { padding: 6px 0; font-size: 14px; overflow-wrap: anywhere; }

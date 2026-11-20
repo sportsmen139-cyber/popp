@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:ui": "node scripts/ui-review.mjs",
     "test:alpha": "node scripts/alpha-review.mjs",
+    "test:release": "node scripts/alpha-release-review.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
