@@ -1,5 +1,5 @@
 {
-  "status": "prepared_not_published",
+  "status": "project_created_assets_uploaded_awaiting_publication_permission",
   "verified_on": "2026-11-20",
   "application_commit": "8f248a93373e056350f7f439ec6c6ed552d4993d",
   "branch": "feature/smart-trainer-catalog-alpha",
@@ -27,19 +27,21 @@
     "reason": "No application files changed; fresh build is byte-identical."
   },
   "cloudflare": {
-    "account_ready": false,
-    "project_created": false,
+    "account_ready": true,
+    "project_created": true,
     "proposed_name": "popp-fitness-alpha",
-    "name_availability_confirmed": false,
+    "name_availability_confirmed": true,
     "deployed": false,
     "actual_url": null,
     "live_https_verified": false,
-    "telegram_native_verified": false
+    "telegram_native_verified": false,
+    "reserved_project_url": "https://popp-fitness-alpha.pages.dev/",
+    "assets_uploaded": 11,
+    "ready_for_deploy": true
   },
   "required_next_steps": [
-    "Owner creates Cloudflare account and signs in.",
-    "Confirm actual project name and obtain separate publication permission.",
-    "Publish the prepared archive, then verify live HTTPS and Mini App behavior."
+    "Obtain separate owner permission for public deployment of the verified Alpha.",
+    "Click Deploy site in the prepared Pages project, then verify live HTTPS and Mini App behavior."
   ],
   "history_migration_performed": false,
   "unchanged": [
@@ -95,5 +97,6 @@
       "bytes": 1484,
       "sha256": "6a935e224a6b44daa9f2d92ee43e8bbff13aaaf3b3db9ec8e91d9c6f90c7a992"
     }
-  }
+  },
+  "dashboard_observation": "Pages Direct Upload: project popp-fitness-alpha; 11/11 files uploaded; All files were successfully uploaded; Deploy site remains unclicked."
 }
