@@ -1,3 +1,6 @@
+// Public recipient explicitly confirmed by the owner. No credentials or bot token.
+export const ownerFeedbackUsername = 'forever_139'
+
 export const feedbackKinds = {
   bug: 'Сообщить об ошибке',
   improvement: 'Предложить улучшение',

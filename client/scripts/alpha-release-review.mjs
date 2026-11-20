@@ -338,6 +338,33 @@ try {
   assert.deepEqual(unavailableSdk.errors, [])
   pass('SDK loading failure preserves browser-mode startup and draft recovery')
 
+  const feedback = await openCase()
+  await feedback.page.goto(origin)
+  const beforeFeedback = await snapshot(feedback.page)
+  await feedback.page.evaluate(() => {
+    window.__feedbackLinks = []
+    window.Telegram.WebApp.openTelegramLink = (url) => window.__feedbackLinks.push(url)
+  })
+  await feedback.page.getByRole('button', { name: 'Обратная связь', exact: true }).click()
+  await feedback.page.getByText('Канал: @forever_139.', { exact: false }).waitFor()
+  await feedback.page.getByLabel('Твой отзыв', { exact: true }).fill('Проверка формы: & ? #')
+  await feedback.page.getByRole('button', { name: 'Открыть Telegram', exact: true }).click()
+  const feedbackLinks = await feedback.page.evaluate(() => window.__feedbackLinks)
+  assert.equal(feedbackLinks.length, 1)
+  const feedbackUrl = new URL(feedbackLinks[0])
+  assert.equal(feedbackUrl.origin, 'https://t.me')
+  assert.equal(feedbackUrl.pathname, '/forever_139')
+  assert.deepEqual([...feedbackUrl.searchParams.keys()], ['text'])
+  assert.equal(feedbackUrl.searchParams.get('text'), 'Отзыв об альфа-версии\nТип: Сообщить об ошибке\n\nПроверка формы: & ? #')
+  assert.deepEqual(await snapshot(feedback.page), beforeFeedback)
+  for (const width of [320, 390, 1280]) {
+    await feedback.page.setViewportSize({ width, height: 844 })
+    await audit(feedback.page, `owner feedback ${width}px`)
+  }
+  await capture(feedback.page, 'owner-feedback')
+  assert.deepEqual(feedback.errors, [])
+  pass('Built Alpha opens owner-confirmed @forever_139 with only the entered feedback; link intercepted, no message sent; mobile layout and storage preserved')
+
   assert.deepEqual(external, [], 'Unexpected external requests')
   await writeFile(resolve(artifacts, 'report.json'), JSON.stringify({ status: 'passed', executed_at: new Date().toISOString(),
     browser: browser.version(), native_telegram_tested: false, storage: 'synthetic disposable profiles only', checks, screenshots, external }, null, 2))

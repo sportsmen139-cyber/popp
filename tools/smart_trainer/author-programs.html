@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>POPP Fitness — авторские программы</title>
+  <link rel="stylesheet" href="/pilot.css">
+  <script type="module" src="/author-programs-ui.mjs"></script>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">POPP FITNESS · Локальная подготовка</p>
+    <h1>Авторские программы</h1>
+    <p>Набор мышечной массы · специализации из «Умного тренера»</p>
+  </header>
+  <section class="notice" aria-label="Ограничения просмотра">
+    <strong>Предварительный просмотр, без назначения тренировок</strong>
+    <p>Здесь показаны шесть реальных программ и препятствия к их запуску. Просмотр не меняет профиль, текущую программу или историю Alpha. Переходы фаз требуют согласованных условий, календаря недостаточно.</p>
+  </section>
+  <section class="panel" aria-labelledby="selection-title">
+    <h2 id="selection-title">Параметры программы</h2>
+    <p>Среда: зал. Уровень и число тренировок должны точно совпадать с авторской программой.</p>
+    <div class="grid">
+      <div><label for="level">Уровень подготовки</label><select id="level"><option value="">Выбери уровень</option><option value="beginner">Новичок</option><option value="intermediate">Средний</option><option value="advanced">Продвинутый</option></select></div>
+      <div><label for="days">Тренировок в неделю</label><select id="days"><option value="">Выбери частоту</option><option value="3">Три</option><option value="4">Четыре</option></select></div>
+    </div>
+    <p id="selection-note" role="status"></p>
+    <div id="programs"></div>
+  </section>
+  <p id="message" role="status" aria-live="polite">Загрузка локального каталога…</p>
+  <section id="preview" hidden aria-label="Состав авторской программы"></section>
+</main>
+</body>
+</html>

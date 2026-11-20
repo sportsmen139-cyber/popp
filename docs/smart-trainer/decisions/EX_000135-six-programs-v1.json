@@ -1,0 +1,83 @@
+{
+  "format_version": 1,
+  "decision_id": "EX_000135-six-programs-v1",
+  "decision_date": "2026-11-20",
+  "status": "OWNER_APPROVED_METHOD_ONLY",
+  "evidence": "Explicit approval by the owner-trainer in this chat on 2026-11-20.",
+  "source_sha256": "1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a",
+  "exercise_id": "EX_000135",
+  "exercise_version": 1,
+  "source_program_version": 1,
+  "programs": {
+    "PRG_000022": {
+      "PHASE_01": "SLOT_000954",
+      "PHASE_02": "SLOT_000972",
+      "PHASE_03": "SLOT_000990"
+    },
+    "PRG_000030": {
+      "PHASE_01": "SLOT_001405",
+      "PHASE_02": "SLOT_001421",
+      "PHASE_03": "SLOT_001437"
+    },
+    "PRG_000032": {
+      "PHASE_01": "SLOT_001513",
+      "PHASE_02": "SLOT_001529",
+      "PHASE_03": "SLOT_001545"
+    },
+    "PRG_000038": {
+      "PHASE_01": "SLOT_001795",
+      "PHASE_02": "SLOT_001811",
+      "PHASE_03": "SLOT_001827"
+    },
+    "PRG_000063": {
+      "PHASE_01": "SLOT_002990",
+      "PHASE_02": "SLOT_003010",
+      "PHASE_03": "SLOT_003030"
+    },
+    "PRG_000060": {
+      "PHASE_01": "SLOT_002810",
+      "PHASE_02": "SLOT_002832",
+      "PHASE_03": "SLOT_002854"
+    }
+  },
+  "phases": {
+    "PHASE_01": {
+      "sets": 2,
+      "reps_per_side": 6,
+      "original_time_seconds": 15
+    },
+    "PHASE_02": {
+      "sets": 2,
+      "reps_per_side": 8,
+      "original_time_seconds": 20
+    },
+    "PHASE_03": {
+      "sets": 2,
+      "reps_per_side": 10,
+      "original_time_seconds": 25
+    }
+  },
+  "counting_basis": "PER_SIDE",
+  "rep_definition_ru": "Контролируемое опускание противоположных руки и ноги с возвращением в исходное положение. Повторения каждой стороны учитываются отдельно.",
+  "phase_transition": "AGREED_PHASE_CONDITIONS_ONLY_NOT_CALENDAR",
+  "technique_rule_ru": "При потере контроля корпуса или техники увеличение повторений не рекомендуется.",
+  "preserve": [
+    "sets",
+    "minimum_sets",
+    "rest",
+    "RIR",
+    "other_exercises",
+    "source_identifiers_and_versions",
+    "original_assignments_and_history"
+  ],
+  "not_time_equivalence": true,
+  "other_programs_in_scope": false,
+  "does_not_confirm": [
+    "equipment",
+    "technical_policy",
+    "engine_compatibility",
+    "publication_rights",
+    "assignment",
+    "cloud_publication"
+  ]
+}

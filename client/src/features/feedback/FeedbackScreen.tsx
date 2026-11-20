@@ -5,6 +5,7 @@ import {
   feedbackKinds,
   formatFeedback,
   openFeedbackChannel,
+  ownerFeedbackUsername,
   parseFeedbackChannel,
 } from './feedback'
 import type { FeedbackChannel, FeedbackDraft, FeedbackPorts } from './feedback'
@@ -31,7 +32,9 @@ function browserPorts(): FeedbackPorts {
 
 export function FeedbackScreen({
   onBack,
-  channel = parseFeedbackChannel(import.meta.env.VITE_FEEDBACK_TELEGRAM_USERNAME),
+  channel = parseFeedbackChannel(
+    import.meta.env.VITE_FEEDBACK_TELEGRAM_USERNAME ?? ownerFeedbackUsername,
+  ),
 }: {
   onBack: () => void
   channel?: FeedbackChannel

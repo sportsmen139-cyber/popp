@@ -1,0 +1,304 @@
+{
+  "date": "2026-11-20",
+  "scope": "Private preparation only; no live assignments, activation or publication",
+  "source_verification": {
+    "source_sha256": "1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a",
+    "rows_checked": {
+      "programs": 6,
+      "sessions": 60,
+      "slots": 324,
+      "weekly_volume": 516,
+      "relations": 868
+    },
+    "formula_checks": 2355,
+    "locale_separator_normalization_only": true,
+    "formula_results_absent_not_assumed_zero": 516,
+    "difference_count": 0,
+    "differences": [],
+    "live_data_match": true
+  },
+  "owner_decision": {
+    "file": "../decisions/EX_000135-six-programs-v1.json",
+    "canonical_sha256": "9308f1963fcd38abd91a863e2a9b2fb05bafe420d8d610ee299bfa9cc60e3465",
+    "programs": 6,
+    "slots": 18,
+    "source_edited": false,
+    "original_values_preserved": true
+  },
+  "programs": [
+    {
+      "programId": "PRG_000022",
+      "programVersion": 1,
+      "level": "intermediate",
+      "daysPerWeek": 3,
+      "weeks": 8,
+      "phaseCount": 3,
+      "sessionCount": 9,
+      "slotCount": 54,
+      "exerciseCount": 18,
+      "authorDeclarationFound": true,
+      "correctionPrepared": true,
+      "originalBundleHash": "99d3396a2e84ea7487cc31b4c648c950e7b2b0827454b32987b2c38b20cb4805",
+      "reviewBundleHash": "b45cfc68693daabbac5c34914349e4d98aba8d8f40941a271cfed83279af695a",
+      "executionScopeHash": "6915070b60a76e7da87c402e4d004d1d0c43ef1797201d8bd2360d9c32cd2199",
+      "executionAvailable": false,
+      "structuralErrors": [],
+      "unitConflicts": [],
+      "blocker_codes": [
+        "cycle_policy_unresolved",
+        "engine_support_not_verified",
+        "equipment_contract_unresolved:EX_000131",
+        "equipment_contract_unresolved:EX_000135",
+        "per_side_logger_not_supported",
+        "progression_policy_unresolved",
+        "publication_rights_not_confirmed",
+        "technical_policy_unconfirmed"
+      ]
+    },
+    {
+      "programId": "PRG_000030",
+      "programVersion": 1,
+      "level": "intermediate",
+      "daysPerWeek": 3,
+      "weeks": 8,
+      "phaseCount": 3,
+      "sessionCount": 9,
+      "slotCount": 48,
+      "exerciseCount": 14,
+      "authorDeclarationFound": true,
+      "correctionPrepared": true,
+      "originalBundleHash": "3bf97fce2c7499fe102fb5b6051b5a4025af0dacf73810c9bb0d4989c9e3acc2",
+      "reviewBundleHash": "e243b1663d4d0da48a2b09a50e58e6c77dbd83f77ea91109eb2f4c36d68477b5",
+      "executionScopeHash": "cb0733e9b6844a60e9c1ee758f29d5a2b66542853feafb1da79771c28f4b2c41",
+      "executionAvailable": false,
+      "structuralErrors": [],
+      "unitConflicts": [],
+      "blocker_codes": [
+        "cycle_policy_unresolved",
+        "engine_support_not_verified",
+        "equipment_contract_unresolved:EX_000131",
+        "equipment_contract_unresolved:EX_000135",
+        "per_side_logger_not_supported",
+        "progression_policy_unresolved",
+        "publication_rights_not_confirmed",
+        "technical_policy_unconfirmed"
+      ]
+    },
+    {
+      "programId": "PRG_000032",
+      "programVersion": 1,
+      "level": "intermediate",
+      "daysPerWeek": 3,
+      "weeks": 8,
+      "phaseCount": 3,
+      "sessionCount": 9,
+      "slotCount": 48,
+      "exerciseCount": 15,
+      "authorDeclarationFound": true,
+      "correctionPrepared": true,
+      "originalBundleHash": "545217ab63e6eb020f629a34517328229c58dbf08d6dc52fb69b0c19301c1fa1",
+      "reviewBundleHash": "326cf3c08ab5dafe829099a24b5eb949b875e6ec93d1e6183974113e75c14bde",
+      "executionScopeHash": "cfe2d3bfa536565af06310be1430386d4e38de3e4fe15fcdcc1ecf8e6204c538",
+      "executionAvailable": false,
+      "structuralErrors": [],
+      "unitConflicts": [],
+      "blocker_codes": [
+        "cycle_policy_unresolved",
+        "engine_support_not_verified",
+        "equipment_contract_unresolved:EX_000131",
+        "equipment_contract_unresolved:EX_000135",
+        "per_side_logger_not_supported",
+        "progression_policy_unresolved",
+        "publication_rights_not_confirmed",
+        "technical_policy_unconfirmed"
+      ]
+    },
+    {
+      "programId": "PRG_000038",
+      "programVersion": 1,
+      "level": "intermediate",
+      "daysPerWeek": 3,
+      "weeks": 8,
+      "phaseCount": 3,
+      "sessionCount": 9,
+      "slotCount": 48,
+      "exerciseCount": 16,
+      "authorDeclarationFound": true,
+      "correctionPrepared": true,
+      "originalBundleHash": "cf08d97ae6f246a17ef06fc17d499e2dda6973d78d303eef75eb48c9853e4079",
+      "reviewBundleHash": "0e803f18dad9398a119f26e7b939d84c71f3d4d68504680c5b99272b4d99207e",
+      "executionScopeHash": "3ab04c2b4b84418c2992f5ebfcb16bb6cab22a11df3ca64e1dc419113884834c",
+      "executionAvailable": false,
+      "structuralErrors": [],
+      "unitConflicts": [],
+      "blocker_codes": [
+        "cycle_policy_unresolved",
+        "engine_support_not_verified",
+        "equipment_contract_unresolved:EX_000135",
+        "per_side_logger_not_supported",
+        "progression_policy_unresolved",
+        "publication_rights_not_confirmed",
+        "technical_policy_unconfirmed"
+      ]
+    },
+    {
+      "programId": "PRG_000063",
+      "programVersion": 1,
+      "level": "advanced",
+      "daysPerWeek": 4,
+      "weeks": 8,
+      "phaseCount": 3,
+      "sessionCount": 12,
+      "slotCount": 60,
+      "exerciseCount": 20,
+      "authorDeclarationFound": true,
+      "correctionPrepared": true,
+      "originalBundleHash": "d86ab307818fd939dc58378e345cf9e1ad461b41d4392929a078421da9c53863",
+      "reviewBundleHash": "5d4ac217c49c0a5f734f7359f986c6071f7bbabe1a1714524cca8381e67c2713",
+      "executionScopeHash": null,
+      "executionAvailable": false,
+      "structuralErrors": [
+        "slot_dose_or_unit"
+      ],
+      "unitConflicts": [
+        {
+          "slot_id": "SLOT_003005",
+          "exercise_id": "EX_000139",
+          "exercise_version": 1,
+          "exercise_unit": "REPS",
+          "prescribed_units": [
+            "SECONDS"
+          ],
+          "source": {
+            "row": 3009,
+            "sheet": "18_Состав_сессий"
+          }
+        },
+        {
+          "slot_id": "SLOT_003025",
+          "exercise_id": "EX_000139",
+          "exercise_version": 1,
+          "exercise_unit": "REPS",
+          "prescribed_units": [
+            "SECONDS"
+          ],
+          "source": {
+            "row": 3029,
+            "sheet": "18_Состав_сессий"
+          }
+        },
+        {
+          "slot_id": "SLOT_003045",
+          "exercise_id": "EX_000139",
+          "exercise_version": 1,
+          "exercise_unit": "REPS",
+          "prescribed_units": [
+            "SECONDS"
+          ],
+          "source": {
+            "row": 3049,
+            "sheet": "18_Состав_сессий"
+          }
+        }
+      ],
+      "blocker_codes": [
+        "engine_support_not_verified",
+        "equipment_contract_unresolved:EX_000131",
+        "equipment_contract_unresolved:EX_000135",
+        "equipment_contract_unresolved:EX_000142",
+        "per_side_logger_not_supported",
+        "publication_rights_not_confirmed",
+        "seconds_logger_not_supported",
+        "source_dose_unit_conflict",
+        "source_schedule_not_supported",
+        "source_structure_invalid",
+        "technical_policy_unconfirmed"
+      ]
+    },
+    {
+      "programId": "PRG_000060",
+      "programVersion": 1,
+      "level": "advanced",
+      "daysPerWeek": 4,
+      "weeks": 8,
+      "phaseCount": 3,
+      "sessionCount": 12,
+      "slotCount": 66,
+      "exerciseCount": 22,
+      "authorDeclarationFound": true,
+      "correctionPrepared": true,
+      "originalBundleHash": "a5ea94670c10c03c686d19e56e61997396ae201eb34a468daf2617beec04d51d",
+      "reviewBundleHash": "fa8bcf904752ce3f4260b206ae85cf7fe754977f43a2902f342aad083b947773",
+      "executionScopeHash": "b67503e16460d4b4bab2be0f448db74216e1c2e9961100ac46dc2cbc5eadd4a1",
+      "executionAvailable": false,
+      "structuralErrors": [],
+      "unitConflicts": [],
+      "blocker_codes": [
+        "cycle_policy_unresolved",
+        "engine_support_not_verified",
+        "equipment_contract_unresolved:EX_000135",
+        "equipment_contract_unresolved:EX_000142",
+        "per_side_logger_not_supported",
+        "progression_policy_unresolved",
+        "publication_rights_not_confirmed",
+        "seconds_logger_not_supported",
+        "source_schedule_not_supported",
+        "technical_policy_unconfirmed",
+        "unsupported_measurement_unit:EX_000142"
+      ]
+    }
+  ],
+  "validation": {
+    "python_full_suite": {
+      "passed": 102
+    },
+    "vitest": {
+      "passed": 369,
+      "files": 30
+    },
+    "build": "passed",
+    "eslint": "passed",
+    "browser": {
+      "ui_regression": 63,
+      "alpha_feedback_media": 13,
+      "release_history_and_owner_contact": 10,
+      "six_author_previews": 10,
+      "total": 96
+    },
+    "viewports": [
+      320,
+      390,
+      1280
+    ],
+    "native_telegram_tested": false,
+    "actual_feedback_messages_sent": 0,
+    "real_source_workouts_executed": 0
+  },
+  "remaining_methodical_decision": {
+    "exercise_id": "EX_000139",
+    "program_id": "PRG_000063",
+    "direction": "Prepare REPS, explicitly confirmed by owner",
+    "phase_repetition_counts": null,
+    "applied": false
+  },
+  "feedback": {
+    "confirmed_public_username": "forever_139",
+    "delivery_mode": "User sends in Telegram after opening; no server delivery claim",
+    "published_site_changed": false
+  },
+  "protected": {
+    "source_google_sheet_changed": false,
+    "importer_changed": false,
+    "training_engine_changed": false,
+    "adaptive_volume_changed": false,
+    "supabase_changed": false,
+    "main_changed": false,
+    "cloudflare_changed": false
+  },
+  "artifact_verification": {
+    "gzip_os_byte_only": true,
+    "raw_actual_sha256": "e4822f9a2c6cdc6636aca7f348a138427ecbc0fa9cf374875eb5d6ecb60ab0db",
+    "raw_registered_sha256": "04867c9770c47077c6888a75f626fcbdb0cb95d4d23be73574c80b6daa7eae16",
+    "all_content_bytes_verified": true
+  }
+}

@@ -7,7 +7,7 @@ from pathlib import Path
 import secrets
 import threading
 
-from ..xlsx_source import canonical
+from ..xlsx_source import SourceError, canonical
 from .pilot import validate_bundle
 from .release import prepare_candidate
 from .workflow import Journal, ReviewError, review_state
@@ -16,7 +16,7 @@ from ..engine.service import PilotService
 ROOT = Path(__file__).resolve().parents[3]
 
 
-def create_server(bundle, journal_path, port=5188, *, technical_contracts=None, alternative_ids=()):
+def create_server(bundle, journal_path, port=5188, *, technical_contracts=None, alternative_ids=(), author_programs=None):
     validate_bundle(bundle)
     journal = Journal(journal_path)
     pilot = PilotService(bundle, Path(journal_path).parent, technical_contracts, alternative_ids)
@@ -73,6 +73,12 @@ def create_server(bundle, journal_path, port=5188, *, technical_contracts=None, 
                     self.reply(200, (ROOT / 'client/scripts/pilot-engine-ui.mjs').read_bytes(), 'text/javascript; charset=utf-8')
                 elif self.path == '/api/pilot-engine':
                     self.reply(200, canonical({'csrf': csrf, **pilot.payload()}))
+                elif author_programs is not None and self.path == '/author-programs':
+                    self.reply(200, (ROOT / 'tools/smart_trainer/author-programs.html').read_bytes(), 'text/html; charset=utf-8')
+                elif author_programs is not None and self.path == '/author-programs-ui.mjs':
+                    self.reply(200, (ROOT / 'client/scripts/author-programs-ui.mjs').read_bytes(), 'text/javascript; charset=utf-8')
+                elif author_programs is not None and self.path == '/api/author-programs':
+                    self.reply(200, canonical({'csrf': csrf, **author_programs.listing()}))
                 elif self.path == '/api/owner-statement/export':
                     self.reply(200, canonical(pilot.author_log.export()), attachment='author-statements.json')
                 elif self.path == '/api/pilot-engine/export':
@@ -89,6 +95,8 @@ def create_server(bundle, journal_path, port=5188, *, technical_contracts=None, 
                     self.reply(404, canonical({'error': 'not_found'}))
             except (OSError, ReviewError):
                 self.reply(503, canonical({'error': 'journal_unavailable', 'message': 'Не удалось прочитать журнал. Исходные файлы не изменены.'}))
+            except SourceError:
+                self.reply(503, canonical({'error': 'source_unavailable', 'message': 'Проверка исходных данных не пройдена. Назначение не создано.'}))
 
         def do_POST(self):
             if not self.allowed_host() or self.headers.get('Origin') != 'http://' + self.headers.get('Host', ''):
@@ -98,7 +106,10 @@ def create_server(bundle, journal_path, port=5188, *, technical_contracts=None, 
             if not hmac.compare_digest(token, csrf):
                 self.reply(403, canonical({'error': 'csrf_denied'}))
                 return
-            if self.path not in ('/api/review', '/api/backup', '/api/owner-statement', '/api/pilot-engine/command') or self.headers.get('Content-Type', '').split(';')[0] != 'application/json':
+            paths = {'/api/review', '/api/backup', '/api/owner-statement', '/api/pilot-engine/command'}
+            if author_programs is not None:
+                paths.add('/api/author-programs/preview')
+            if self.path not in paths or self.headers.get('Content-Type', '').split(';')[0] != 'application/json':
                 self.reply(400, canonical({'error': 'invalid_request'}))
                 return
             try:
@@ -115,6 +126,11 @@ def create_server(bundle, journal_path, port=5188, *, technical_contracts=None, 
                         values[key] = value
                     return values
                 data = json.loads(self.rfile.read(length).decode('utf-8'), object_pairs_hook=unique)
+                if self.path == '/api/author-programs/preview':
+                    if not isinstance(data, dict) or set(data) != {'programId', 'profile'}:
+                        raise ValueError('Unexpected preview fields')
+                    self.reply(200, canonical(author_programs.preview(data['programId'], data['profile'])))
+                    return
                 if self.path in ('/api/owner-statement', '/api/pilot-engine/command'):
                     with mutex:
                         response = pilot.handle('declaration' if self.path == '/api/owner-statement' else 'engine', data)
