@@ -52,6 +52,9 @@ service_account*.json
 # Private workbook snapshots and full content previews; publication rights pending.
 /.local/smart-trainer/
 
+# Locally prepared hosting archives and their manifests; never deploy automatically.
+/releases/
+
 # Offline Python tooling caches.
 __pycache__/
 *.py[cod]

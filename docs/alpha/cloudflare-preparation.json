@@ -1,0 +1,99 @@
+{
+  "status": "prepared_not_published",
+  "verified_on": "2026-11-20",
+  "application_commit": "8f248a93373e056350f7f439ec6c6ed552d4993d",
+  "branch": "feature/smart-trainer-catalog-alpha",
+  "hosting": "Cloudflare Pages Direct Upload",
+  "archive": {
+    "file": "releases/popp-fitness-alpha-8f248a9.zip",
+    "sha256": "6eaa5db6dd585e986d862eba92a757c23cbb1241db0085455cb2d6b55c2ee4b4",
+    "bytes": 268198,
+    "files": 11
+  },
+  "checks": {
+    "fresh_build": "passed",
+    "application_files_byte_identical_to_last_verified_alpha": 10,
+    "zip_integrity_and_contents": "passed",
+    "index_at_zip_root": true,
+    "bot_token_pattern_scan": "passed",
+    "old_host_reference_scan": "passed",
+    "no_source_env_workbooks_journals_or_user_data_in_archive": true,
+    "git_runtime_diff_from_reviewed_commit_empty": true
+  },
+  "previous_application_validation": {
+    "unit_tests": 369,
+    "browser_checks": 85,
+    "rerun_in_this_hosting_task": false,
+    "reason": "No application files changed; fresh build is byte-identical."
+  },
+  "cloudflare": {
+    "account_ready": false,
+    "project_created": false,
+    "proposed_name": "popp-fitness-alpha",
+    "name_availability_confirmed": false,
+    "deployed": false,
+    "actual_url": null,
+    "live_https_verified": false,
+    "telegram_native_verified": false
+  },
+  "required_next_steps": [
+    "Owner creates Cloudflare account and signs in.",
+    "Confirm actual project name and obtain separate publication permission.",
+    "Publish the prepared archive, then verify live HTTPS and Mini App behavior."
+  ],
+  "history_migration_performed": false,
+  "unchanged": [
+    "client UI and training logic",
+    "main",
+    "old published Site and its DNS",
+    "Supabase",
+    "Telegram bot configuration and token",
+    "existing user data"
+  ],
+  "files": {
+    "_headers": {
+      "bytes": 131,
+      "sha256": "a4fe254700ad5aad6dec21b2589c4c26d0624dd11c9a4d41ec8659786d493855"
+    },
+    "app-icon.svg": {
+      "bytes": 328,
+      "sha256": "c18d72e455a2bcc013fe1497eb7413d7cf1018207a32eb64795eb9f0d4ef54bb"
+    },
+    "apple-touch-icon.png": {
+      "bytes": 3837,
+      "sha256": "7bbdce969a3a0ebc9329899cedaa74b1837d514df56eb19148ab224382206430"
+    },
+    "assets/ProgressScreen-BJTyeB2w.css": {
+      "bytes": 7124,
+      "sha256": "3650aa9dfa47434ba12b79d246b1d3d5e6f5707329a86fe115d965bb5e731e77"
+    },
+    "assets/ProgressScreen-Ui4sB7TU.js": {
+      "bytes": 398012,
+      "sha256": "6cd47228ac2fcb9e3660e8daa967cf6173545dcc3cb65c8f1adef353eeb45e2d"
+    },
+    "assets/index-ClrDP5N4.css": {
+      "bytes": 22053,
+      "sha256": "b7f8b6332a798845eea13c9891052dc8608cd4d34807c194061ed26d2fb08125"
+    },
+    "assets/index-c22I5q4y.js": {
+      "bytes": 308074,
+      "sha256": "1bebb286ae1ac0d2c867558a637c668dcf5812c9ccaf5c3aaa0bc98f5f21f60e"
+    },
+    "assets/onest-variable-DxZ7AgKS.woff2": {
+      "bytes": 50120,
+      "sha256": "fb7f115784857562685a850e83dc3f9b385b9757b15d05e337f18b6fcc021a03"
+    },
+    "favicon.svg": {
+      "bytes": 326,
+      "sha256": "bdeaa0121b31e2dc3df5324efa9e20975f552d3899c8cf925e4fac9cec264152"
+    },
+    "icons.svg": {
+      "bytes": 5031,
+      "sha256": "b45fa506195cfcdef406ba9f0c77b36ddc1a7c224040926ec70abc2fdea7b93a"
+    },
+    "index.html": {
+      "bytes": 1484,
+      "sha256": "6a935e224a6b44daa9f2d92ee43e8bbff13aaaf3b3db9ec8e91d9c6f90c7a992"
+    }
+  }
+}
