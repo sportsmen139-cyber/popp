@@ -1,0 +1,32 @@
+.goal-alpha-note {
+  padding: 16px 18px;
+  margin-bottom: 24px;
+  border-left: 3px solid var(--accent);
+  background: var(--surface);
+  border-radius: 0 12px 12px 0;
+}
+.goal-alpha-note strong { font-size: 1rem; }
+.goal-alpha-note p { margin: 8px 0 0; font-size: .9375rem; line-height: 1.55; color: var(--text-secondary); }
+.goal-choices { display: grid; gap: 12px; }
+.goal-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 112px;
+  width: 100%;
+  padding: 20px;
+  text-align: left;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+}
+.goal-choice strong { font-size: 1.25rem; line-height: 1.3; font-weight: 600; letter-spacing: -.025em; }
+.goal-choice > span { font-size: .9375rem; line-height: 1.5; color: var(--text-secondary); }
+.goal-choice .goal-status { font-size: .875rem; font-weight: 600; }
+.goal-choice .goal-status.is-available { color: var(--text); }
+.goal-unavailable { padding: 20px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }
+.goal-unavailable p { font-size: 1rem; line-height: 1.6; margin: 0 0 20px; }
+.goal-unavailable .action-button { width: 100%; }
+@media (hover: hover) { .goal-choice:hover { border-color: var(--accent); } }

@@ -4,7 +4,9 @@ import type { TrainingEmphasisId } from '../../types/program'
 export function resolveGoal(
   goal: TrainingGoal,
 ): TrainingEmphasisId | null {
-  if (goal.target.type === 'whole_body') {
+  // Only the three existing Alpha variants are connected. A whole-body target
+  // alone must never turn strength, hypertrophy or endurance into general fitness.
+  if (goal.goalType === 'general_fitness' && goal.target.type === 'whole_body') {
     return 'balanced'
   }
 

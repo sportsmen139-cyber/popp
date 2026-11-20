@@ -31,7 +31,6 @@ import { applySessionAdaptation } from './domain/session/applySessionAdaptation'
 import { resolveSessionAdaptation } from './domain/session/resolveSessionAdaptation'
 
 import {
-  clearOnboardingProfile,
   saveOnboardingProfile,
 } from './storage/onboardingStorage'
 
@@ -39,6 +38,7 @@ import { commitCompletion, loadApplicationState, prepareCompletion, saveWorkoutD
 import type { PendingCompletion, WorkoutDraft } from './storage/workoutPersistence'
 
 import type { TrainingGoal } from './types/goal'
+import { resolveGoal } from './domain/program/resolveGoal'
 
 import type { ResolvedWorkout, TrainingEnvironment, UserLevel } from './types/program'
 
@@ -253,10 +253,8 @@ function App() {
       setStorageNotice('Сначала заверши незавершённую тренировку. Её результаты и настройки сохранены для продолжения.')
       return
     }
-    try { clearOnboardingProfile() }
-    catch (error) { reportStorageError(error); return }
     setActiveScreen('training')
-    setSavedOnboardingProfile(null)
+    // Keep the saved profile until a complete, supported replacement is saved.
 
     setWorkoutStarted(false)
     setShowSessionCheckIn(false)
@@ -378,8 +376,12 @@ function App() {
   if (!selectedGoal) {
     return renderScreen(
       <OnboardingGoal
+        selection={{ environment: selectedEnvironment, daysPerWeek: selectedDaysPerWeek, level: selectedLevel,
+          completedWorkoutsCount: userProgress.completedWorkoutsCount,
+          availableEquipment: savedOnboardingProfile?.availableEquipment }}
         onSelect={(goal) => {
           const profile = {
+            ...savedOnboardingProfile,
             environment: selectedEnvironment,
 
             daysPerWeek: selectedDaysPerWeek,
@@ -451,6 +453,8 @@ function App() {
             <p className="subtitle">
               {currentWorkoutResult.reason === 'invalid_equipment_inventory'
                 ? 'Сохранённый список оборудования не распознан. Обнови профиль перед подбором тренировки.'
+                : resolveGoal(selectedGoal) === null
+                ? 'Для сохранённой цели программа в Alpha пока не подключена. Выбери другую цель в профиле. История тренировок сохранена.'
                 : 'В этой alpha доступна программа для зала — 3 раза в неделю. Выбери эти настройки, чтобы проверить тренировку.'}
             </p>
 

@@ -129,11 +129,15 @@ async function accessibility(page, name) {
   passed(`axe ${name}`)
 }
 
-async function onboard(page) {
-  await page.getByRole('button', { name: /^В зале/ }).click()
-  await page.getByRole('button', { name: '3 раза в неделю', exact: true }).click()
+async function openGoals(page, environment = 'В зале', days = '3 раза в неделю') {
+  await page.getByRole('button', { name: environment, exact: true }).click()
+  await page.getByRole('button', { name: days, exact: true }).click()
   await page.getByRole('button', { name: 'Новичок', exact: true }).click()
-  await page.getByRole('button', { name: 'Поддерживать форму', exact: true }).click()
+}
+
+async function onboard(page) {
+  await openGoals(page)
+  await page.getByRole('button', { name: 'Общая физическая подготовка', exact: true }).click()
 }
 
 async function checkin(page, adapt = false) {
@@ -532,10 +536,125 @@ try {
     await page.getByRole('button', { name: 'Средний', exact: true }).click()
     await page.getByRole('button', { name: 'Назад', exact: true }).click()
     await page.getByRole('button', { name: 'Продвинутый', exact: true }).click()
-    await page.getByRole('button', { name: label, exact: true }).click()
+    await page.getByRole('button', { name: label === 'Увеличить ягодицы' ? 'Набор мышечной массы' : 'Улучшение конкретного упражнения', exact: true }).click()
+    await page.getByRole('button', { name: label === 'Увеличить ягодицы' ? 'Ягодицы' : 'Подтягивания', exact: true }).click()
     assert.deepEqual((await storage(page))['fitness-onboarding-profile'].goal, goal)
     await context.close()
     passed(`Onboarding back navigation and goal: ${label}`)
+  }
+
+  const mainGoals = ['Общая физическая подготовка', 'Набор мышечной массы', 'Развитие силы', 'Мышечная выносливость', 'Улучшение конкретного упражнения']
+  const muscles = ['Всё тело без специализации', 'Ягодицы', 'Спина', 'Грудь', 'Плечи', 'Руки', 'Ноги', 'Передняя поверхность бедра', 'Задняя поверхность бедра', 'Плечи и руки']
+  for (const width of [320, 360, 390, 430, 1280]) {
+    const { page, context } = await setup(width)
+    await openGoals(page)
+    assert.deepEqual(await page.locator('.goal-choice strong').allTextContents(), mainGoals)
+    await layout(page, `goals ${width}`)
+    const logo = await page.locator('.brand-wordmark').boundingBox()
+    const back = await page.getByRole('button', { name: 'Назад', exact: true }).boundingBox()
+    assert.ok(logo && back && logo.x + logo.width <= back.x)
+    assert.equal(await page.locator('.brand-wordmark').getAttribute('viewBox'), '0 0 140 36')
+    const logoScale = await page.locator('.brand-wordmark').evaluate((element) => {
+      const matrix = element.getScreenCTM()
+      return matrix ? [Math.hypot(matrix.a, matrix.b), Math.hypot(matrix.c, matrix.d)] : []
+    })
+    assert.ok(logoScale.length === 2 && Math.abs(logoScale[0] - logoScale[1]) < 0.0001, 'Wordmark geometry is not stretched inside its SVG viewport')
+    if (width === 390) { await capture(page, 'goals', true); await accessibility(page, 'goals') }
+    await page.getByRole('button', { name: 'Набор мышечной массы', exact: true }).click()
+    assert.deepEqual(await page.locator('.goal-choice strong').allTextContents(), muscles)
+    await layout(page, `muscle goals ${width}`)
+    if (width === 390) { await capture(page, 'goal-muscles', true); await accessibility(page, 'muscle goals') }
+    await page.getByRole('button', { name: 'Назад', exact: true }).click()
+    await page.getByRole('button', { name: 'Улучшение конкретного упражнения', exact: true }).click()
+    await layout(page, `exercise goals ${width}`)
+    if (width === 390) { await capture(page, 'goal-exercises', true); await accessibility(page, 'exercise goals') }
+    await context.close()
+    passed(`Goal hierarchy, logo and controls at ${width}px`)
+  }
+
+  const unsupportedGoals = [
+    ['Развитие силы'], ['Мышечная выносливость'],
+    ...muscles.filter((name) => name !== 'Ягодицы').map((name) => ['Набор мышечной массы', name]),
+    ['Улучшение конкретного упражнения', 'Отжимания на брусьях'],
+  ]
+  for (const [main, specialization] of unsupportedGoals) {
+    const { page, context } = await setup(320)
+    await openGoals(page)
+    const before = await storage(page)
+    await page.getByRole('button', { name: main, exact: true }).click()
+    if (specialization) await page.getByRole('button', { name: specialization, exact: true }).click()
+    await page.getByRole('heading', { name: 'Для этой цели пока нет программы', exact: true }).waitFor()
+    assert.deepEqual(await storage(page), before, 'Unavailable selection never saves a false assignment')
+    assert.equal(await page.locator('.workout-card,.exercise-card').count(), 0)
+    await layout(page, 'unavailable goal')
+    if (main === 'Развитие силы') { await capture(page, 'goal-unavailable', true); await accessibility(page, 'unavailable goal') }
+    await page.getByRole('button', { name: 'Назад', exact: true }).click()
+    await page.getByRole('heading', { name: specialization ? (main === 'Набор мышечной массы' ? 'На каких мышцах сделать акцент?' : 'Какое упражнение хочешь улучшить?') : 'Какая у тебя главная цель?', exact: true }).waitFor()
+    await context.close()
+    passed(`Unavailable goal does not assign or mutate records: ${specialization || main}`)
+  }
+
+  for (const [environment, days] of [['Дома', '3 раза в неделю'], ['На улице', '3 раза в неделю'], ['В зале', '2 раза в неделю'], ['В зале', '4 раза в неделю']]) {
+    const { page, context } = await setup(320)
+    await openGoals(page, environment, days)
+    await page.getByRole('button', { name: 'Общая физическая подготовка', exact: true }).click()
+    await page.getByRole('heading', { name: 'Для этой цели пока нет программы', exact: true }).waitFor()
+    assert.equal((await storage(page))['fitness-onboarding-profile'], null)
+    await page.getByRole('button', { name: 'Выбрать другую цель', exact: true }).click()
+    await page.getByRole('heading', { name: 'Какая у тебя главная цель?', exact: true }).waitFor()
+    await context.close()
+    passed(`Goal availability respects settings: ${environment}, ${days}`)
+  }
+
+  for (const goal of [baseline.normal['fitness-onboarding-profile'].goal,
+    { goalType: 'hypertrophy', target: { type: 'muscle_group', id: 'glutes' }, priority: 'high' },
+    { goalType: 'exercise_performance', target: { type: 'exercise', id: 'pull_up' }, priority: 'high' }]) {
+    const oldProfile = { ...baseline.normal['fitness-onboarding-profile'], goal, legacyField: 'preserve' }
+    const { page, context } = await setup(390, 844, oldProfile)
+    await page.evaluate((data) => {
+      localStorage.setItem('fitness-workout-history', JSON.stringify(data['fitness-workout-history']))
+      localStorage.setItem('fitness-user-progress', JSON.stringify(data['fitness-user-progress']))
+    }, baseline.normal)
+    await page.reload()
+    await page.getByRole('button', { name: 'Начать тренировку', exact: true }).waitFor()
+    const before = await storage(page)
+    await page.getByRole('button', { name: 'Изменить профиль', exact: true }).click()
+    await openGoals(page)
+    await page.getByRole('button', { name: 'Развитие силы', exact: true }).click()
+    assert.deepEqual(await storage(page), before, 'Unfinished profile edit keeps the full old profile and history')
+    await page.reload()
+    await page.getByRole('button', { name: 'Начать тренировку', exact: true }).waitFor()
+    assert.deepEqual(await storage(page), before)
+    await page.getByRole('button', { name: 'Изменить профиль', exact: true }).click()
+    await onboard(page)
+    const after = await storage(page)
+    assert.deepEqual(after['fitness-workout-history'], before['fitness-workout-history'])
+    assert.deepEqual(after['fitness-user-progress'], before['fitness-user-progress'])
+    assert.equal(after['fitness-onboarding-profile'].legacyField, 'preserve')
+    assert.deepEqual(after['fitness-onboarding-profile'].goal, baseline.normal['fitness-onboarding-profile'].goal)
+    await context.close()
+    passed(`Legacy ${goal.goalType}: reopen, unfinished edit and supported replacement preserve records`)
+  }
+
+  const equipmentBlocked = await setup(320, 844, { ...baseline.normal['fitness-onboarding-profile'], availableEquipment: [] })
+  await equipmentBlocked.page.getByRole('heading', { name: 'Тренировка недоступна', exact: true }).waitFor()
+  const equipmentBefore = await storage(equipmentBlocked.page)
+  await equipmentBlocked.page.getByRole('button', { name: 'Изменить профиль', exact: true }).click()
+  await openGoals(equipmentBlocked.page)
+  await equipmentBlocked.page.getByRole('button', { name: 'Общая физическая подготовка', exact: true }).click()
+  await equipmentBlocked.page.getByRole('heading', { name: 'Для этой цели пока нет программы', exact: true }).waitFor()
+  assert.match(await equipmentBlocked.page.locator('.goal-unavailable').innerText(), /оборудованием/)
+  assert.deepEqual(await storage(equipmentBlocked.page), equipmentBefore)
+  await equipmentBlocked.context.close()
+  passed('Goal choice also respects actual equipment availability and preserves the saved inventory')
+
+  for (const goalType of ['strength', 'hypertrophy', 'endurance']) {
+    const { page, context } = await setup(390, 844, { ...baseline.normal['fitness-onboarding-profile'], goal: { goalType, target: { type: 'whole_body' }, priority: 'normal' } })
+    await page.getByRole('heading', { name: 'Тренировка недоступна', exact: true }).waitFor()
+    assert.match(await page.locator('.subtitle').innerText(), /Для сохранённой цели/)
+    assert.equal(await page.locator('.workout-card,.exercise-card').count(), 0)
+    await context.close()
+    passed(`Stored unsupported whole-body ${goalType} cannot fall back to general fitness`)
   }
 
   const metadata = await setup()

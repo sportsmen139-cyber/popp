@@ -3,6 +3,11 @@ import { describe, expect, it } from 'vitest'
 import { resolveGoal } from './resolveGoal'
 
 describe('resolveGoal', () => {
+  it.each(['hypertrophy', 'strength', 'endurance', 'exercise_performance', 'body_composition', 'return_to_training'] as const)(
+    'не подменяет %s с целью «всё тело» общей подготовкой', (goalType) => {
+      expect(resolveGoal({ goalType, target: { type: 'whole_body' }, priority: 'normal' })).toBeNull()
+    },
+  )
   it('превращает цель роста ягодиц в glutes emphasis', () => {
     const result = resolveGoal({
       goalType: 'hypertrophy',

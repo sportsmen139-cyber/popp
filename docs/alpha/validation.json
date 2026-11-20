@@ -1,7 +1,7 @@
 {
   "status": "passed_automated_checks_native_telegram_pending",
   "verified_on": "2026-11-20",
-  "base_commit": "75d9e34818790a82ae602a02e20ff4a49cb6c424",
+  "base_commit": "ff728fb58aa4609d5763411c4132fd25a28af5c9",
   "branch": "feature/smart-trainer-catalog-alpha",
   "node": "24.21.0",
   "browser": {
@@ -12,8 +12,8 @@
   "checks": {
     "unit": {
       "command": "npm test",
-      "test_files": 29,
-      "tests": 341,
+      "test_files": 30,
+      "tests": 369,
       "status": "passed"
     },
     "build": {
@@ -26,7 +26,7 @@
     },
     "ui": {
       "command": "npm run test:ui",
-      "checks": 31,
+      "checks": 63,
       "report": "ui-review.json"
     },
     "alpha": {
@@ -46,7 +46,7 @@
     "main",
     "production publication",
     "Supabase and existing user data",
-    "client Training Engine domain logic and 45 legacy exercise IDs",
+    "workout composition, sets, working weight progression and history calculations",
     "Smart Trainer importer, source programs and isolated Python Engine"
   ],
   "limitations": [
@@ -57,5 +57,26 @@
     "Existing test Site has public link access, no tester allowlist."
   ],
   "publication_performed": false,
-  "source_snapshot": "Existing ignored local XLSX found; no import or source-wide audit performed."
+  "source_snapshot": "Existing ignored local XLSX found; no import or source-wide audit performed.",
+  "scope": "Alpha goal selection hierarchy and strict assignment boundary; no new training programs",
+  "goal_source_verification": {
+    "source_sha256": "1919449150c40600c12d719b415ba1792ac331a8d29be2e4c6191f36f18a904a",
+    "sheet": "16_Программы",
+    "rows": "5:112",
+    "columns": [
+      "A",
+      "B",
+      "H",
+      "I",
+      "K",
+      "S"
+    ],
+    "program_metadata_rows_matching_existing_import": 108,
+    "main_directions": 5,
+    "ui_final_choices": 15,
+    "assignable_legacy_variants": 3,
+    "source_modified": false,
+    "importer_modified": false,
+    "full_workbook_audit_performed": false
+  }
 }

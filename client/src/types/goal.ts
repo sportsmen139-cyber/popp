@@ -13,11 +13,16 @@ export type MuscleGroupGoalTarget =
   | 'chest'
   | 'shoulders'
   | 'legs'
+  | 'arms'
+  | 'quads'
+  | 'hamstrings'
+  | 'shoulders_arms'
 
 export type ExerciseGoalTarget =
   | 'pull_up'
   | 'bench_press'
   | 'squat'
+  | 'dip'
 
 export type GoalTarget =
   | {

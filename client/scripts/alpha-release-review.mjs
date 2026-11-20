@@ -76,7 +76,7 @@ async function onboard(page) {
   await page.getByRole('button', { name: /^В зале/ }).click()
   await page.getByRole('button', { name: '3 раза в неделю', exact: true }).click()
   await page.getByRole('button', { name: 'Новичок', exact: true }).click()
-  await page.getByRole('button', { name: 'Поддерживать форму', exact: true }).click()
+  await page.getByRole('button', { name: 'Общая физическая подготовка', exact: true }).click()
 }
 
 async function start(page) {
